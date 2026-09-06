@@ -1,0 +1,25 @@
+{
+  "name": "prima-second-home",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PRIMA SECOND HOME — aplikácia pre hostí ubytovní PRIMA",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "node tools/verify-imports.mjs && node tools/check-i18n.mjs",
+    "test": "node --test test/*.test.mjs",
+    "icons": "node tools/make-icons.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.383.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0",
+    "vite-plugin-pwa": "^0.20.0"
+  }
+}
