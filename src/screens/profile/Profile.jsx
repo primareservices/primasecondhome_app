@@ -45,6 +45,7 @@ export function Profile() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
         <ListRow icon="ShieldCheck" title={t('profile.rulesAgain')} onClick={() => navigate('/info/rules')}/>
         {stay && <ListRow icon="Star" title={t('profile.feedback')} sub={t('feedback.sub')} onClick={() => navigate('/feedback')}/>}
+        {stay && <ListRow icon="ShieldCheck" title={t('private.title')} sub={t('private.sub')} onClick={() => navigate('/private')}/>}
       </div>
       {!standalone && <Banner tone="info" icon="Smartphone" style={{ marginTop: 12 }}><b>{t('profile.install')}</b><div>{t('profile.installHint')}</div></Banner>}
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { C } from '../../config/theme.js';
 import { monoFamily } from '../../config/app-config.js';
 import { CARD_REASONS, DOC_PICKUPS, DOC_PURPOSES, ISSUE_BY_KEY, PLACES, SLOTS, URGENCY } from '../../config/catalog.js';
+import { PRIVATE_CATEGORIES } from '../../config/catalog-v2.js';
 import { useT } from '../../i18n/index.js';
 import { cancelRequest, getRequest, subscribe } from '../../data/adapter.js';
 import { back, navigate } from '../../router.js';
@@ -50,6 +51,10 @@ export function RequestDetail({ id }) {
           <KeyValue label={t('docs.passport')} value={r.passport} mono/>
           {r.neededBy && <KeyValue label={t('docs.validUntil')} value={r.neededBy}/>}
           <KeyValue label={t('docs.pickup')} value={label(DOC_PICKUPS, r.pickup, t)}/>
+        </>}
+        {r.kind === 'private' && <>
+          <KeyValue label={t('private.about')} value={label(PRIVATE_CATEGORIES, r.category, t)}/>
+          <KeyValue label={t('private.anon')} value={r.anonymous ? t('common.yes') : t('common.no')}/>
         </>}
         {(r.text || r.note) && <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>{t('detail.yourText')}</div>

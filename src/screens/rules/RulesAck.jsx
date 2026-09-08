@@ -11,9 +11,8 @@ import { RulesBody } from './Rules.jsx';
 // Zobrazí sa raz po prihlásení; potvrdenie sa ukladá s verziou pravidiel.
 export function RulesAck() {
   const { t } = useT();
-  const { stay, content } = useApp();
+  const { stay, rules } = useApp();
   const [checked, setChecked] = useState(false);
-  const rules = content.rules;
   return (
     <div className="page page-nonav fade-in">
       <h1 style={{ fontSize: 22, fontWeight: 800, margin: '12px 0 4px' }}>{t('rules.ackTitle')}</h1>

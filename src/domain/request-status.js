@@ -11,6 +11,7 @@ export const STATUS = {
   resolved:   { t: 'status.resolved',   re: 'Vyriešené',     tone: 'success', open: false },
   ready:      { t: 'status.ready',      re: null,            tone: 'success', open: false },
   forwarded:  { t: 'status.forwarded',  re: null,            tone: 'info',    open: true },
+  received:   { t: 'status.received',   re: null,            tone: 'info',    open: true },
   cancelled:  { t: 'status.cancelled',  re: null,            tone: 'muted',   open: false },
 };
 export const STATUS_KEYS = Object.keys(STATUS);

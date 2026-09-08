@@ -12,12 +12,14 @@ export function requestTitle(r, t) {
   if (r.kind === 'issue') return t((ISSUE_BY_KEY[r.category] || ISSUE_BY_KEY.other).t);
   if (r.kind === 'service') return t((SERVICE_BY_KEY[r.service] || SERVICE_BY_KEY.other).t);
   if (r.kind === 'document') return t('docs.confirmation');
+  if (r.kind === 'private') return t('private.title');
   return t('requests.kind.feedback');
 }
 export function requestIcon(r) {
   if (r.kind === 'issue') return (ISSUE_BY_KEY[r.category] || ISSUE_BY_KEY.other).icon;
   if (r.kind === 'service') return (SERVICE_BY_KEY[r.service] || SERVICE_BY_KEY.other).icon;
   if (r.kind === 'document') return 'FileCheck';
+  if (r.kind === 'private') return 'ShieldCheck';
   return 'Star';
 }
 export function Requests() {

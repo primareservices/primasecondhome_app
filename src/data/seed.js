@@ -19,13 +19,24 @@ export const DEMO_STAYS = [
     company: 'Demo Logistics s.r.o.', coordinator: { name: 'Martin Kováč', phone: '+421 900 111 222' },
     registeredAt: '2026-09-02', lang: 'uz',
   },
+  {
+    id: 'stay_demo_tarif', code: 'TARIF-2214', surnamePrefix: 'iva', displayName: 'Serhii I.',
+    propertyId: 'p_tarif', room: 'B214', checkIn: '2026-06-15', checkOut: '2026-12-31',
+    company: 'Demo Agency s.r.o.', coordinator: { name: 'Peter Novák', phone: '+421 900 123 456' },
+    registeredAt: '2026-06-16', lang: 'uk', permitExpiry: '2026-10-25',
+  },
 ];
-export const DEMO_SURNAMES = { 'IC23-1102': 'Kovalenko', 'NUK-0340': 'Dela Cruz', 'GAL-0201': 'Karimov' };
+export const DEMO_SURNAMES = { 'IC23-1102': 'Kovalenko', 'NUK-0340': 'Dela Cruz', 'GAL-0201': 'Karimov', 'TARIF-2214': 'Ivanenko' };
 
 const daysAgo = (n, h = 10) => { const d = new Date(); d.setDate(d.getDate() - n); d.setHours(h, 0, 0, 0); return d.toISOString(); };
 const daysAhead = (n, h = 9) => { const d = new Date(); d.setDate(d.getDate() + n); d.setHours(h, 0, 0, 0); return d.toISOString(); };
 
 // Žiadosti ukážkového hosťa v IC 23 — jedna vyriešená, jedna rozpracovaná, jeden dokument.
+export function demoBookingsFor(stayId) {
+  if (stayId !== 'stay_demo_tarif') return [];
+  const d = new Date(); const day = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  return [{ id: 'b_demo_1', stayId, day, start: 18, len: 2, machine: 2, status: 'booked', createdAt: daysAgo(1, 20), demoSeeded: true }];
+}
 export function demoRequestsFor(stayId) {
   if (stayId !== 'stay_demo_ic23') return [];
   return [

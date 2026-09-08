@@ -7,7 +7,7 @@ import { createRequest } from '../../data/adapter.js';
 import { back, navigate } from '../../router.js';
 import { compressImage } from '../../lib/photo.js';
 import { roomLabel } from '../../domain/room-codes.js';
-import { Banner, Card, Chip, Field, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
+import { Banner, Card, Chip, Field, ListRow, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
 export function Report({ query }) {
@@ -77,6 +77,7 @@ export function Report({ query }) {
       </Field>
       {cat && cat.reception && <Banner tone="info" icon="Headset" style={{ marginTop: 10 }}>{t('report.noiseNote')}</Banner>}
       {cat && cat.ddd && <Banner tone="warning" icon="Bug" style={{ marginTop: 10 }}>{t('report.pestsNote')}</Banner>}
+      <div style={{ marginTop: 12 }}><ListRow icon="ShieldCheck" title={t('report.private')} sub={t('report.privateSub')} onClick={() => navigate('/private')}/></div>
 
       <Field label={t('report.where')} hint={t('report.roomHint')} style={{ marginTop: 18 }}>
         <div className="chips">

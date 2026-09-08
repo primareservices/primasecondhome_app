@@ -3,6 +3,7 @@ import { DEFAULT_LANG, detectLang } from './config/languages.js';
 import { propertyById } from './config/properties.js';
 import { I18nContext, hasDict, loadDict, makeT, readStoredLang, storeLang } from './i18n/index.js';
 import { contentSync, loadContent } from './content/index.js';
+import { hasPack, loadPack, packSync } from './content/packs/index.js';
 import { AppContext } from './app-context.js';
 import { getPublicPropertyId, getRulesAck, getSession, listAnnouncements, listRequests, subscribe } from './data/adapter.js';
 import { isOpen } from './domain/request-status.js';
@@ -28,6 +29,10 @@ import { Contacts } from './screens/contacts/Contacts.jsx';
 import { Feedback } from './screens/feedback/Feedback.jsx';
 import { Announcements } from './screens/announcements/Announcements.jsx';
 import { Profile } from './screens/profile/Profile.jsx';
+import { Laundry } from './screens/laundry/Laundry.jsx';
+import { Around } from './screens/around/Around.jsx';
+import { Emergency } from './screens/emergency/Emergency.jsx';
+import { PrivateReport } from './screens/report/PrivateReport.jsx';
 
 // Obrazovky, ktoré vyžadujú prihláseného hosťa; v informačnom režime dostanú výzvu na kód.
 function NeedCode({ t }) {
@@ -54,6 +59,10 @@ function screenFor(route, stay, t) {
     case 'feedback': return guard(<Feedback/>);
     case 'announcements': return <Announcements/>;
     case 'profile': return <Profile/>;
+    case 'laundry': return guard(<Laundry/>);
+    case 'around': return <Around/>;
+    case 'emergency': return <Emergency/>;
+    case 'private': return guard(<PrivateReport/>);
     default: return <Home/>;
   }
 }
@@ -80,19 +89,30 @@ export function App() {
   const stay = session ? session.stay : null;
   const publicPid = useMemo(() => getPublicPropertyId(), [tick]); // eslint-disable-line react-hooks/exhaustive-deps
   const property = propertyById(stay ? stay.propertyId : publicPid);
+  // Balík obsahu budovy (content pack): fakty + texty v jazyku hosťa, fallback EN.
+  const pid = property ? property.id : null;
+  const [pack, setPack] = useState(() => (pid && hasPack(pid) ? packSync(pid, lang) : null));
+  useEffect(() => {
+    let alive = true;
+    if (!pid || !hasPack(pid)) { setPack(null); return undefined; }
+    setPack(packSync(pid, lang));
+    loadPack(pid, lang).then(p => { if (alive) setPack(p); }).catch(() => {});
+    return () => { alive = false; };
+  }, [pid, lang]);
+  const rules = (pack && pack.rules) || content.rules;
   const rulesAck = useMemo(() => (stay ? getRulesAck(stay.id) : null), [stay, tick]); // eslint-disable-line react-hooks/exhaustive-deps
   const badges = useMemo(() => ({
     home: property ? listAnnouncements(property.id).filter(a => a.unread).length : 0,
     requests: stay ? listRequests(stay.id).filter(isOpen).length : 0,
   }), [stay, property, tick]); // eslint-disable-line react-hooks/exhaustive-deps
-  const ctx = useMemo(() => ({ stay, property, content, publicMode: !stay, refresh: () => setTick(x => x + 1) }), [stay, property, content]);
+  const ctx = useMemo(() => ({ stay, property, content, pack, rules, publicMode: !stay, refresh: () => setTick(x => x + 1) }), [stay, property, content, pack, rules]);
   useEffect(() => { if (window.__primaBootOk) window.__primaBootOk(); }, []);
 
   const seg = route.segs[0] || '';
   let body;
   if (!storedLang || (!stay && !property) || seg === 'welcome') {
     body = <Welcome key={route.query.toString()} query={route.query} initialStep={route.query.get('step') || (storedLang ? 'code' : 'lang')} hasLang={!!storedLang}/>;
-  } else if (stay && (!rulesAck || rulesAck.version !== content.rules.version) && !(seg === 'info' && route.segs[1] === 'rules')) {
+  } else if (stay && (!rulesAck || rulesAck.version !== rules.version) && !(seg === 'info' && route.segs[1] === 'rules')) {
     body = <RulesAck/>;
   } else {
     body = <Shell segs={route.segs} badges={badges}>{screenFor(route, stay, t)}</Shell>;

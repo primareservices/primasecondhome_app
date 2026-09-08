@@ -26,5 +26,7 @@ export const NETWORK = {
   web: 'https://primare.sk',
   iomPhone: '0850 211 478',
   iomWeb: 'https://mic.iom.sk',
+  // Rezervačný systém cudzineckej polície (OCP) — vstupná stránka MV SR; presnú adresu overí office (docs/RESEARCH-TARIF.md).
+  foreignPoliceUrl: 'https://www.minv.sk/?cudzinecka-policia',
   emergency: { general: '112', ambulance: '155', fire: '150', police: '158' },
 };

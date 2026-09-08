@@ -90,6 +90,14 @@ Založiť Supabase projekt pre hostí, nasadiť `supabase/migrations/`, napísa�
 rozhraním ako `src/data/demo-store.js`, modul „Hostia" v PRIMA TOOLS (kódy pri check-ine) a most do
 RE SERVICE — podrobne v [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
+## v2 — Tarif (8. 9. 2026)
+
+Návrh dizajnu a funkcionality podľa content packu TARIF: `docs/NAVRH_V2.md`, plátno s obrazovkami
+https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02, rešerš `docs/RESEARCH-TARIF.md`.
+Nové v appke: balíky obsahu na budovu (`src/content/packs/`), rezervácia práčovne (`#/laundry`),
+Okolie budovy (`#/around`), Núdzová karta (`#/emergency`), povolenie na pobyt s pripomienkami
+(Dokumenty), súkromné nahlásenie (`#/private`). Demo kód Tarif: `TARIF-2214`, priezvisko `Ivanenko`.
+
 ## Ukážky (demo, 390 px)
 
 | Jazyk | Domov (UK) | Hlásenie (UK) |
@@ -99,3 +107,11 @@ RE SERVICE — podrobne v [docs/INTEGRATION.md](docs/INTEGRATION.md).
 | Detail žiadosti (UK) | Info o budove (UK) | Domov (HI) |
 |---|---|---|
 | ![detail](docs/screens/04-request-detail-uk.png) | ![info](docs/screens/05-info-uk.png) | ![hindi](docs/screens/06-home-hi.png) |
+
+| Domov v2 (Tarif) | Práčovňa | Okolie budovy |
+|---|---|---|
+| ![domov v2](docs/screens/07-home-tarif-v2.png) | ![práčovňa](docs/screens/08-laundry-v2.png) | ![okolie](docs/screens/09-around-v2.png) |
+
+| Núdzová karta | Dokumenty v2 | Súkromné nahlásenie |
+|---|---|---|
+| ![núdzová](docs/screens/10-emergency-v2.png) | ![dokumenty](docs/screens/11-documents-v2.png) | ![súkromné](docs/screens/12-private-v2.png) |

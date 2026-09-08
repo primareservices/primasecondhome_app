@@ -37,3 +37,11 @@ Bengali (bn), Punjabi (pa) — decide from the Casist nationality ranking per bu
 - Do not translate product names (PRIMA, PRIMA SECOND HOME, RE SERVICE) or codes (IC23-1102).
 - Slovak institution names stay in Slovak with a translation in brackets the first time
   (e.g. *cudzinecká polícia* — foreign police).
+
+
+## v2 (8. 9. 2026)
+
+- 88 nových kľúčov UI (práčovňa, okolie, núdzová karta, povolenie na pobyt, súkromné nahlásenie) vo
+  všetkých 12 jazykoch — SK a EN písané ručne, ostatné strojový návrh na kontrolu rodeným hovorcom.
+- Balík obsahu Tarif: poriadok v1.0 a núdzová karta v EN/SK/UK/RU; okolie budovy, how-to karty a
+  šablóny oznamov len EN/SK (ostatné jazyky spadnú na EN). Preklad cez DeepL + kontrola pred spustením.

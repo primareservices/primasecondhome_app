@@ -3,12 +3,14 @@ import { BRAND, C } from '../../config/theme.js';
 import { monoFamily } from '../../config/app-config.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
-import { listAnnouncements, listRequests, subscribe } from '../../data/adapter.js';
+import { getPermitExpiry, listAnnouncements, listBookings, listRequests, subscribe } from '../../data/adapter.js';
 import { navigate } from '../../router.js';
 import { fmtDate } from '../../lib/format.js';
 import { nextCleaningDate } from '../../domain/cleaning.js';
 import { isOpen } from '../../domain/request-status.js';
 import { roomLabel } from '../../domain/room-codes.js';
+import { slotLabel, upcomingBooking } from '../../domain/laundry.js';
+import { permitStatus } from '../../domain/permit.js';
 import { pickText } from '../../content/index.js';
 import { BigAction, Card, ListRow, SectionLabel, Tile, primaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
@@ -20,15 +22,30 @@ export function AnnouncementRow({ a, lang, onClick }) {
   return <ListRow icon={icon} tone={tone} title={tx.title} sub={pickText(tx.body, lang)} onClick={onClick} right={a.unread ? <span style={{ width: 9, height: 9, borderRadius: '50%', background: BRAND.red, flexShrink: 0 }}/> : null}/>;
 }
 
+function TodayRow({ icon, tone, title, sub, onClick, last }) {
+  const bg = tone === 'warning' ? C.warningSoft : tone === 'danger' ? BRAND.redSoft : tone === 'success' ? C.successSoft : C.infoSoft;
+  const fg = tone === 'warning' ? C.warningText : tone === 'danger' ? BRAND.redText : tone === 'success' ? C.successText : C.infoText;
+  return (
+    <button type="button" onClick={onClick} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', background: 'none', border: 'none', borderBottom: last ? 'none' : '1px solid ' + C.border, color: C.text }}>
+      <span style={{ width: 38, height: 38, borderRadius: 10, background: bg, color: fg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icon name={icon} size={19}/></span>
+      <span style={{ flex: 1, minWidth: 0 }}><span style={{ display: 'block', fontSize: 15, fontWeight: 600, lineHeight: 1.3 }}>{title}</span>{sub && <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 2, lineHeight: 1.4 }}>{sub}</span>}</span>
+      <Icon name="ChevronRight" size={18} color={C.textFaint}/>
+    </button>
+  );
+}
+
 export function Home() {
   const { t, lang } = useT();
-  const { stay, property, publicMode } = useApp();
+  const { stay, property, pack } = useApp();
   const [tick, setTick] = useState(0);
   useEffect(() => subscribe(() => setTick(x => x + 1)), []);
   const anns = useMemo(() => property ? listAnnouncements(property.id) : [], [property, tick]);
   const reqs = useMemo(() => stay ? listRequests(stay.id) : [], [stay, tick]);
+  const booking = useMemo(() => stay && property.laundry === 'booking' ? upcomingBooking(listBookings(stay.id)) : null, [stay, property, tick]);
+  const permit = useMemo(() => stay ? permitStatus(getPermitExpiry(stay.id)) : null, [stay, tick]);
   const open = reqs.filter(isOpen);
   const cleaning = nextCleaningDate();
+  const bookingIsToday = booking && booking.day === new Date().toISOString().slice(0, 10);
 
   return (
     <>
@@ -62,6 +79,13 @@ export function Home() {
         </Card>
       )}
 
+      {stay && (booking || permit) && (
+        <Card style={{ padding: '6px 16px', marginBottom: 12 }}>
+          {booking && <TodayRow icon="WashingMachine" tone="info" title={t('home.laundryBooking', { slot: (bookingIsToday ? t('common.today') : fmtDate(booking.day, lang)) + ' ' + slotLabel(booking.start, booking.len || 2), n: booking.machine })} sub={t('laundry.fee', { price: (pack && pack.facts && pack.facts.laundry && pack.facts.laundry.price) || '2,30 €' })} onClick={() => navigate('/laundry')} last={!permit}/>}
+          {permit && <TodayRow icon="FileCheck" tone={permit.set ? permit.tone : 'info'} title={!permit.set ? t('home.permitSet') : permit.expired ? t('home.permitExpired') : t('home.permitDays', { n: permit.days })} sub={t('docs.permitHint')} onClick={() => navigate('/documents')} last/>}
+        </Card>
+      )}
+
       {stay && <BigAction icon="Wrench" title={t('home.reportProblem')} sub={t('home.reportSub')} onClick={() => navigate('/report')}/>}
 
       <div className="grid-2" style={{ marginTop: 12 }}>
@@ -70,16 +94,20 @@ export function Home() {
             <Tile icon="WashingMachine" title={t('home.services')} sub={t('home.servicesSub')} onClick={() => navigate('/services')}/>
             <Tile icon="Headset" title={t('home.askReception')} sub={t('home.askSub')} onClick={() => navigate('/contacts')}/>
             <Tile icon="FileCheck" title={t('home.documents')} sub={t('home.documentsSub')} onClick={() => navigate('/documents')}/>
-            <Tile icon="BookOpen" title={t('home.guides')} sub={t('home.guidesSub')} onClick={() => navigate('/guides')}/>
+            {pack ? <Tile icon="MapPin" title={t('home.around')} sub={t('home.aroundSub')} onClick={() => navigate('/around')}/> : <Tile icon="BookOpen" title={t('home.guides')} sub={t('home.guidesSub')} onClick={() => navigate('/guides')}/>}
           </>
         ) : (
           <>
             <Tile icon="Building2" title={t('info.title')} sub={property ? property.street : ''} onClick={() => navigate('/info')}/>
             <Tile icon="ShieldCheck" title={t('rules.title')} sub={t('rules.readFull')} onClick={() => navigate('/info/rules')}/>
             <Tile icon="Headset" title={t('contacts.title')} sub={t('home.askSub')} onClick={() => navigate('/contacts')}/>
-            <Tile icon="BookOpen" title={t('home.guides')} sub={t('home.guidesSub')} onClick={() => navigate('/guides')}/>
+            {pack ? <Tile icon="MapPin" title={t('home.around')} sub={t('home.aroundSub')} onClick={() => navigate('/around')}/> : <Tile icon="BookOpen" title={t('home.guides')} sub={t('home.guidesSub')} onClick={() => navigate('/guides')}/>}
           </>
         )}
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <ListRow icon="Siren" tone="danger" title={t('home.emergency')} sub={t('home.emergencySub')} onClick={() => navigate('/emergency')}/>
       </div>
 
       {stay && open.length > 0 && (
@@ -96,7 +124,6 @@ export function Home() {
           {anns.slice(0, 3).map(a => <AnnouncementRow key={a.id} a={a} lang={lang} onClick={() => navigate('/announcements')}/>)}
         </div>
       ) : <div style={{ fontSize: 14, color: C.textMuted, padding: '4px 2px' }}>{t('home.noAnnouncements')}</div>}
-      {!publicMode && null}
     </>
   );
 }

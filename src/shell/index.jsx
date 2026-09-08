@@ -8,10 +8,10 @@ import { PrimaLogo } from '../ui/PrimaLogo.jsx';
 import { langMeta } from '../config/languages.js';
 
 const NAV = [
-  { key: 'home', path: '/', icon: 'Home', t: 'nav.home', match: ['', 'report', 'services', 'documents', 'announcements'] },
+  { key: 'home', path: '/', icon: 'Home', t: 'nav.home', match: ['', 'report', 'services', 'documents', 'announcements', 'laundry'] },
   { key: 'requests', path: '/requests', icon: 'ClipboardList', t: 'nav.requests', match: ['requests'] },
-  { key: 'info', path: '/info', icon: 'Info', t: 'nav.info', match: ['info', 'guides', 'contacts'] },
-  { key: 'profile', path: '/profile', icon: 'User', t: 'nav.profile', match: ['profile', 'feedback'] },
+  { key: 'info', path: '/info', icon: 'Info', t: 'nav.info', match: ['info', 'guides', 'contacts', 'around', 'emergency'] },
+  { key: 'profile', path: '/profile', icon: 'User', t: 'nav.profile', match: ['profile', 'feedback', 'private'] },
 ];
 export function activeNav(segs) {
   const first = segs[0] || '';

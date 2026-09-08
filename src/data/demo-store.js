@@ -1,13 +1,13 @@
 // DEMO úložisko nad localStorage. Rovnaké rozhranie ako budúci Supabase adaptér
 // (src/data/adapter.js). Simuluje aj prácu personálu: staršie žiadosti sa posúvajú
 // v stavoch, aby bolo v ukážke vidno priebeh (ageRequests).
-import { DEMO_ANNOUNCEMENTS, DEMO_STAYS, demoRequestsFor } from './seed.js';
+import { DEMO_ANNOUNCEMENTS, DEMO_STAYS, demoBookingsFor, demoRequestsFor } from './seed.js';
 
 const KEY = 'primaHome:demo:v1';
 const listeners = new Set();
 let state = null;
 
-function blank() { return { session: null, publicPropertyId: null, requests: [], readAnn: [], rulesAck: {}, feedback: [], seq: 1100, notifications: true }; }
+function blank() { return { session: null, publicPropertyId: null, requests: [], readAnn: [], rulesAck: {}, feedback: [], seq: 1100, notifications: true, bookings: [], permits: {} }; }
 function load() {
   if (state) return state;
   try { const raw = localStorage.getItem(KEY); state = raw ? { ...blank(), ...JSON.parse(raw) } : blank(); }
@@ -29,6 +29,7 @@ const FLOW = {
   issue:    [[1, 'assigned', null], [4, 'inProgress', { sk: 'Technik príde dnes medzi 13:00 a 15:00.', en: 'The technician will come today between 13:00 and 15:00.' }], [12, 'resolved', { sk: 'Opravené. Ak problém pretrváva, nahláste ho znova.', en: 'Fixed. If the problem continues, please report it again.' }]],
   service:  [[1, 'assigned', { sk: 'Recepcia potvrdila.', en: 'Reception confirmed.' }], [10, 'resolved', { sk: 'Hotové.', en: 'Done.' }]],
   document: [[2, 'inProgress', { sk: 'Pripravujeme.', en: 'Being prepared.' }], [8, 'ready', { sk: 'Pripravené na recepcii, prineste doklad.', en: 'Ready at reception — bring your ID.' }]],
+  private:  [[2, 'received', { sk: 'Vedenie PRIMA hlásenie prijalo a preverí ho.', en: 'PRIMA management has received your report and will look into it.' }]],
 };
 function ageRequests() {
   const st = load();
@@ -62,6 +63,8 @@ export function redeemCode(code, surname) {
   const st = load();
   st.session = { stayId: stay.id, at: new Date().toISOString() };
   if (!st.requests.some(r => r.stayId === stay.id)) st.requests.push(...demoRequestsFor(stay.id).map(r => ({ ...r, demoSeeded: true })));
+  if (!st.bookings.some(b => b.stayId === stay.id)) st.bookings.push(...demoBookingsFor(stay.id));
+  if (stay.permitExpiry && !st.permits[stay.id]) st.permits[stay.id] = stay.permitExpiry;
   save();
   return stay;
 }
@@ -110,6 +113,19 @@ export function markAnnouncementsRead(ids) {
   for (const id of ids) if (!st.readAnn.includes(id)) { st.readAnn.push(id); changed = true; }
   if (changed) save();
 }
+
+// ── laundry bookings / permit ──
+export function listBookings(stayId) { return load().bookings.filter(b => b.stayId === stayId).sort((a, b) => (a.day + a.start < b.day + b.start ? -1 : 1)); }
+export function createBooking(stayId, { day, start, len = 2, machine }) {
+  const st = load();
+  if (st.bookings.some(b => b.day === day && b.start === start && b.machine === machine && b.status !== 'cancelled')) throw new Error('taken');
+  const b = { id: 'b_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), stayId, day, start, len, machine, status: 'booked', createdAt: new Date().toISOString() };
+  st.bookings.push(b); save();
+  return b;
+}
+export function cancelBooking(id) { const st = load(); const b = st.bookings.find(x => x.id === id); if (!b) return null; b.status = 'cancelled'; save(); return b; }
+export function getPermitExpiry(stayId) { return load().permits[stayId] || null; }
+export function setPermitExpiry(stayId, iso) { const st = load(); if (iso) st.permits[stayId] = iso; else delete st.permits[stayId]; save(); }
 
 // ── rules / feedback / prefs ──
 export function getRulesAck(stayId) { return load().rulesAck[stayId] || null; }
