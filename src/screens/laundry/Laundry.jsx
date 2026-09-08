@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BRAND, C } from '../../config/theme.js';
-import { monoFamily } from '../../config/app-config.js';
+import { localeOf } from '../../config/languages.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
 import { cancelBooking, createBooking, listBookings, subscribe } from '../../data/adapter.js';
 import { back } from '../../router.js';
 import { availability, canCancel, dayISO, nextDays, slotLabel } from '../../domain/laundry.js';
 import { fmtDate } from '../../lib/format.js';
-import { Banner, Card, Chip, EmptyState, Field, ListRow, PageHeader, SectionLabel, Sheet, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
+import { Banner, Card, EmptyState, IconBox, PageHeader, SectionLabel, Sheet, Tag, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
 const DEFAULT_LAUNDRY = { slotHours: 2, machines: 4, hours: [7, 23], price: '2,30 €', location: null };
 
+// Práčovňa (smer A): dni ako vysoké pilulky, mriežka práčok — šrafované = obsadené,
+// tyrkysové = moja, červené = vybrané. Súhrn s cenou pláva nad navigáciou.
 export function Laundry() {
   const { t, lang } = useT();
   const { stay, pack } = useApp();
@@ -27,7 +29,11 @@ export function Laundry() {
   useEffect(() => subscribe(() => setTick(x => x + 1)), []);
   const bookings = useMemo(() => listBookings(stay.id), [stay, tick]);
   const slots = useMemo(() => availability(facts, day, bookings), [day, bookings]); // eslint-disable-line react-hooks/exhaustive-deps
-  const active = bookings.filter(b => b.status !== 'cancelled' && (b.day > dayISO(new Date()) || (b.day === dayISO(new Date()) && new Date().getHours() < b.start + (b.len || 2))));
+  const now = new Date();
+  const active = bookings.filter(b => b.status !== 'cancelled' && (b.day > dayISO(now) || (b.day === dayISO(now) && now.getHours() < b.start + (b.len || 2))));
+  const locale = localeOf(lang);
+  const dayParts = (iso) => { const d = new Date(iso + 'T12:00:00'); return [d.toLocaleDateString(locale, { weekday: 'short' }).replace(/\.$/, ''), d.getDate()]; };
+  const grid = { display: 'grid', gridTemplateColumns: `repeat(${L.machines}, 44px)`, gap: 8 };
 
   const book = () => {
     if (!sel) { setError(t('laundry.pick')); return; }
@@ -35,64 +41,79 @@ export function Laundry() {
     try { const b = createBooking(stay.id, { day, start: sel.start, len: L.slotHours, machine: sel.machine }); setDone(b); setSel(null); }
     catch { setError(t('laundry.full')); }
   };
-  const dayLabel = (iso, i) => (i === 0 ? t('common.today') + ' · ' : '') + new Date(iso + 'T12:00:00').toLocaleDateString(lang === 'sk' ? 'sk-SK' : undefined, { weekday: 'short', day: 'numeric' });
 
   return (
     <>
-      <PageHeader title={t('laundry.title')} sub={t('laundry.sub', { price: L.price, hours: L.slotHours })} onBack={() => back('/services')}/>
-      <Banner tone="info" icon="Info" style={{ marginBottom: 14 }}>
-        {t('laundry.info', { machines: L.machines })} {L.location ? L.location : <span style={{ color: C.textMuted }}>· {t('info.notSet')}</span>}
-      </Banner>
-      {done && <Banner tone="success" icon="CheckCircle2" style={{ marginBottom: 14 }}><b>{t('laundry.booked')}</b> · {fmtDate(done.day, lang)} · {slotLabel(done.start, done.len)} · {t('laundry.machine', { n: done.machine })}<div style={{ fontSize: 13, marginTop: 2 }}>{t('laundry.fee', { price: L.price })}</div></Banner>}
+      <PageHeader title={t('laundry.title')} sub={t('laundry.info', { machines: L.machines }) + (L.location ? ' ' + L.location : '')} onBack={() => back('/services')}
+        action={<Tag tone="muted" style={{ height: 32, padding: '0 12px' }}><span className="num">{L.price} / {L.slotHours} h</span></Tag>}/>
+      {done && <Banner tone="success" icon="CheckCircle2" style={{ marginBottom: 16 }}><b>{t('laundry.booked')}</b> · {fmtDate(done.day, lang)} · {slotLabel(done.start, done.len)} · {t('laundry.machine', { n: done.machine })}<div style={{ fontSize: 13, marginTop: 2 }}>{t('laundry.fee', { price: L.price })}</div></Banner>}
 
-      <Field label={t('laundry.day')}>
-        <div className="chips">{days.map((d, i) => <Chip key={d} active={d === day} onClick={() => { setDay(d); setSel(null); }}>{dayLabel(d, i)}</Chip>)}</div>
-      </Field>
+      <div className="chips" style={{ marginBottom: 16 }}>
+        {days.map((d, i) => { const [wd, n] = dayParts(d); return (
+          <button key={d} type="button" className={'pill-day' + (d === day ? ' on' : '')} onClick={() => { setDay(d); setSel(null); }} aria-label={fmtDate(d, lang)} aria-pressed={d === day}>
+            <span>{i === 0 ? t('common.today') : wd}</span><b>{n}</b>
+          </button>
+        ); })}
+      </div>
 
-      <Field label={t('laundry.slots')} style={{ marginTop: 16 }}>
-        <Card style={{ padding: '4px 16px' }}>
-          {slots.map((s, i) => (
-            <div key={s.start} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: i === slots.length - 1 ? 'none' : '1px solid ' + C.border, opacity: s.past ? 0.45 : 1 }}>
-              <span style={{ width: 92, fontSize: 14, fontWeight: 600, fontFamily: monoFamily, color: s.past ? C.textFaint : C.text }}>{s.label}</span>
-              <span style={{ display: 'flex', gap: 6, flex: 1 }}>
-                {s.machines.map(m => {
-                  const isSel = sel && sel.start === s.start && sel.machine === m.n;
-                  const disabled = s.past || m.taken;
-                  return (
-                    <button key={m.n} type="button" disabled={disabled} onClick={() => setSel({ start: s.start, machine: m.n })} aria-label={t('laundry.machine', { n: m.n })} style={{
-                      width: 44, height: 36, borderRadius: 999, fontSize: 14, fontWeight: 700,
-                      border: '1px solid ' + (isSel ? BRAND.red : m.mine ? C.successBorder : disabled ? C.border : C.borderStrong),
-                      background: isSel ? BRAND.red : m.mine ? C.successSoft : disabled ? C.cardAlt : C.card,
-                      color: isSel ? '#fff' : m.mine ? C.successText : disabled ? C.textFaint : C.text,
-                    }}>{m.mine ? <Icon name="Check" size={16}/> : m.n}</button>
-                  );
-                })}
-              </span>
-            </div>
-          ))}
-        </Card>
-        <div style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.45 }}>{t('laundry.legend')}</div>
-      </Field>
-
-      {error && <Banner tone="danger" icon="AlertCircle" style={{ marginTop: 12 }}>{error}</Banner>}
-      <Card style={{ marginTop: 14, borderColor: sel ? BRAND.red : C.border, background: sel ? BRAND.redSoft : C.card }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ width: 38, height: 38, borderRadius: 10, background: sel ? BRAND.red : C.cardAlt, color: sel ? '#fff' : C.textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icon name="WashingMachine" size={19}/></span>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: 'block', fontSize: 15, fontWeight: 700 }}>{sel ? fmtDate(day, lang) + ' · ' + slotLabel(sel.start, L.slotHours) + ' · ' + t('laundry.machine', { n: sel.machine }) : t('laundry.pick')}</span>
-            <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 2 }}>{t('laundry.fee', { price: L.price })}</span>
-          </span>
+      <Card style={{ padding: '6px 18px 10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0 6px' }}>
+          <span className="label" style={{ width: 96, flexShrink: 0 }}>{t('laundry.time')}</span>
+          <span style={grid}>{Array.from({ length: L.machines }, (_, i) => <span key={i} className="label" style={{ textAlign: 'center' }}>{i + 1}</span>)}</span>
         </div>
-        <button type="button" style={{ ...primaryBtn, marginTop: 12, opacity: sel ? 1 : 0.5 }} onClick={book} disabled={!sel}><Icon name="Calendar" size={18}/>{t('laundry.book')}</button>
+        {slots.map(s => (
+          <div key={s.start} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
+            <span className="num" style={{ width: 96, flexShrink: 0, fontSize: 14, fontWeight: 700, color: s.past ? '#B9B3AE' : C.text }}>{s.label}</span>
+            <span style={grid}>
+              {s.machines.map(m => {
+                const isSel = sel && sel.start === s.start && sel.machine === m.n;
+                const cls = 'm' + (isSel ? ' sel' : m.mine ? ' mine' : m.taken ? ' taken hatch' : '') + (s.past ? ' past' : '');
+                return (
+                  <button key={m.n} type="button" className={cls} disabled={s.past || m.taken || m.mine} onClick={() => { setError(''); setSel(isSel ? null : { start: s.start, machine: m.n }); }} aria-label={s.label + ' · ' + t('laundry.machine', { n: m.n })} aria-pressed={!!isSel}>
+                    {m.mine ? <Icon name="Check" size={18}/> : m.n}
+                  </button>
+                );
+              })}
+            </span>
+          </div>
+        ))}
+        <div style={{ display: 'flex', gap: 14, padding: '12px 0 4px', fontSize: 12, fontWeight: 700, color: C.textMuted, flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span className="hatch" style={{ width: 14, height: 14, borderRadius: 4 }}/>{t('laundry.legendTaken')}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ width: 14, height: 14, borderRadius: 4, background: C.infoSoft }}/>{t('laundry.legendMine')}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ width: 14, height: 14, borderRadius: 4, background: BRAND.red }}/>{t('laundry.legendSel')}</span>
+        </div>
       </Card>
+      <div className="hint" style={{ margin: '12px 2px 0' }}>{t('laundry.legend')} {t('laundry.fee', { price: L.price })}</div>
+      {error && <Banner tone="danger" icon="AlertCircle" style={{ marginTop: 12 }}>{error}</Banner>}
 
       <SectionLabel>{t('laundry.mine')}</SectionLabel>
       {active.length ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {active.map(b => <ListRow key={b.id} icon="Clock" tone="info" title={fmtDate(b.day, lang) + ' · ' + slotLabel(b.start, b.len || 2) + ' · ' + t('laundry.machine', { n: b.machine })} sub={t('laundry.reminder')}
-            right={canCancel(b) ? <button type="button" style={{ ...secondaryBtn, width: 'auto', minHeight: 40, padding: '8px 12px', fontSize: 13 }} onClick={() => setConfirm(b.id)}>{t('laundry.cancel')}</button> : null}/>)}
-        </div>
+        <Card className="rows" style={{ padding: '4px 18px' }}>
+          {active.map(b => (
+            <div key={b.id} className="row">
+              <IconBox name="Clock" tone="info"/>
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: 'block', fontSize: 15, fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.01em' }}>{(b.day === dayISO(now) ? t('common.today') : fmtDate(b.day, lang)) + ' ' + slotLabel(b.start, b.len || 2) + ' · ' + t('laundry.machine', { n: b.machine })}</span>
+                <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3 }}>{t('laundry.reminder')}</span>
+              </span>
+              {canCancel(b) && <button type="button" style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 12, borderRadius: 999, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)' }} onClick={() => setConfirm(b.id)}>{t('laundry.cancel')}</button>}
+            </div>
+          ))}
+        </Card>
       ) : <EmptyState icon="WashingMachine" title={t('laundry.none')}/>}
+      <div style={{ height: 104 }}/>
+
+      <div style={{ position: 'fixed', left: 16, right: 16, bottom: 'calc(100px + env(safe-area-inset-bottom))', zIndex: 18, pointerEvents: 'none' }}>
+        <div style={{ pointerEvents: 'auto', maxWidth: 608, margin: '0 auto', background: C.card, borderRadius: C.radius, boxShadow: '0 -8px 30px rgba(23,22,26,0.08), 0 16px 40px rgba(23,22,26,0.14)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {sel && <div className="label" style={{ color: BRAND.red }}>{t('laundry.selected')}</div>}
+            <div style={{ fontSize: 15, fontWeight: 700, marginTop: sel ? 4 : 0, lineHeight: 1.3, letterSpacing: '-0.01em', color: sel ? C.text : C.textMuted }}>{sel ? fmtDate(day, lang) + ' · ' + slotLabel(sel.start, L.slotHours) + ' · ' + t('laundry.machine', { n: sel.machine }) : t('laundry.pick')}</div>
+            {sel && <div className="num" style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>{L.price}</div>}
+          </div>
+          <button type="button" style={{ ...primaryBtn, width: 'auto', minWidth: 132, minHeight: 52, padding: '0 20px', fontSize: 16, opacity: sel ? 1 : 0.45, boxShadow: sel ? primaryBtn.boxShadow : 'none' }} onClick={book} disabled={!sel}>{t('laundry.book')}</button>
+        </div>
+      </div>
+
       <Sheet open={!!confirm} title={t('laundry.cancelConfirm')} onClose={() => setConfirm(null)}>
         <div style={{ display: 'flex', gap: 10 }}>
           <button type="button" style={{ ...secondaryBtn, flex: 1 }} onClick={() => setConfirm(null)}>{t('common.no')}</button>

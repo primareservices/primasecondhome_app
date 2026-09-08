@@ -11,7 +11,14 @@ export function laundrySlots(facts) {
 export const pad2 = (n) => String(n).padStart(2, '0');
 export function slotLabel(start, len = 2) { return pad2(start) + ':00–' + pad2(start + len) + ':00'; }
 export function dayISO(d) { const x = new Date(d); return x.getFullYear() + '-' + pad2(x.getMonth() + 1) + '-' + pad2(x.getDate()); }
-function hash(s) { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
+function hash(s) {
+  let h = 2166136261;
+  for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  // Dokončovací mix (murmur3 fmix): bez neho sa susedné práčky líšia len v nízkych bitoch
+  // a celý riadok vyjde buď obsadený, alebo voľný.
+  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
 // Ukážková obsadenosť: ~40 % okien obsadených, prvé okná dňa a večer viac.
 export function demoTaken(day, start, machine) {
   const base = hash(day + '|' + start + '|' + machine);

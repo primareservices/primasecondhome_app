@@ -9,7 +9,7 @@ import {
   LifeBuoy, Loader2, LogOut, Mail, MapPin, Megaphone, MessageCircle, MessageSquare, Moon, Phone,
   Refrigerator, Send, Shirt, ShieldCheck, Siren, Smartphone, Sparkles, Star, Trash2, User, Users,
   Utensils, Volume2, WashingMachine, Wifi, WifiOff, Wrench, X, Zap, Cigarette, Landmark, Banknote,
-  GraduationCap, Headset, Hourglass, Timer, Ban, ParkingCircle,
+  GraduationCap, Headset, Hourglass, Timer, Ban, ParkingCircle, ShoppingBag, Sun, TramFront, EyeOff, Church,
 } from 'lucide-react';
 
 export const ICONS = {
@@ -20,7 +20,7 @@ export const ICONS = {
   LifeBuoy, Loader2, LogOut, Mail, MapPin, Megaphone, MessageCircle, MessageSquare, Moon, Phone,
   Refrigerator, Send, Shirt, ShieldCheck, Siren, Smartphone, Sparkles, Star, Trash2, User, Users,
   Utensils, Volume2, WashingMachine, Wifi, WifiOff, Wrench, X, Zap, Cigarette, Landmark, Banknote,
-  GraduationCap, Headset, Hourglass, Timer, Ban, ParkingCircle,
+  GraduationCap, Headset, Hourglass, Timer, Ban, ParkingCircle, ShoppingBag, Sun, TramFront, EyeOff, Church,
 };
 
 export function Icon({ name, size = 18, ...rest }) {

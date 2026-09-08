@@ -8,13 +8,15 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 export const DEMO_MODE = !SUPABASE_URL;
 
-export const fontFamily = "'Inter', 'Noto Sans Devanagari', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
-export const monoFamily = "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace";
+// Manrope pokrýva latinku, cyriliku aj vietnamčinu; dévanágarí (hi, ne) padá na Noto Sans Devanagari.
+export const fontFamily = "'Manrope', 'Noto Sans Devanagari', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
+// Čísla (izba, referencie, časy) nie sú v monospace — Manrope 800 s tabulkovými číslicami.
+export const monoFamily = fontFamily;
 
 export const shadow = {
-  sm: '0 1px 2px rgba(17,24,39,0.04), 0 1px 1px rgba(17,24,39,0.02)',
-  md: '0 4px 12px rgba(17,24,39,0.06), 0 1px 3px rgba(17,24,39,0.04)',
-  lg: '0 12px 32px rgba(17,24,39,0.10), 0 4px 12px rgba(17,24,39,0.06)',
+  sm: '0 1px 2px rgba(23,22,26,0.04), 0 10px 30px rgba(23,22,26,0.06)',
+  md: '0 1px 2px rgba(23,22,26,0.04), 0 12px 34px rgba(23,22,26,0.10)',
+  lg: '0 22px 44px rgba(74,15,27,0.28)',
 };
 
 // Kontakty spoločné pre celú sieť (verejné údaje z primare.sk / ubytovnaprima.sk).

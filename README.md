@@ -98,20 +98,35 @@ Nové v appke: balíky obsahu na budovu (`src/content/packs/`), rezervácia prá
 Okolie budovy (`#/around`), Núdzová karta (`#/emergency`), povolenie na pobyt s pripomienkami
 (Dokumenty), súkromné nahlásenie (`#/private`). Demo kód Tarif: `TARIF-2214`, priezvisko `Ivanenko`.
 
-## Ukážky (demo, 390 px)
+## v3 — dizajn na úroveň App Store (8. 9. 2026)
 
-| Jazyk | Domov (UK) | Hlásenie (UK) |
-|---|---|---|
-| ![jazyk](docs/screens/01-language.png) | ![domov](docs/screens/02-home-uk.png) | ![hlásenie](docs/screens/03-report-uk.png) |
+Celá appka prešla na dizajnový systém „Teplý a sebavedomý“ (smer A): teplé pozadie, Manrope,
+bez rámikov, vínový hero, plávajúca navigácia, jedna červená akcia na obrazovku. Popis tokenov a
+komponentov je v [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md); alternatívy B „Editorial“ a C „Bold“
+sú na strane 2 plátna. Nové drobnosti: „Moje doklady“ (fotky pasu a karty len v telefóne), písma v builde
+(offline PWA bez Google Fonts), živšia ukážková obsadenosť práčovne.
 
-| Detail žiadosti (UK) | Info o budove (UK) | Domov (HI) |
-|---|---|---|
-| ![detail](docs/screens/04-request-detail-uk.png) | ![info](docs/screens/05-info-uk.png) | ![hindi](docs/screens/06-home-hi.png) |
+## Ukážky (demo, 390 px, dizajn v3 — smer A)
 
-| Domov v2 (Tarif) | Práčovňa | Okolie budovy |
-|---|---|---|
-| ![domov v2](docs/screens/07-home-tarif-v2.png) | ![práčovňa](docs/screens/08-laundry-v2.png) | ![okolie](docs/screens/09-around-v2.png) |
+Dizajnový systém: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Plátno s obrazovkami a alternatívami B/C:
+https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02.
 
-| Núdzová karta | Dokumenty v2 | Súkromné nahlásenie |
+| Jazyk | Kód (UK) | Domov (Tarif) |
 |---|---|---|
-| ![núdzová](docs/screens/10-emergency-v2.png) | ![dokumenty](docs/screens/11-documents-v2.png) | ![súkromné](docs/screens/12-private-v2.png) |
+| ![jazyk](docs/screens/01-language.png) | ![kód](docs/screens/02-code-uk.png) | ![domov](docs/screens/03-home-tarif.png) |
+
+| Práčovňa | Okolie budovy | Okolie — úrady |
+|---|---|---|
+| ![práčovňa](docs/screens/04-laundry.png) | ![okolie](docs/screens/05-around.png) | ![úrady](docs/screens/06-around-authorities.png) |
+
+| Núdzová situácia | Dokumenty | Súkromné nahlásenie |
+|---|---|---|
+| ![núdzová](docs/screens/07-emergency.png) | ![dokumenty](docs/screens/08-documents.png) | ![súkromné](docs/screens/09-private.png) |
+
+| Hlásenie (UK) | Žiadosti (UK) | Info o budove |
+|---|---|---|
+| ![hlásenie](docs/screens/10-report-uk.png) | ![žiadosti](docs/screens/11-requests-uk.png) | ![info](docs/screens/12-info.png) |
+
+| Kontakty (UK) | Profil (UK) | Domov (HI) | Verejný režim (HI) |
+|---|---|---|---|
+| ![kontakty](docs/screens/13-contacts-uk.png) | ![profil](docs/screens/14-profile-uk.png) | ![hindi](docs/screens/15-home-hi.png) | ![verejný](docs/screens/16-home-public-hi.png) |

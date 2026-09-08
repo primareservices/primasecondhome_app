@@ -29,14 +29,15 @@ riadky, tlačidlá a spodná navigácia), takže sa prenášajú do kódu 1:1 �
 1. **Domov v2** — jedna dominantná akcia (Nahlásiť problém) ostáva; nad ňou karta „Dnes" s tým, čo hosťa
    čaká (práčovňa 18:00, pobyt platí 47 dní). Núdzová situácia je na jeden ťuk, ale vizuálne pod
    akciami — nesmie súperiť s hlásením porúch.
-2. **Práčovňa** — deň → okno → práčka. Sivé = obsadené, zelené = moje. Výber sa potvrdzuje v červenej
-   karte s cenou a tým, kde sa platí. Moje rezervácie so stornom.
+2. **Práčovňa** — deň → okno → práčka. Šrafované = obsadené, tyrkysové = moje, červené = vybrané.
+   Výber sa potvrdzuje v plávajúcom súhrne s cenou a tým, kde sa platí. Moje rezervácie so stornom.
 3. **Okolie budovy** — chipy podľa kategórií; riadok = názov, popis, čas pešo, tlačidlo Mapa.
    Cudzinecká polícia má vlastnú kartu s varovaním „bez online rezervácie nevybavíte nič".
 4. **Núdzová karta** — červená hlavička, štyri čísla ako veľké tlačidlá, adresa na prečítanie
    (kopírovať / prehrať), postup pri alarme, lekárnička, recepcia.
-5. **Dokumenty v2** — povolenie na pobyt navrchu (najväčšia úzkosť hostí), hlásenie pobytu, potvrdenie
-   o ubytovaní so stavom, „Moje doklady" (fotky pasu a karty len v telefóne — návrh, nie je v kóde).
+5. **Dokumenty v2** — povolenie na pobyt navrchu ako vínový hero s prstencom odpočtu (najväčšia úzkosť
+   hostí), hlásenie pobytu, potvrdenie o ubytovaní so stavom, „Moje doklady" (fotky pasu a karty len
+   v telefóne).
 6. **Súkromné nahlásenie** — štyri kategórie, text v jazyku hosťa, fotka, anonymita zapnutá
    predvolene, kontakt voliteľný, tiesňové linky na konci.
 7. **Lístok pri check-ine (A6)** — QR → `home.primare.sk/#/welcome?c=KÓD`, kód, izba, príchod,
@@ -44,10 +45,17 @@ riadky, tlačidlá a spodná navigácia), takže sa prenášajú do kódu 1:1 �
 
 ## 3. Čo z toho už beží v demo appke
 
-Všetko okrem tlače lístka a „Mojich dokladov": balíky obsahu (Tarif: fakty + poriadok/núdzová
+Všetko okrem tlače lístka: balíky obsahu (Tarif: fakty + poriadok/núdzová
 karta v EN/SK/UK/RU, okolie a how-to v EN/SK), rezervácia práčovne, Okolie, Núdzová karta,
 povolenie na pobyt s pripomienkami, súkromné nahlásenie, karta Dnes. Demo kód pre Tarif:
 `TARIF-2214`, priezvisko `Ivanenko` (izba B 214, pobyt do 25. 10. 2026, rezervácia práčovne dnes 18:00).
+
+### 3a. Dizajn v3 (8. 9. 2026)
+
+Prvý vizuál (kópia interného vzhľadu údržbárskej appky) bol odmietnutý ako nedostatočný. Plátno má
+teraz na strane 1 smer **A „Teplý a sebavedomý“** (teplá šedá, Manrope, vínový hero, bez rámikov,
+plávajúca navigácia) a na strane 2 alternatívy **B „Editorial“** a **C „Bold“**. Appka je celá
+prerobená na smer A — tokeny, komponenty a pravidlá sú v `docs/DESIGN_SYSTEM.md`.
 
 ## 4. Dátový model v1.1 (doplnky k `docs/INTEGRATION.md`)
 

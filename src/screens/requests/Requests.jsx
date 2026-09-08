@@ -38,7 +38,7 @@ export function Requests() {
       </div>
       {list.length ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {list.map(r => <ListRow key={r.id} icon={requestIcon(r)} title={requestTitle(r, t)} sub={r.ref + ' · ' + t('requests.kind.' + r.kind) + ' · ' + fmtDay(r.createdAt, lang, t)} right={<StatusBadge status={r.status}/>} onClick={() => navigate('/requests/' + r.id)}/>)}
+          {list.map(r => <ListRow key={r.id} icon={requestIcon(r)} title={requestTitle(r, t)} sub={r.ref + ' · ' + t('requests.kind.' + r.kind) + ' · ' + fmtDay(r.createdAt, lang, t)} meta={<StatusBadge status={r.status}/>} onClick={() => navigate('/requests/' + r.id)}/>)}
         </div>
       ) : <EmptyState icon="Inbox" title={t('requests.empty')} subtitle={t('requests.emptySub')}/>}
     </>
