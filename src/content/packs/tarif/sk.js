@@ -1,0 +1,91 @@
+export default {
+  rules: {
+    version: '1.0',
+    intro: 'Tieto pravidlá udržiavajú budovu bezpečnú a pokojnú pre všetkých. Ich porušenie môže znamenať pokutu alebo ukončenie pobytu. Návrh v1.0 na schválenie PRIMA.',
+    items: [
+      { title: 'Nočný kľud', text: '22:00–06:00. Mnohí susedia pracujú na nočné — na chodbách buďte potichu v každú hodinu.' },
+      { title: 'Fajčenie', text: 'Len na označenom mieste vonku. Nikdy v izbách, kuchyniach, na chodbách ani v kúpeľniach.' },
+      { title: 'Návštevy', text: '08:00–22:00, registrované na recepcii s dokladom. Prenocovanie návštev nie je dovolené.' },
+      { title: 'Vaša izba', text: 'Upratuje sa v pracovné dni. Nechajte voľnú podlahu; osobné veci do skrinky. Upratovačky nehýbu s vecami.' },
+      { title: 'Kuchyňa', text: 'Jedna na poschodí, spoločná. Po použití upracte, potraviny v chladničke označte, varič nikdy nenechávajte bez dozoru.' },
+      { title: 'Alkohol', text: 'Nie v spoločných priestoroch — kuchyne, chodby, recepcia, vstup. Opité správanie: upozornenie, potom prehodnotenie zmluvy.' },
+      { title: 'Prístupová karta', text: 'Osobná — nikdy ju nepožičiavajte. Stratu hneď nahláste na recepcii. Náhradná karta je spoplatnená.' },
+      { title: 'Požiarna bezpečnosť', text: 'Žiadne varenie ani otvorený oheň v izbách, žiadne zakryté hlásiče dymu, žiadne zatarasené chodby. Alarm → najbližší východ → zhromaždisko.' },
+      { title: 'Škody', text: 'Hneď nahláste v appke. Úmyselná alebo nedbanlivá škoda sa účtuje ubytovanému.' },
+      { title: 'Odpad', text: 'Žltá: plasty, kovy, tetrapaky · Modrá: papier · Zelená: sklo · Čierna: zmesový. Nádoby na mieste, ktoré ukáže recepcia.' },
+      { title: 'Parkovanie', text: 'Len registrované autá, len na vyznačených miestach. EČV nahláste na recepcii.' },
+      { title: 'Rešpekt', text: 'Nulová tolerancia násilia, obťažovania a diskriminácie. Nahláste na recepcii alebo súkromne v appke.' },
+      { title: 'Odchod', text: 'Vráťte kľúč/kartu, izba sa skontroluje, odchod do stanoveného času v posledný deň.' },
+    ],
+  },
+  emergency: {
+    title: 'Núdzová situácia',
+    readToOperator: 'Prečítajte operátorovi (po slovensky):',
+    assembly: 'Zhromaždisko: parkovisko',
+    firstAid: 'Lekárnička: recepcia',
+    steps: ['Zaznie alarm → opustite budovu najbližším východom', 'Choďte na zhromaždisko', 'Nepoužívajte výťah', 'Povedzte recepcii, kto chýba'],
+  },
+  facts: {
+    rooms: '3-lôžkové izby po rekonštrukcii, chladnička v každej izbe',
+    laundry: 'Platená samoobslužná práčovňa: 2-hodinové cykly, termín si rezervujete v appke.',
+    cleaning: 'Izby sa upratujú v pracovné dni; spoločné priestory denne.',
+    wifi5g: 'V budove je dobré pokrytie 5G.',
+    access: 'Čipová karta + biometrický turniket pri vstupe.',
+    parking: 'Súkromné, podľa voľnej kapacity — EČV nahláste na recepcii.',
+  },
+  city: {
+    title: 'Okolie budovy',
+    sections: {
+      transport: { title: 'Doprava', items: {
+        busStop: 'Zastávka „Stará Vajnorská" — linky 57 (→ Depo Jurajov dvor) a 65 (→ Vrakuňa / Rača, Tbiliská).',
+        tram: 'Električka 4 zo Zlatých pieskov na Trnavské mýto a do centra.',
+        tickets: 'Lístky od 1. 7. 2026: 30 min 1,20 € papier / 1,09 € v appke · 60 min 1,80 € / 1,60 € · 24 h 5,40 € / 4,85 €. 30-dňový 40,50 €, 365-dňový 263 € — spýtajte sa zamestnávateľa na preplatenie.',
+        fine: 'Bez lístka: pokuta 79 € na mieste (89 € do 15 dní, 99 € potom).',
+      } },
+      shopping: { title: 'Nákupy', items: {
+        mall: 'Shopping Palace Zlaté piesky — supermarket, predajne mobilov, food court.',
+        grocery: 'Potraviny — Tesco Extra a Lidl na Zlatých pieskoch.',
+        pharmacy: 'Lekáreň — Dr. Max v Shopping Palace.',
+      } },
+      health: { title: 'Zdravie', items: {
+        hospital: 'Nemocnica · pohotovosť — UNB Ružinov, Ružinovská 6.',
+        gp: 'Váš všeobecný lekár — ste vo verejnom poistení cez zamestnávateľa. Vypýtajte si od HR preukaz a zaregistrujte sa u lekára. Najbližšia je Poliklinika Vajnorská (Vajnorská 40).',
+      } },
+      money: { title: 'Peniaze a pošta', items: {
+        post: 'Slovenská pošta — Cesta na Senec 2A, denne 8–20. Western Union na priehradke.',
+        novaPost: 'Balíky na Ukrajinu — Nova Post č. 1, Dunajská 14 (centrum).',
+        parcelBoxes: 'Balíkoboxy — Packeta Z-BOX / AlzaBox pri Shopping Palace.',
+      } },
+      authorities: { title: 'Úrady a pomoc', items: {
+        foreignPolice: 'Cudzinecká polícia Bratislava — Račianska 62. Po/St/Pia 7:30–15:30 · Ut 7:30–15:00 · Št 7:30–14:00. Nutná online rezervácia — bez nej nevybavíte nič.',
+        iom: 'Migračné informačné centrum IOM — Grösslingová 35 · Po/Ut/Št 9–12, 13–17 · 0850 211 478 · ukrajinsky/rusky na Telegrame +421 908 767 853 · poradenstvo zdarma.',
+        embassies: 'Veľvyslanectvá',
+      } },
+      worship: { title: 'Bohoslužby', items: {
+        orthodox: 'Pravoslávny chrám sv. Rastislava, Tomášikova (Ružinov). Liturgie v pracovné dni 8:00, So 9:30, Ne 10:00.',
+        greekCatholic: 'Gréckokatolícka katedrála — Ulica 29. augusta 7. Ukrajinské liturgie aj u sv. Rozálie v Lamači.',
+        mosque: 'Modlitebňa — AYA, Bojnícka 18. Piatková modlitba okolo 13:00.',
+      } },
+      leisure: { title: 'Voľný čas', items: {
+        zlatePiesky: 'Jazero Zlaté piesky — pláž, kúpanie v lete, bežecký okruh.',
+        kuchajda: 'Jazero Kuchajda — park, beh, futbalové ihriská.',
+      } },
+    },
+  },
+  howTo: [
+    { id: 'ticket', title: 'Kúpiť lístok na MHD', steps: ['Stiahnite si appku IDS BK (alebo Cyril) — e-lístky sú lacnejšie: 30 min 1,09 €.', 'Na krátku cestu 30 min, do centra 60 min. Aktivujte pred nastúpením.', 'Papierový lístok zo žltého automatu? Označte ho v oranžovom označovači vo vozidle.', 'Mesačník 40,50 € — formulár na recepcii; zamestnávateľ ho môže preplatiť.'] },
+    { id: 'doctor', title: 'Zaregistrovať sa u lekára', steps: ['Vypýtajte si od HR zamestnávateľa preukaz poistenca (VšZP, Dôvera alebo Union).', 'Nájdite všeobecného lekára, ktorý prijíma pacientov — recepcia má zoznam.', 'Prineste pas, pobytovú kartu a preukaz poistenca; podpíšte registráciu.', 'Súrny problém? Pohotovosť alebo volajte 155.'] },
+    { id: 'money', title: 'Poslať peniaze domov', steps: ['Prineste pas a celé meno príjemcu.', 'Porovnajte cenu v appke s cenou na priehradke — appky bývajú lacnejšie.', 'Doklad si nechajte, kým peniaze neprídu.'] },
+    { id: 'sim', title: 'Slovenská SIM karta', steps: ['Predajne Orange, Telekom, O2 alebo 4ka v Shopping Palace.', 'Prineste pas — predplatené SIM sa registrujú na vás.', 'Dobíjajte v appke operátora, v automatoch alebo stánkoch.'] },
+    { id: 'permit', title: 'Vaše povolenie na pobyt', steps: ['Noste pobytovú kartu a pas.', 'Obnovenie: požiadajte pred vypršaním — appka pripomenie 90, 60 a 30 dní vopred.', 'Zmena adresy: nahláste cudzineckej polícii — recepcia pomôže s formulárom.', 'Otázky: IOM MIC radí zdarma po ukrajinsky a rusky.'] },
+  ],
+  announcementTemplates: [
+    { key: 'hotWater', severity: 'warning', title: 'Odstávka teplej vody', body: 'Streda 10:00–14:00, údržba kotolne. Poschodia 1–4.' },
+    { key: 'fireDrill', severity: 'urgent', title: 'Požiarne cvičenie', body: 'Piatok 14:00. Keď zaznie alarm, odíďte najbližším východom a zhromaždite sa na parkovisku.' },
+    { key: 'inspection', severity: 'info', title: 'Kontrola izieb', body: 'Utorok 09:00–12:00, poschodia 5–6. Nechajte prosím izbu upratanú.' },
+    { key: 'cleaningChange', severity: 'info', title: 'Zmena dňa upratovania', body: 'Upratovanie izieb na poschodí [X] sa tento týždeň presúva z [deň] na [deň].' },
+    { key: 'shuttle', severity: 'info', title: 'Zmena zvozu', body: 'Odchod o [čas] sa od [dátum] presúva na [čas]. Ostatné časy bez zmeny.' },
+    { key: 'lostFound', severity: 'info', title: 'Straty a nálezy', body: 'Na recepcii sa našlo: [vec]. Vyzdvihnite s kartou.' },
+    { key: 'holiday', severity: 'info', title: 'Sviatky', body: 'Recepcia funguje nonstop. Práčovňa zatvorená [dátum].' },
+  ],
+};
