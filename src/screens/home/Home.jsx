@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BRAND, C } from '../../config/theme.js';
+import { shadow } from '../../config/app-config.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
 import { getPermitExpiry, listAnnouncements, listBookings, listRequests, subscribe } from '../../data/adapter.js';
@@ -13,6 +14,8 @@ import { permitStatus } from '../../domain/permit.js';
 import { pickText } from '../../content/index.js';
 import { BigAction, Card, IconBox, ListRow, QuickAction, SectionLabel, Tag, Tile, primaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
+import { PrimaLogo } from '../../ui/PrimaLogo.jsx';
+import { BuildingArt, buildingArt, useBrandImage } from '../../ui/brand.jsx';
 
 function HeroChip({ icon, children }) {
   return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 999, background: 'rgba(255,255,255,0.14)', color: '#fff', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}><Icon name={icon} size={14}/>{children}</span>;
@@ -59,12 +62,32 @@ export function Home() {
   const cleaning = nextCleaningDate();
   const today = new Date().toISOString().slice(0, 10);
   const loc = stay ? parseRoomLoc(stay.room) : null;
+  const art = useBrandImage(buildingArt(property));
 
   return (
     <>
-      {stay ? (
+      {stay && art ? (
+        <div style={{ background: C.card, borderRadius: 28, overflow: 'hidden', boxShadow: shadow.md }}>
+          <div style={{ position: 'relative' }}>
+            <BuildingArt property={property} height={186}/>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0) 55%, #FFFFFF 100%)' }}/>
+            <span style={{ position: 'absolute', left: 16, top: 14 }}><Tag tone="ink" icon="MapPin" style={{ height: 30, fontSize: 12.5 }}>{property.name}</Tag></span>
+          </div>
+          <div style={{ padding: '0 20px 20px' }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.textMuted }}>{t('home.hello', { name: stay.displayName })}</div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 6 }}>
+              <div className="num" style={{ fontSize: 54, fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.03em' }}>{roomLabel(stay.room)}</div>
+              <div style={{ paddingBottom: 6, fontSize: 13, color: C.textMuted, lineHeight: 1.3, fontWeight: 600 }}>{t('home.room')}{loc && loc.floor != null ? <><br/>{loc.floor}. p.</> : null}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
+              <Tag tone="muted" icon="Calendar" style={{ height: 32, fontSize: 12.5 }}>{t('home.checkOut')} {fmtDate(stay.checkOut, lang)}</Tag>
+              <Tag tone="muted" icon="Sparkles" style={{ height: 32, fontSize: 12.5 }}>{t('home.nextCleaning')} {fmtDate(cleaning.toISOString(), lang)}</Tag>
+            </div>
+          </div>
+        </div>
+      ) : stay ? (
         <div style={{ background: BRAND.wineGradient, color: '#fff', borderRadius: 28, padding: '22px 20px 20px', position: 'relative', overflow: 'hidden', boxShadow: '0 22px 44px rgba(74,15,27,0.28)' }}>
-          <svg width="220" height="220" viewBox="0 0 100 100" aria-hidden="true" style={{ position: 'absolute', right: -22, bottom: -30, opacity: 0.08 }}><path d="M50 24 L18 50 H27 V78 H44 V60 H56 V78 H73 V50 H82 Z" fill="#fff"/><rect x="62" y="28" width="7" height="14" fill="#fff"/></svg>
+          <PrimaLogo variant="roof" tone="white" height={120} style={{ position: 'absolute', right: -40, bottom: -18, opacity: 0.1 }}/>
           <div style={{ fontSize: 15, fontWeight: 500, opacity: 0.8 }}>{t('home.hello', { name: stay.displayName })}</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 10 }}>
             <div className="num" style={{ fontSize: 56, fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.03em' }}>{roomLabel(stay.room)}</div>
@@ -77,7 +100,8 @@ export function Home() {
           </div>
         </div>
       ) : (
-        <Card style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <Card style={{ display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
+          <BuildingArt property={property} height={150} style={{ margin: '-18px -18px 2px' }}/>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <IconBox name="Info" tone="info"/>
             <div>

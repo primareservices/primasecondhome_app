@@ -95,3 +95,29 @@ Teplé pozadie namiesto studenej šedej, Manrope namiesto Inter/monospace, žiad
 väčšie rádiusy (22/28), plávajúca navigácia, hero s gradientom, tónované boxy ikon namiesto
 sivých, jedna červená akcia na obrazovku, vlastné písma v builde (funguje offline a bez
 Google Fonts).
+
+## 7. Brand (v3.1, 8. 9. 2026) — oficiálne logo a ilustrácie
+
+Appka používa tie isté brandové prvky ako PRIMA RE SERVICE, PRIMA TOOLS a web primare.sk:
+
+- **Logo** `src/ui/PrimaLogo.jsx` — cesty z oficiálneho brandového SVG (strieška v dvoch červených
+  `#EE2A24` / `#B82025`, slovná značka PRIMA, slogan YOUR SECOND HOME). Varianty `horizontal`
+  (celé logo), `mark` (strieška + PRIMA — hlavička appky), `roof` (iba strieška — vodoznak v hero,
+  ikona). Tóny `brand`, `ink` (PRIM atramentové, A červené ako na webe), `white`, `mono`.
+  Oficiálne červené sú len v logu; akcie v UI ostávajú v `BRAND.red` `#BD2435` ako v celej rodine appiek.
+- **Ikona PWA a favicon** — `tools/make-icons.mjs` rasterizuje bielu striešku na červenom gradiente
+  (`public/icon-*.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon.svg`).
+- **Ilustrácia všetkých budov** `public/brand/prima-buildings.webp` — izometrická 3D ilustrácia
+  PRIMA Nitra, Tarif, Nukleon, IC 15, IC 23 a Galanta s červenou strieškou uprostred; rovnaký súbor
+  ako `login-buildings.webp` na prihlásení PRIMA TOOLS / RE SERVICE. Ukazuje sa na obrazovke Vitajte
+  (rozloženie ako prihlásenie: logo, ilustrácia, karta s obsahom).
+- **Výrezy budov** `public/brand/buildings/<qr>.webp` — `tools/crop-buildings.mjs` ich vyreže
+  z ilustrácie (súradnice v skripte). Hlavička domova hosťa je potom svetlá karta s budovou hosťa,
+  Info o budove má výrez nad adresou, verejný režim tiež.
+- **Náhľady prevádzok** `public/prevadzky/<qr>.jpg` — malé ilustrácie z PRIMA TOOLS pre výber
+  budovy vo verejnom režime.
+
+Všetky obrázky sú **voliteľné**: `src/ui/brand.jsx` (`useBrandImage`, `BuildingArt`, `BuildingThumb`)
+najprv overí, že súbor existuje; bez neho obrazovka použije záložný vzhľad (vínový hero s vodoznakom
+striešky, ikona budovy). Do repozitára ich treba skopírovať z PRIMA TOOLS (`public/login-buildings.webp`,
+`public/prevadzky/*.jpg`) a spustiť `NPM_GLOBAL_ROOT=$(npm root -g) node tools/crop-buildings.mjs`.

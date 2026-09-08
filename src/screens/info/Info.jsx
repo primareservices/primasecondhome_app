@@ -6,6 +6,7 @@ import { useApp } from '../../app-context.js';
 import { navigate } from '../../router.js';
 import { Card, IconBox, ListRow, PageHeader, SectionLabel, ghostBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { HOUSE_INFO_ICONS, Icon } from '../../ui/icons.jsx';
+import { BuildingArt } from '../../ui/brand.jsx';
 
 function InfoBlock({ icon, title, children }) {
   return (
@@ -31,7 +32,8 @@ export function Info() {
     <>
       <PageHeader title={t('info.title')} sub={p.name + (p.beds ? ' · ' + p.beds + ' ' + t('info.beds') : '')}
         action={publicMode && <button type="button" style={{ ...ghostBtn, fontSize: 13 }} onClick={() => navigate('/welcome?step=public')}>{t('common.change')}</button>}/>
-      <Card style={{ marginBottom: 10 }}>
+      <Card style={{ marginBottom: 10, overflow: 'hidden' }}>
+        <BuildingArt property={p} height={160} style={{ margin: '-18px -18px 16px' }}/>
         <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
           <IconBox name="MapPin" tone="brand"/>
           <div style={{ flex: 1 }}>

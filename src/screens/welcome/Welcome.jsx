@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { BRAND, C } from '../../config/theme.js';
-import { APP_NAME, DEMO_MODE } from '../../config/app-config.js';
+import { DEMO_MODE } from '../../config/app-config.js';
 import { PROPERTIES } from '../../config/properties.js';
 import { LANGS } from '../../config/languages.js';
 import { useT } from '../../i18n/index.js';
 import { navigate } from '../../router.js';
 import { redeemCode, setPublicProperty } from '../../data/adapter.js';
 import { DEMO_STAYS, DEMO_SURNAMES } from '../../data/seed.js';
-import { BrandMark } from '../../shell/index.jsx';
-import { Banner, Field, ListRow, Spinner, Tag, ghostBtn, iconBtn, inputStyle, primaryBtn } from '../../ui/primitives.jsx';
+import { Banner, Card, Field, Spinner, Tag, ghostBtn, iconBtn, inputStyle, primaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 import { LangCard } from '../../ui/LangPicker.jsx';
+import { PrimaLogo } from '../../ui/PrimaLogo.jsx';
+import { BRAND_ART, BuildingThumb, useBrandImage } from '../../ui/brand.jsx';
 
 // Kroky: 'lang' → 'code' → ('public'). ?c=KÓD z QR na lístku predvyplní kód.
+// Vstup do appky má rovnakú stavbu ako prihlásenie PRIMA TOOLS / RE SERVICE: oficiálne logo,
+// izometrická ilustrácia všetkých budov, pod ňou karta s obsahom. Bez ilustrácie vínová hlavička.
 export function Welcome({ query, initialStep, hasLang }) {
   const { t, lang, setLang, ready } = useT();
   const [step, setStep] = useState(initialStep || (hasLang ? 'code' : 'lang'));
@@ -20,6 +23,7 @@ export function Welcome({ query, initialStep, hasLang }) {
   const [surname, setSurname] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const art = useBrandImage(BRAND_ART);
   useEffect(() => { if (query.get('c')) setCode(query.get('c')); }, [query]);
 
   const submit = async () => {
@@ -34,17 +38,28 @@ export function Welcome({ query, initialStep, hasLang }) {
   const demoHint = DEMO_MODE ? DEMO_STAYS.map(s => s.code).join(', ') : null;
   const demoSurname = DEMO_MODE ? DEMO_SURNAMES[String(code).toUpperCase().trim()] : null;
   const bigInput = { ...inputStyle, fontSize: 22, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', minHeight: 60, textAlign: 'center' };
+  const title = ready ? t('welcome.title') : 'Welcome to PRIMA';
 
   if (step === 'lang') {
     return (
       <div className="fade-in" style={{ minHeight: '100dvh' }}>
-        <div style={{ position: 'relative', background: BRAND.wineGradient, color: '#fff', padding: '26px 24px 30px', borderRadius: '0 0 40px 40px', overflow: 'hidden', boxShadow: '0 22px 44px rgba(74,15,27,0.28)' }}>
-          <svg width="300" height="300" viewBox="0 0 100 100" aria-hidden="true" style={{ position: 'absolute', right: -70, top: 40, opacity: 0.1 }}><path d="M50 24 L18 50 H27 V78 H44 V60 H56 V78 H73 V50 H82 Z" fill="#fff"/><rect x="62" y="28" width="7" height="14" fill="#fff"/></svg>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}><BrandMark size={40} white/><b style={{ fontSize: 13, letterSpacing: '0.12em' }}>{APP_NAME}</b></div>
-          <h1 style={{ margin: '56px 0 0', fontSize: 34, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, maxWidth: 300 }}>{ready ? t('welcome.title') : 'Welcome to PRIMA'}<br/><span style={{ fontWeight: 500, opacity: 0.85 }}>Welcome home.</span></h1>
-          <div style={{ fontSize: 14, opacity: 0.8, marginTop: 10 }}>{t('welcome.chooseLanguage')} · Choose your language</div>
-        </div>
+        {art ? (
+          <div style={{ background: 'linear-gradient(180deg, #E9EDF2 0%, #F6F2EE 100%)', padding: '22px 20px 0', overflow: 'hidden' }}>
+            <div style={{ maxWidth: 640, margin: '0 auto' }}>
+              <PrimaLogo variant="horizontal" tone="brand" height={46}/>
+              <img src={BRAND_ART} alt="" style={{ display: 'block', width: '110%', maxWidth: 560, maxHeight: '36dvh', objectFit: 'contain', margin: '4px auto -6px', transform: 'translateX(-3%)' }}/>
+            </div>
+          </div>
+        ) : (
+          <div style={{ position: 'relative', background: BRAND.wineGradient, color: '#fff', padding: '26px 24px 30px', borderRadius: '0 0 40px 40px', overflow: 'hidden', boxShadow: '0 22px 44px rgba(74,15,27,0.28)' }}>
+            <PrimaLogo variant="roof" tone="white" height={150} style={{ position: 'absolute', right: -60, top: 60, opacity: 0.1 }}/>
+            <PrimaLogo variant="horizontal" tone="white" height={44}/>
+            <h1 style={{ margin: '48px 0 0', fontSize: 34, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, maxWidth: 300 }}>{title}<br/><span style={{ fontWeight: 500, opacity: 0.85 }}>Welcome home.</span></h1>
+          </div>
+        )}
         <div className="page page-nonav" style={{ paddingTop: 18 }}>
+          {art && <h1 style={{ margin: '4px 0 0', fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>{title} <span style={{ fontWeight: 500, color: C.textMuted }}>Welcome home.</span></h1>}
+          <div style={{ fontSize: 14, color: C.textMuted, margin: art ? '10px 0 18px' : '0 0 16px', fontWeight: 600 }}>{t('welcome.chooseLanguage')} · Choose your language</div>
           <div className="lang-grid">
             {LANGS.map(l => <LangCard key={l.code} l={l} active={l.code === lang} onClick={() => { setLang(l.code); setStep('code'); }}/>)}
           </div>
@@ -54,8 +69,9 @@ export function Welcome({ query, initialStep, hasLang }) {
   }
   return (
     <div className="page page-nonav fade-in" style={{ paddingTop: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 22 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
         <button type="button" style={iconBtn} onClick={() => setStep(step === 'public' ? 'code' : 'lang')} aria-label="back"><Icon name="ChevronLeft" size={22}/></button>
+        <PrimaLogo variant="mark" tone="brand" height={26}/>
         <span style={{ flex: 1 }}/>
         <button type="button" style={{ ...iconBtn, width: 'auto', padding: '0 12px', gap: 6, fontSize: 12, fontWeight: 800, letterSpacing: '0.06em' }} onClick={() => setStep('lang')}><Icon name="Languages" size={16}/>{lang.toUpperCase()}</button>
       </div>
@@ -79,12 +95,23 @@ export function Welcome({ query, initialStep, hasLang }) {
         </div>
       )}
       {step === 'public' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
             <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>{t('welcome.publicTitle')}</h1>
             <div style={{ fontSize: 14, color: C.textMuted, marginTop: 8, lineHeight: 1.45 }}>{t('welcome.publicHint')}</div>
           </div>
-          {PROPERTIES.map(p => <ListRow key={p.id} icon="Building2" title={p.name} sub={p.street + ', ' + p.city} onClick={() => { setPublicProperty(p.id); navigate('/', { replace: true }); }}/>)}
+          <Card className="rows" style={{ padding: '4px 18px' }}>
+            {PROPERTIES.map(p => (
+              <button key={p.id} type="button" className="row press" onClick={() => { setPublicProperty(p.id); navigate('/', { replace: true }); }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', color: C.text, padding: '12px 0' }}>
+                <BuildingThumb property={p} size={52} radius={16}/>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'block', fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em' }}>{p.name}</span>
+                  <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3 }}>{p.street}, {p.city}</span>
+                </span>
+                <Icon name="ChevronRight" size={20} color={C.textFaint}/>
+              </button>
+            ))}
+          </Card>
         </div>
       )}
     </div>

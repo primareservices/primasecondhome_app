@@ -6,6 +6,7 @@ import { useApp } from '../app-context.js';
 import { navigate } from '../router.js';
 import { Icon } from '../ui/icons.jsx';
 import { langMeta } from '../config/languages.js';
+import { PrimaLogo } from '../ui/PrimaLogo.jsx';
 
 const NAV = [
   { key: 'home', path: '/', icon: 'Home', t: 'nav.home', match: ['', 'report', 'services', 'documents', 'announcements', 'laundry'] },
@@ -26,15 +27,6 @@ function useOnline() {
   }, []);
   return online;
 }
-export function BrandMark({ size = 30, white }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
-      <rect width="100" height="100" rx="26" fill={white ? '#FFFFFF' : BRAND.red}/>
-      <path d="M50 24 L18 50 H27 V78 H44 V60 H56 V78 H73 V50 H82 Z" fill={white ? BRAND.red : '#fff'}/>
-      <rect x="62" y="28" width="7" height="14" fill={white ? BRAND.red : '#fff'}/>
-    </svg>
-  );
-}
 export function Shell({ children, segs, badges }) {
   const { t, lang } = useT();
   const { property } = useApp();
@@ -45,9 +37,8 @@ export function Shell({ children, segs, badges }) {
     <div style={{ minHeight: '100dvh' }}>
       <div className="topbar">
         <div className="topbar-inner">
-          <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <BrandMark/>
-            <b style={{ fontSize: 14, letterSpacing: '0.06em', color: BRAND.red }}>PRIMA</b>
+          <button type="button" onClick={() => navigate('/')} aria-label="PRIMA" style={{ background: 'none', border: 'none', padding: 0, display: 'inline-flex', alignItems: 'center' }}>
+            <PrimaLogo variant="mark" tone="brand" height={26}/>
           </button>
           {property && <span style={{ display: 'inline-flex', alignItems: 'center', height: 32, padding: '0 12px', borderRadius: 999, background: C.card, boxShadow: shadow.sm, fontSize: 12, fontWeight: 800, color: C.text }}>{property.name.replace(/^PRIMA\s+/i, '')}</span>}
           <span style={{ flex: 1 }}/>

@@ -1,21 +1,65 @@
 import { BRAND, C } from '../config/theme.js';
-import { fontFamily } from '../config/app-config.js';
 
-// Značka: červený štvorec s domčekom (rovnaký motív ako ikona appky) + wordmark.
-export function PrimaLogo({ size = 28, wordmark = true, sub }) {
+// Oficiálne logo PRIMA — strieška (dve červené) + slovná značka PRIMA + slogan YOUR SECOND HOME.
+// Cesty sú z brandového SVG (rovnaké ako v PRIMA RE SERVICE a PRIMA TOOLS); menia sa iba farby.
+//   variant: 'horizontal' (strieška + PRIMA + slogan) · 'mark' (strieška + PRIMA) · 'roof' (iba strieška)
+//   tone:    'brand' (oficiálne farby) · 'ink' (PRIM atramentové, A červené — webová verzia) · 'white' · 'mono'
+const LIGHT = '#EE2A24', DARK = '#B82025', INK = '#231F20';
+const ROOF_DARK = 'M113.53 26.51L340.17 136.39V109.87L140.88 13.26L113.53 26.51Z';
+const ROOF_LIGHT = 'M101.7 5.74L0.459656 54.82V81.33L113.53 26.51L140.88 13.26L113.53 0L101.7 5.74Z';
+const LETTERS = [
+  'M22.0997 106.01H13.7097V113.68H22.0997C24.3297 113.68 26.0997 112.17 26.0997 109.88C26.0997 107.59 24.3297 106.01 22.0997 106.01ZM0.459656 94.99H23.7997C34.0297 94.99 39.5397 101.81 39.5397 110C39.5397 118.19 34.0297 124.69 23.7997 124.69H13.6997V138.72H0.459656V94.99Z',
+  'M65.1996 106.01H57.1396V113.68H65.1996C67.4296 113.68 69.5296 112.24 69.5296 109.81C69.5296 107.38 67.4296 106.01 65.1996 106.01ZM61.9196 124.7H57.1296V138.73H43.8796V95H67.2196C77.4496 95 82.9596 101.82 82.9596 110.01C82.9596 117.55 78.5696 121.55 75.0896 123.25L83.0196 138.72H67.9396L61.9096 124.69L61.9196 124.7Z',
+  'M101.61 94.99H88.3597V138.72H101.61V94.99Z',
+  'M147.38 111.12L137.61 138.73H131.71L121.94 111.12V138.73H108.7V94.99H126.99L134.66 117.29L142.33 94.99H160.63V138.73H147.38V111.12Z',
+  'M182.49 122.07H192.45L187.47 106.66L182.49 122.07ZM195.87 133.09H179.09L177.38 138.73H163.02L179.15 95H195.8L211.93 138.73H197.57L195.87 133.09Z',
+];
+const TAGLINE_DARK = [
+  'M8.56966 176.03V167.43L0.459656 154.39H7.81966L11.8397 161.69L15.7997 154.39H23.1597L15.1097 167.43V176.03H8.55966H8.56966Z',
+  'M33.7096 154.04C40.3896 154.04 45.5496 158.58 45.5496 165.23C45.5496 171.88 40.3896 176.42 33.7096 176.42C27.0296 176.42 21.8696 171.88 21.8696 165.23C21.8696 158.58 27.0296 154.04 33.7096 154.04ZM33.7096 159.81C30.5596 159.81 28.5196 162.21 28.5196 165.23C28.5196 168.25 30.5596 170.65 33.7096 170.65C36.8596 170.65 38.8996 168.25 38.8996 165.23C38.8996 162.21 36.8596 159.81 33.7096 159.81Z',
+  'M47.8896 154.39H54.5396V166.91C54.5396 168.99 55.6096 170.64 58.2996 170.64C60.9896 170.64 62.0296 168.99 62.0296 166.91V154.39H68.6796V167.11C68.6796 172.49 65.5996 176.42 58.2996 176.42C50.9996 176.42 47.8896 172.49 47.8896 167.14V154.39Z',
+  'M84.0896 176.03L81.1096 169.09H78.7396V176.03H72.1896V154.39H83.7396C88.7996 154.39 91.5296 157.76 91.5296 161.82C91.5296 165.55 89.3596 167.53 87.6396 168.37L91.5696 176.03H84.1096H84.0896ZM82.7296 159.84H78.7396V163.64H82.7296C83.8296 163.64 84.8696 162.93 84.8696 161.73C84.8696 160.53 83.8296 159.85 82.7296 159.85V159.84Z',
+  'M104.2 168.12C105.82 169.68 108.26 170.91 111.18 170.91C112.41 170.91 113.58 170.49 113.58 169.65C113.58 168.81 112.67 168.38 110.53 168C106.96 167.35 101.51 166.51 101.51 161.09C101.51 157.42 104.56 154.08 110.5 154.08C114.04 154.08 117.22 155.09 119.68 157.1L116.18 161.74C114.3 160.31 111.86 159.6 110.14 159.6C108.52 159.6 108.16 160.18 108.16 160.74C108.16 161.58 109.04 161.88 111.34 162.26C114.91 162.88 120.2 163.91 120.2 168.91C120.2 173.91 116.66 176.44 110.86 176.44C106.25 176.44 103.11 175.08 100.8 173L104.21 168.13L104.2 168.12Z',
+  'M122.34 176.03V154.39H138.76V159.84H128.9V162.37H138.53V167.82H128.9V170.58H138.76V176.03H122.34Z',
+  'M140.5 165.23C140.5 158.55 145.63 154.04 152.24 154.04C158.08 154.04 160.93 157.35 162.23 160.33L156.59 162.96C156.04 161.27 154.35 159.81 152.24 159.81C149.26 159.81 147.15 162.21 147.15 165.23C147.15 168.25 149.26 170.65 152.24 170.65C154.35 170.65 156.04 169.19 156.59 167.5L162.23 170.1C160.96 172.99 158.08 176.43 152.24 176.43C145.62 176.43 140.5 171.89 140.5 165.24V165.23Z',
+  'M174.96 154.04C181.64 154.04 186.8 158.58 186.8 165.23C186.8 171.88 181.64 176.42 174.96 176.42C168.28 176.42 163.12 171.88 163.12 165.23C163.12 158.58 168.28 154.04 174.96 154.04ZM174.96 159.81C171.81 159.81 169.77 162.21 169.77 165.23C169.77 168.25 171.81 170.65 174.96 170.65C178.11 170.65 180.15 168.25 180.15 165.23C180.15 162.21 178.11 159.81 174.96 159.81Z',
+  'M203.67 176.03L195.69 164.42V176.03H189.14V154.39H195.89L203.42 165.29V154.39H209.97V176.03H203.68H203.67Z',
+  'M213.46 176.03V154.39H223.13C229.94 154.39 235 158.28 235 165.19C235 172.1 229.94 176.03 223.16 176.03H213.46ZM220.02 170.32H223.13C226.41 170.32 228.35 167.92 228.35 165.19C228.35 162.27 226.66 160.1 223.16 160.1H220.01V170.32H220.02Z',
+];
+const TAGLINE_RED = [
+  'M259.92 176.03V167.76H252.17V176.03H245.62V154.39H252.17V162.05H259.92V154.39H266.47V176.03H259.92Z',
+  'M280.65 154.04C287.33 154.04 292.49 158.58 292.49 165.23C292.49 171.88 287.33 176.42 280.65 176.42C273.97 176.42 268.81 171.88 268.81 165.23C268.81 158.58 273.97 154.04 280.65 154.04ZM280.65 159.81C277.5 159.81 275.46 162.21 275.46 165.23C275.46 168.25 277.5 170.65 280.65 170.65C283.8 170.65 285.84 168.25 285.84 165.23C285.84 162.21 283.8 159.81 280.65 159.81Z',
+  'M313.96 176.03V162.37L309.13 176.03H306.21L301.38 162.37V176.03H294.83V154.39H303.88L307.68 165.42L311.48 154.39H320.53V176.03H313.98H313.96Z',
+  'M324.02 176.03V154.39H340.44V159.84H330.58V162.37H340.21V167.82H330.58V170.58H340.44V176.03H324.02Z',
+];
+
+function colors(tone) {
+  if (tone === 'white') return { light: '#FFFFFF', dark: 'rgba(255,255,255,0.72)', letters: '#FFFFFF', lastLetter: '#FFFFFF', tagline: 'rgba(255,255,255,0.8)', taglineRed: '#FFFFFF' };
+  if (tone === 'mono') return { light: C.text, dark: C.text, letters: C.text, lastLetter: C.text, tagline: C.text, taglineRed: C.text };
+  if (tone === 'ink') return { light: LIGHT, dark: DARK, letters: C.text, lastLetter: LIGHT, tagline: C.textMuted, taglineRed: C.textMuted };
+  return { light: LIGHT, dark: DARK, letters: LIGHT, lastLetter: LIGHT, tagline: INK, taglineRed: LIGHT };
+}
+const BOX = { roof: [341, 137], mark: [341, 140], horizontal: [341, 177] };
+
+export function PrimaLogo({ height = 28, variant = 'horizontal', tone = 'brand', style }) {
+  const c = colors(tone);
+  const [vw, vh] = BOX[variant] || BOX.horizontal;
+  const w = Math.round(height * vw / vh);
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, fontFamily }}>
-      <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
-        <rect width="100" height="100" rx="22" fill={BRAND.red}/>
-        <path d="M50 24 L18 50 H27 V78 H44 V60 H56 V78 H73 V50 H82 Z" fill="#fff"/>
-        <rect x="62" y="28" width="7" height="14" fill="#fff"/>
-      </svg>
-      {wordmark && (
-        <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.05 }}>
-          <b style={{ fontSize: Math.round(size * 0.5), letterSpacing: '0.04em', color: BRAND.red }}>PRIMA</b>
-          {sub && <span style={{ fontSize: Math.round(size * 0.36), fontWeight: 600, color: C.textMuted, letterSpacing: '0.02em' }}>{sub}</span>}
-        </span>
-      )}
+    <svg width={w} height={height} viewBox={`0 0 ${vw} ${vh}`} fill="none" aria-label="PRIMA" style={style}>
+      <path d={ROOF_DARK} fill={c.dark}/>
+      <path d={ROOF_LIGHT} fill={c.light}/>
+      {variant !== 'roof' && LETTERS.map((d, i) => <path key={i} d={d} fill={i === LETTERS.length - 1 ? c.lastLetter : c.letters}/>)}
+      {variant === 'horizontal' && TAGLINE_DARK.map((d, i) => <path key={'t' + i} d={d} fill={c.tagline}/>)}
+      {variant === 'horizontal' && TAGLINE_RED.map((d, i) => <path key={'r' + i} d={d} fill={c.taglineRed}/>)}
+    </svg>
+  );
+}
+// Kompaktná značka do rohu appky: strieška v červenom štvorci (rovnaká ako ikona PWA).
+export function PrimaAppMark({ size = 30, style }) {
+  return (
+    <span style={{ width: size, height: size, borderRadius: size * 0.3, background: BRAND.redGradient, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...style }} aria-hidden="true">
+      <PrimaLogo variant="roof" tone="white" height={size * 0.3}/>
     </span>
   );
 }

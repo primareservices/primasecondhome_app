@@ -106,6 +106,15 @@ komponentov je v [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md); alternatívy B 
 sú na strane 2 plátna. Nové drobnosti: „Moje doklady“ (fotky pasu a karty len v telefóne), písma v builde
 (offline PWA bez Google Fonts), živšia ukážková obsadenosť práčovne.
 
+### v3.1 — brand PRIMA v appke
+
+Oficiálne logo PRIMA (strieška + PRIMA + YOUR SECOND HOME, `src/ui/PrimaLogo.jsx`) v hlavičke, na
+Vitajte a ako ikona PWA; Vitajte má rovnakú stavbu ako prihlásenie PRIMA TOOLS / RE SERVICE
+(logo → izometrická ilustrácia budov → karta). Domov, Info a verejný režim ukazujú výrez budovy
+hosťa. Obrázky sú voliteľné — pozri `docs/DESIGN_SYSTEM.md` §7: skopírujte `login-buildings.webp`
+a `prevadzky/*.jpg` z PRIMA TOOLS do `public/brand/` a `public/prevadzky/` a spustite
+`node tools/crop-buildings.mjs`; dovtedy appka používa vínový hero a ikonu budovy.
+
 ## Ukážky (demo, 390 px, dizajn v3 — smer A)
 
 Dizajnový systém: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Plátno s obrazovkami a alternatívami B/C:
