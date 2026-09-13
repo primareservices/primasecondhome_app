@@ -1,0 +1,14 @@
+# Supabase CLI — len nastavenia edge funkcií. Webhookové a cron funkcie bežia bez overenia JWT
+# a overujú hlavičku x-webhook-secret (secret WEBHOOK_SECRET); translate volá appka s JWT hosťa.
+[functions.guest-request-bridge]
+verify_jwt = false
+[functions.sync-ticket-status]
+verify_jwt = false
+[functions.send-push]
+verify_jwt = false
+[functions.sign-rules]
+verify_jwt = false
+[functions.guest-cleanup]
+verify_jwt = false
+[functions.translate]
+verify_jwt = true
