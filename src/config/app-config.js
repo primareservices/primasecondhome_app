@@ -1,11 +1,12 @@
 export const APP_NAME = 'PRIMA SECOND HOME';
 export const APP_SHORT = 'PRIMA Home';
 export const APP_VERSION = 'v0.2.0';
-export const APP_ENV = import.meta.env.VITE_APP_ENV || 'production';
+// (import.meta.env && …) — v node testoch import.meta.env neexistuje; Vite výraz aj tak nahradí.
+export const APP_ENV = (import.meta.env && import.meta.env.VITE_APP_ENV) || 'production';
 export const IS_STAGING = APP_ENV === 'staging';
 // DEMO režim: bez Supabase URL beží appka nad localStorage (src/data/demo-store.js).
-export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+export const SUPABASE_URL = (import.meta.env && import.meta.env.VITE_SUPABASE_URL) || '';
+export const SUPABASE_ANON_KEY = (import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || '';
 export const DEMO_MODE = !SUPABASE_URL;
 
 // Poppins je písmo značky (Design Manual 2026): ExtraBold verzálky na nadpisy, Regular na text.

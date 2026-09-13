@@ -25,7 +25,7 @@ export function demoTaken(day, start, machine) {
   const bias = start >= 17 ? 0.15 : start < 9 ? 0.1 : 0;
   return base < 0.35 + bias;
 }
-export function availability(facts, day, bookings, now = new Date()) {
+export function availability(facts, day, bookings, now = new Date(), { demo = true } = {}) {
   const len = (facts && facts.laundry && facts.laundry.slotHours) || 2;
   const machines = (facts && facts.laundry && facts.laundry.machines) || 4;
   const today = dayISO(now);
@@ -35,7 +35,7 @@ export function availability(facts, day, bookings, now = new Date()) {
     for (let m = 1; m <= machines; m++) {
       const mine = bookings.some(b => b.day === day && b.start === start && b.machine === m && b.status !== 'cancelled');
       const others = bookings.some(b => b.day === day && b.start === start && b.machine === m && b.status !== 'cancelled' && b.foreign);
-      ms.push({ n: m, mine, taken: !mine && (others || demoTaken(day, start, m)), past });
+      ms.push({ n: m, mine, taken: !mine && (others || (demo && demoTaken(day, start, m))), past });
     }
     return { start, len, label: slotLabel(start, len), past, machines: ms };
   });

@@ -5,7 +5,7 @@ import { I18nContext, hasDict, loadDict, makeT, readStoredLang, storeLang } from
 import { contentSync, loadContent } from './content/index.js';
 import { hasPack, loadPack, packSync } from './content/packs/index.js';
 import { AppContext } from './app-context.js';
-import { getPublicPropertyId, getRulesAck, getSession, listAnnouncements, listRequests, setPublicProperty, subscribe } from './data/adapter.js';
+import { getPublicPropertyId, getRulesAck, getSession, listAnnouncements, listRequests, setPublicProperty, startStore, subscribe } from './data/adapter.js';
 import { startOutbox } from './data/outbox.js';
 import { peekQrPending } from './boot/deep-link.js';
 import { isOpen } from './domain/request-status.js';
@@ -108,7 +108,7 @@ export function App() {
     requests: stay ? listRequests(stay.id).filter(isOpen).length : 0,
   }), [stay, property, tick]); // eslint-disable-line react-hooks/exhaustive-deps
   const ctx = useMemo(() => ({ stay, property, content, pack, rules, publicMode: !stay, refresh: () => setTick(x => x + 1) }), [stay, property, content, pack, rules]);
-  useEffect(() => { if (window.__primaBootOk) window.__primaBootOk(); startOutbox(); }, []);
+  useEffect(() => { if (window.__primaBootOk) window.__primaBootOk(); startOutbox(); startStore(); }, []);
   // QR z dverí bez prihlásenia: vyberie budovu; kód izby si Report prevezme po zadaní kódu (do 30 min).
   useEffect(() => {
     if (stay) return;

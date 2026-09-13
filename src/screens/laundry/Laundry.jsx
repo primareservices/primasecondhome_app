@@ -3,6 +3,7 @@ import { BRAND, C } from '../../config/theme.js';
 import { localeOf } from '../../config/languages.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
+import { DEMO_MODE } from '../../config/app-config.js';
 import { cancelBooking, createBooking, listBookings, subscribe } from '../../data/adapter.js';
 import { back } from '../../router.js';
 import { availability, canCancel, dayISO, nextDays, slotLabel } from '../../domain/laundry.js';
@@ -28,17 +29,17 @@ export function Laundry() {
   const [confirm, setConfirm] = useState(null);
   useEffect(() => subscribe(() => setTick(x => x + 1)), []);
   const bookings = useMemo(() => listBookings(stay.id), [stay, tick]);
-  const slots = useMemo(() => availability(facts, day, bookings), [day, bookings]); // eslint-disable-line react-hooks/exhaustive-deps
+  const slots = useMemo(() => availability(facts, day, bookings, new Date(), { demo: DEMO_MODE }), [day, bookings]); // eslint-disable-line react-hooks/exhaustive-deps
   const now = new Date();
-  const active = bookings.filter(b => b.status !== 'cancelled' && (b.day > dayISO(now) || (b.day === dayISO(now) && now.getHours() < b.start + (b.len || 2))));
+  const active = bookings.filter(b => !b.foreign && b.status !== 'cancelled' && (b.day > dayISO(now) || (b.day === dayISO(now) && now.getHours() < b.start + (b.len || 2))));
   const locale = localeOf(lang);
   const dayParts = (iso) => { const d = new Date(iso + 'T12:00:00'); return [d.toLocaleDateString(locale, { weekday: 'short' }).replace(/\.$/, ''), d.getDate()]; };
   const grid = { display: 'grid', gridTemplateColumns: `repeat(${L.machines}, 44px)`, gap: 8 };
 
-  const book = () => {
+  const book = async () => {
     if (!sel) { setError(t('laundry.pick')); return; }
     setError('');
-    try { const b = createBooking(stay.id, { day, start: sel.start, len: L.slotHours, machine: sel.machine }); setDone(b); setSel(null); }
+    try { const b = await Promise.resolve(createBooking(stay.id, { day, start: sel.start, len: L.slotHours, machine: sel.machine })); setDone(b); setSel(null); }
     catch { setError(t('laundry.full')); }
   };
 

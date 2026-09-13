@@ -38,3 +38,12 @@ test('outbox: poslucháč dostane zmenu, isOnline je v node true', async () => {
   assert.ok(n >= 1); off();
   assert.equal(isOnline(), true);
 });
+
+test('outbox: trvalá chyba (permanent) položku vyradí a front pokračuje', async () => {
+  _resetForTests();
+  const sent = [];
+  registerHandler('syncRequest', async (p) => { if (p.id === 'bad') { const e = new Error('rls'); e.permanent = true; throw e; } sent.push(p.id); });
+  enqueue('syncRequest', { id: 'bad' }); enqueue('syncRequest', { id: 'ok' });
+  const r = await flush();
+  assert.deepEqual(sent, ['ok']); assert.equal(r.sent, 1); assert.equal(pendingCount(), 0);
+});

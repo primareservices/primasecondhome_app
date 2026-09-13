@@ -6,7 +6,8 @@ const KEY = 'primaHome:outbox:v1';
 const handlers = {};
 const listeners = new Set();
 const mem = {};
-let flushing = false;
+let flushing = null;   // prebiehajúci flush (sľub) — súbežné volania ho zdieľajú
+const failed = [];   // posledné trvalo zlyhané položky (diagnostika v Profile)
 let started = false;
 
 function store() {
@@ -24,15 +25,20 @@ export function registerHandler(op, fn) { handlers[op] = fn; }
 export function subscribeOutbox(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 export function pendingCount() { return read().length; }
 export function pendingItems() { return read(); }
+export function failedItems() { return failed.slice(); }
 export function enqueue(op, payload) {
   const item = { id: 'o_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), op, payload, at: new Date().toISOString(), tries: 0 };
   write([...read(), item]);
   return item;
 }
 // Odošle po poradí; pri prvej chybe skončí (ďalší pokus príde s online/visibility/intervalom).
-export async function flush() {
-  if (flushing || !isOnline()) return { sent: 0, left: pendingCount() };
-  flushing = true;
+export function flush() {
+  if (flushing) return flushing;
+  if (!isOnline()) return Promise.resolve({ sent: 0, left: pendingCount() });
+  flushing = flushNow().finally(() => { flushing = null; });
+  return flushing;
+}
+async function flushNow() {
   let sent = 0;
   try {
     let list = read();
@@ -43,11 +49,16 @@ export async function flush() {
         await h(item.payload);
         list = list.filter(x => x.id !== item.id); write(list); sent += 1;
       } catch (e) {
-        item.tries += 1; item.lastError = String((e && e.message) || e).slice(0, 160); write(list);
-        break;
+        item.tries += 1; item.lastError = String((e && e.message) || e).slice(0, 160);
+        if (e && e.permanent) {              // trvalá chyba (napr. RLS, validácia): vyradiť, nezastavovať front
+          failed.push({ ...item, failedAt: new Date().toISOString() }); failed.splice(0, Math.max(0, failed.length - 20));
+          list = list.filter(x => x.id !== item.id); write(list); continue;
+        }
+        write(list);
+        break;                                // prechodná chyba (sieť, 5xx): skúsime neskôr
       }
     }
-  } finally { flushing = false; }
+  } finally { /* flushing sa vynuluje vo flush() */ }
   return { sent, left: pendingCount() };
 }
 export function startOutbox() {
@@ -58,4 +69,5 @@ export function startOutbox() {
   setInterval(flush, 30 * 1000);
   flush();
 }
-export function _resetForTests() { write([]); for (const k of Object.keys(handlers)) delete handlers[k]; flushing = false; }
+// Pre testy: vyprázdni front (handlery ostávajú — registrujú ich moduly úložísk pri importe).
+export function _resetForTests() { write([]); flushing = null; failed.length = 0; }

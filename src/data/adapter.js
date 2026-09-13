@@ -1,35 +1,45 @@
-// Jediný vstup do dát pre obrazovky. V DEMO režime (bez VITE_SUPABASE_URL) ide všetko
-// do demo-store.js; Supabase adaptér s rovnakými funkciami je krok v1.1
-// (docs/INTEGRATION.md §1.2–1.5, schéma v supabase/migrations/).
+// Jediný vstup do dát pre obrazovky. DEMO režim (bez VITE_SUPABASE_URL) → demo-store.js
+// (localStorage + simulácia personálu); s nastaveným Supabase → supabase-store.js (cache + sync +
+// outbox). Obe majú rovnaké synchrónne rozhranie; asynchrónne sú len redeemCode, createBooking,
+// getPhotoUrls a getDocumentUrl (obrazovky ich awaitujú).
 import { DEMO_MODE } from '../config/app-config.js';
 import * as demo from './demo-store.js';
+import * as supa from './supabase-store.js';
 
-if (!DEMO_MODE) {
-  // Zámerne bez tichého fallbacku: keď je URL nastavená, ale adaptér ešte neexistuje,
-  // má to byť vidieť v konzole, nie sa tváriť ako demo.
-  console.warn('[data] Supabase adaptér ešte nie je implementovaný — beží DEMO úložisko.');
-}
+const impl = DEMO_MODE ? demo : supa;
+const noop = () => {};
+const empty = () => [];
 
-export const subscribe = demo.subscribe;
-export const getSession = demo.getSession;
-export const redeemCode = demo.redeemCode;
-export const signOut = demo.signOut;
-export const getPublicPropertyId = demo.getPublicPropertyId;
-export const setPublicProperty = demo.setPublicProperty;
-export const listRequests = demo.listRequests;
-export const getRequest = demo.getRequest;
-export const createRequest = demo.createRequest;
-export const cancelRequest = demo.cancelRequest;
-export const listAnnouncements = demo.listAnnouncements;
-export const markAnnouncementsRead = demo.markAnnouncementsRead;
-export const getRulesAck = demo.getRulesAck;
-export const ackRules = demo.ackRules;
-export const submitFeedback = demo.submitFeedback;
-export const getNotificationsPref = demo.getNotificationsPref;
-export const setNotificationsPref = demo.setNotificationsPref;
-export const resetDemo = demo.resetDemo;
-export const listBookings = demo.listBookings;
-export const createBooking = demo.createBooking;
-export const cancelBooking = demo.cancelBooking;
-export const getPermitExpiry = demo.getPermitExpiry;
-export const setPermitExpiry = demo.setPermitExpiry;
+export const subscribe = impl.subscribe;
+export const getSession = impl.getSession;
+export const redeemCode = impl.redeemCode;
+export const signOut = impl.signOut;
+export const getPublicPropertyId = impl.getPublicPropertyId;
+export const setPublicProperty = impl.setPublicProperty;
+export const listRequests = impl.listRequests;
+export const getRequest = impl.getRequest;
+export const createRequest = impl.createRequest;
+export const cancelRequest = impl.cancelRequest;
+export const listAnnouncements = impl.listAnnouncements;
+export const markAnnouncementsRead = impl.markAnnouncementsRead;
+export const getRulesAck = impl.getRulesAck;
+export const ackRules = impl.ackRules;
+export const submitFeedback = impl.submitFeedback;
+export const getNotificationsPref = impl.getNotificationsPref;
+export const setNotificationsPref = impl.setNotificationsPref;
+export const resetDemo = impl.resetDemo;
+export const listBookings = impl.listBookings;
+export const createBooking = impl.createBooking;
+export const cancelBooking = impl.cancelBooking;
+export const getPermitExpiry = impl.getPermitExpiry;
+export const setPermitExpiry = impl.setPermitExpiry;
+// v1.1: fotky, správy s recepciou, podpis poriadku, štart synchronizácie
+export const getPhotoUrls = impl.getPhotoUrls || (async (r) => (r && r.photos) || []);
+export const listMessages = impl.listMessages || empty;
+export const sendMessage = impl.sendMessage || (() => null);
+export const markMessagesRead = impl.markMessagesRead || noop;
+export const listSignatures = impl.listSignatures || empty;
+export const signRules = impl.signRules || (() => null);
+export const getDocumentUrl = impl.getDocumentUrl || (async (s) => (s && s.pdfDataUrl) || null);
+export const startStore = impl.start || noop;
+export const STORE_KIND = DEMO_MODE ? 'demo' : 'supabase';
