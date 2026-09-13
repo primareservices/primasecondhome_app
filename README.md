@@ -80,9 +80,16 @@ docs/                      RESEARCH.md, PRODUCT_SPEC.md, INTEGRATION.md, TRANSLA
 
 ## Nasadenie
 
-Cloudflare Workers Builds ako pri sesterských appkách: `main` → produkcia, čokoľvek iné → staging
-(`vite.config.js` číta `WORKERS_CI_BRANCH`). Bez `VITE_SUPABASE_URL` beží build v DEMO režime.
-Navrhovaná doména: `home.primare.sk`.
+Cloudflare Workers Builds ako pri sesterských appkách: vetva `main` = produkcia, každá iná vetva =
+staging s vlastným náhľadovým odkazom (`vite.config.js` číta `WORKERS_CI_BRANCH`). Bez
+`VITE_SUPABASE_URL` beží build v DEMO režime. Doména: `home.primare.sk`.
+
+Nastavenie v Cloudflare (raz): Workers & Pages → Import a repository → tento repozitár; build
+`npm run build`, deploy `npx wrangler deploy`, production branch `main`; Domains & Routes →
+`home.primare.sk`. Bezpečnostné hlavičky (HSTS, CSP) sú v `public/_headers`.
+
+Postup zmeny: vetva → `npm run check` (importy, preklady, testy, build) → náhľad na staging →
+zlúčenie do `main` = produkcia. Verzia sa dvíha spolu so zápisom do [CHANGELOG.md](CHANGELOG.md).
 
 ## Ďalší krok (v1.1)
 
@@ -136,6 +143,13 @@ hosťa. Obrázky sú voliteľné — pozri `docs/DESIGN_SYSTEM.md` §7: skopíru
 a `prevadzky/*.jpg` z PRIMA TOOLS do `public/brand/` a `public/prevadzky/` a spustite
 `node tools/crop-buildings.mjs`; dovtedy appka používa vínový hero a ikonu budovy.
 
+## v0.2.0 — kolo A: čo sme prevzali zo sesterských appiek (13. 9. 2026)
+
+Diktovanie v jazyku hosťa, outbox (hlásenie sa offline uloží a odošle sa samo), QR štítok z dverí
+predvyplní izbu, kódy izieb sa normalizujú podľa pravidiel RE SERVICE, HSTS + CSP, verzia a STAGING
+v pätičke, `npm run check` ako v RE SERVICE. Podrobne v [CHANGELOG.md](CHANGELOG.md) a
+[docs/SESTERSKE_APPKY.md](docs/SESTERSKE_APPKY.md).
+
 ## Ukážky (demo, 390 px, dizajn v5 minimal podľa brand manuálu)
 
 Dizajnový systém: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Plátno s obrazovkami a alternatívami B/C:
@@ -160,3 +174,4 @@ https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02.
 | Kontakty (UK) | Profil (UK) | Domov (HI) | Verejný režim (HI) |
 |---|---|---|---|
 | ![kontakty](docs/screens/13-contacts-uk.png) | ![profil](docs/screens/14-profile-uk.png) | ![hindi](docs/screens/15-home-hi.png) | ![verejný](docs/screens/16-home-public-hi.png) |
+| ![offline: uložené](docs/screens/18-report-queued-uk.png) | ![offline: žiadosti](docs/screens/17-requests-queued-uk.png) | | |

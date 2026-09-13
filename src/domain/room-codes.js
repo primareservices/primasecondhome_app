@@ -39,3 +39,26 @@ export function parseQrPayload(raw) {
   if (!pid || !room) return null;
   return { pid, room };
 }
+
+// Ručne zadaný kód izby (hlásenie „inde“): 'b 214' → 'B214', '111 / 2' → '111/2', '111/BUNKA' → '111/bunka'.
+export function normalizeRoomCode(input) {
+  let s = String(input || '').trim().replace(/\s+/g, '').replace(/[\\–—]/g, '/');
+  if (!s) return '';
+  const i = s.indexOf('/');
+  if (i > 0) {
+    const sub = s.slice(i + 1);
+    s = s.slice(0, i).toUpperCase() + '/' + (sub.toLowerCase() === CELL_COMMON_SUFFIX ? CELL_COMMON_SUFFIX : sub.toUpperCase());
+  } else s = s.toUpperCase();
+  return s;
+}
+// Vyzerá to ako kód izby podľa pravidiel RE SERVICE? (blok A/B/C + 1–4 číslice, voliteľne /izba alebo /bunka)
+export function isRoomCode(code) {
+  return /^[A-Z]?\d{1,4}(\/(\d{1,2}[A-Z]?|bunka))?$/.test(String(code || ''));
+}
+// Popis pre hosťa na potvrdenie: { cell, sub, common, block, floor } alebo null, keď to nie je kód.
+export function describeRoom(code) {
+  if (!isRoomCode(code)) return null;
+  const { cell, sub } = parseCellRoom(code);
+  const { block, floor } = parseRoomLoc(code);
+  return { cell, sub: sub === CELL_COMMON_SUFFIX ? null : sub, common: sub === CELL_COMMON_SUFFIX, block, floor };
+}

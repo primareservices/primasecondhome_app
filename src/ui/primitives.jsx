@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BRAND, C } from '../config/theme.js';
 import { monoFamily, shadow } from '../config/app-config.js';
 import { useT } from '../i18n/index.js';
 import { statusMeta } from '../domain/request-status.js';
+import { getSpeechRecognition, speechLangFor } from '../domain/speech.js';
 import { Icon } from './icons.jsx';
 import { RoofAccent } from './PrimaLogo.jsx';
 
@@ -273,5 +274,37 @@ export function KeyValue({ label, value, mono }) {
       <span style={{ color: C.textMuted }}>{label}</span>
       <b className={mono ? 'num' : undefined} style={{ textAlign: 'right', fontFamily: mono ? monoFamily : undefined, fontWeight: 600 }}>{value}</b>
     </div>
+  );
+}
+
+// Diktovanie (vzor PRIMA RE SERVICE): Web Speech API v jazyku hosťa. Kde API chýba, nevykreslí sa nič.
+// Výsledok sa pripája k textu cez onText — hosť ho môže ďalej upraviť.
+export function DictateButton({ lang, onText, label, listeningLabel, style }) {
+  const SR = getSpeechRecognition();
+  const [on, setOn] = useState(false);
+  const recRef = useRef(null);
+  useEffect(() => () => { try { recRef.current && recRef.current.abort(); } catch {} }, []);
+  if (!SR) return null;
+  const toggle = () => {
+    if (on) { try { recRef.current && recRef.current.stop(); } catch {} setOn(false); return; }
+    let rec;
+    try { rec = new SR(); } catch { return; }
+    rec.lang = speechLangFor(lang);
+    rec.interimResults = false;
+    rec.continuous = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = (e) => {
+      const said = Array.from(e.results || []).map(r => (r[0] && r[0].transcript) || '').join(' ').replace(/\s+/g, ' ').trim();
+      if (said) onText(said);
+    };
+    rec.onend = () => setOn(false);
+    rec.onerror = () => setOn(false);
+    recRef.current = rec;
+    try { rec.start(); setOn(true); } catch { setOn(false); }
+  };
+  return (
+    <button type="button" onClick={toggle} aria-pressed={on} style={{ ...secondaryBtn, minHeight: 44, padding: '0 14px', fontSize: 14, width: 'auto', ...(on ? { boxShadow: 'inset 0 0 0 1.5px ' + BRAND.red, color: BRAND.red } : {}), ...style }}>
+      <Icon name={on ? 'Square' : 'Mic'} size={16}/>{on ? listeningLabel : label}
+    </button>
   );
 }

@@ -7,6 +7,7 @@ import { navigate } from '../router.js';
 import { Icon } from '../ui/icons.jsx';
 import { langMeta } from '../config/languages.js';
 import { PrimaLogo } from '../ui/PrimaLogo.jsx';
+import { useOnline, useOutboxCount } from '../lib/online.js';
 
 const NAV = [
   { key: 'home', path: '/', icon: 'Home', t: 'nav.home', match: ['', 'report', 'services', 'documents', 'announcements', 'laundry'] },
@@ -18,19 +19,11 @@ export function activeNav(segs) {
   const first = segs[0] || '';
   return (NAV.find(n => n.match.includes(first)) || NAV[0]).key;
 }
-function useOnline() {
-  const [online, setOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine);
-  useEffect(() => {
-    const on = () => setOnline(true), off = () => setOnline(false);
-    window.addEventListener('online', on); window.addEventListener('offline', off);
-    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
-  }, []);
-  return online;
-}
 export function Shell({ children, segs, badges }) {
   const { t, lang } = useT();
   const { property } = useApp();
   const online = useOnline();
+  const queued = useOutboxCount();
   const active = activeNav(segs);
   const unread = badges && badges.home;
   return (
@@ -49,10 +42,11 @@ export function Shell({ children, segs, badges }) {
           <button type="button" onClick={() => navigate('/profile')} aria-label={t('profile.language')} style={{ height: 44, padding: '0 12px', borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: C.text, letterSpacing: '0.06em' }}><Icon name="Languages" size={16}/>{langMeta(lang).short}</button>
         </div>
       </div>
-      {!online && (
+      {(!online || queued > 0) && (
         <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 20px' }}>
-          <div style={{ background: C.warningSoft, color: C.warningText, fontSize: 13, fontWeight: 700, padding: '10px 14px', borderRadius: 16, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Icon name="WifiOff" size={15}/>{t('offline.banner')}
+          <div style={{ background: C.card, boxShadow: 'inset 0 0 0 1px ' + C.warningBorder, color: C.warningText, fontSize: 13, fontWeight: 600, padding: '10px 14px', borderRadius: 16, display: 'flex', gap: 8, alignItems: 'flex-start', lineHeight: 1.4 }}>
+            <span style={{ display: 'flex', marginTop: 2 }}><Icon name={online ? 'CloudOff' : 'WifiOff'} size={15}/></span>
+            <span>{online ? t('offline.pendingSend', { n: queued }) : t('offline.banner') + (queued ? ' ' + t('offline.queuedCount', { n: queued }) : '')}</span>
           </div>
         </div>
       )}

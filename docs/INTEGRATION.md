@@ -44,7 +44,8 @@ Nightly, the XLSX/daily report reconciles check-outs (close stays whose *Odchod*
 ### 1.3 Requests → PRIMA RE SERVICE tickets
 
 Guest issue reports are inserted into the guest DB (`guest_requests`) first (so the guest
-sees them instantly), then an edge function `guest-request-bridge` (service role of the RE
+sees them instantly; offline they wait in `src/data/outbox.js` and are sent when the phone is back
+online — the Supabase adapter routes `createRequest` through the same queue), then an edge function `guest-request-bridge` (service role of the RE
 SERVICE project, never in the client) creates the ticket:
 
 ```js
@@ -112,6 +113,9 @@ accepts the same payload (`?qr=` → `parseQrPayload`) to pre-fill the building 
 the report form; scanning with the phone camera opens the RE SERVICE URL, which should
 redirect unauthenticated non-staff to `home.primare.sk/#/report?qr=...` (one line in
 RE SERVICE `boot/deep-link.js`, guarded by "no staff session").
+Implemented on the guest side in v0.2.0: `src/boot/deep-link.js` captures `?qr=` (also
+`#/report?qr=…`) before React, keeps it 30 minutes, the public mode picks the building and the
+report form prefills the room.
 
 ### 1.7 Verified against RE SERVICE v11.63 and TOOLS v0.52 (13 Sep 2026)
 

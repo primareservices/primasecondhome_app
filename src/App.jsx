@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DEFAULT_LANG, detectLang } from './config/languages.js';
-import { propertyById } from './config/properties.js';
+import { propertyById, propertyByQr } from './config/properties.js';
 import { I18nContext, hasDict, loadDict, makeT, readStoredLang, storeLang } from './i18n/index.js';
 import { contentSync, loadContent } from './content/index.js';
 import { hasPack, loadPack, packSync } from './content/packs/index.js';
 import { AppContext } from './app-context.js';
-import { getPublicPropertyId, getRulesAck, getSession, listAnnouncements, listRequests, subscribe } from './data/adapter.js';
+import { getPublicPropertyId, getRulesAck, getSession, listAnnouncements, listRequests, setPublicProperty, subscribe } from './data/adapter.js';
+import { startOutbox } from './data/outbox.js';
+import { peekQrPending } from './boot/deep-link.js';
 import { isOpen } from './domain/request-status.js';
 import { useRoute } from './router.js';
 import { navigate } from './router.js';
@@ -106,7 +108,14 @@ export function App() {
     requests: stay ? listRequests(stay.id).filter(isOpen).length : 0,
   }), [stay, property, tick]); // eslint-disable-line react-hooks/exhaustive-deps
   const ctx = useMemo(() => ({ stay, property, content, pack, rules, publicMode: !stay, refresh: () => setTick(x => x + 1) }), [stay, property, content, pack, rules]);
-  useEffect(() => { if (window.__primaBootOk) window.__primaBootOk(); }, []);
+  useEffect(() => { if (window.__primaBootOk) window.__primaBootOk(); startOutbox(); }, []);
+  // QR z dverí bez prihlásenia: vyberie budovu; kód izby si Report prevezme po zadaní kódu (do 30 min).
+  useEffect(() => {
+    if (stay) return;
+    const q = peekQrPending();
+    const p = q && propertyByQr(q.pid);
+    if (p && p.id !== publicPid) setPublicProperty(p.id);
+  }, [stay, publicPid]);
 
   const seg = route.segs[0] || '';
   let body;

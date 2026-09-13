@@ -5,7 +5,7 @@ import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
 import { createRequest } from '../../data/adapter.js';
 import { back, navigate } from '../../router.js';
-import { Banner, Card, Field, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
+import { DictateButton, Banner, Card, Field, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
 export function ServiceForm({ type }) {
@@ -71,7 +71,7 @@ export function ServiceForm({ type }) {
         {has('plate') && <Field label={t('svc.parking.plate')}><input value={plate} onChange={e => setPlate(e.target.value.toUpperCase())} placeholder="BA 123 AB" style={{ ...inputStyle, textTransform: 'uppercase', fontWeight: 700 }}/></Field>}
         {has('cardReason') && <Field label={t('svc.card.reason')}><Segmented options={CARD_REASONS.map(r => ({ key: r.key, label: t(r.t) }))} value={cardReason} onChange={setCardReason}/></Field>}
         {has('roomReason') && <Field label={t('svc.room.reason')}><textarea value={roomReason} onChange={e => setRoomReason(e.target.value)} rows={3} style={{ ...inputStyle, minHeight: 84 }}/></Field>}
-        {has('note') && <Field label={t('svc.note')} optional={svc.key !== 'other'}><textarea value={note} onChange={e => setNote(e.target.value)} rows={3} style={{ ...inputStyle, minHeight: 72 }}/></Field>}
+        {has('note') && <Field label={t('svc.note')} optional={svc.key !== 'other'}><textarea value={note} onChange={e => setNote(e.target.value)} rows={3} style={{ ...inputStyle, minHeight: 72 }}/><DictateButton lang={lang} onText={(s) => setNote(v => (v ? v.replace(/\s+$/, '') + ' ' : '') + s)} label={t('common.dictate')} listeningLabel={t('common.listening')} style={{ marginTop: 8 }}/></Field>}
         {error && <Banner tone="danger" icon="AlertCircle">{error}</Banner>}
         <Card style={{ padding: 12, display: 'flex', gap: 10 }}>
           <button type="button" style={{ ...secondaryBtn, flex: 1 }} onClick={() => back('/services')}>{t('common.cancel')}</button>

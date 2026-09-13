@@ -91,8 +91,10 @@ RE SERVICE), `tools/verify-imports.mjs`, `_headers` (zatiaľ bez HSTS a CSP).
 
 ## 6. Navrhované ďalšie kolo
 
-- **A — klient, bez backendu:** diktovanie v hlásení, offline front zápisov, verzia + STAGING
-  v pätičke profilu, HSTS + CSP hlavičky, `lazySafe`, validácia kódu izby podľa `room-codes`.
+- **A — hotové vo v0.2.0 (13. 9. 2026):** diktovanie v hlásení, outbox (offline front zápisov),
+  verzia + STAGING v pätičke profilu, HSTS + CSP hlavičky, zachytenie `?qr=` pred Reactom,
+  normalizácia a popis kódu izby podľa `room-codes`. `lazySafe` nebolo treba — appka nemá lazy
+  chunky a PWA `autoUpdate` rieši zastarané súbory.
 - **B — backend v1.1:** Supabase projekt hostí + adaptér, edge funkcia `guest-report` v RE SERVICE,
   čítanie `clean_plan`, DeepL, push.
 - **C — TOOLS:** modul „Hostia“ (kódy z XLSX exportu, tlač lístka), koordinátori firiem do appky.

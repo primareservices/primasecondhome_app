@@ -2,6 +2,7 @@
 // (src/data/adapter.js). Simuluje aj prácu personálu: staršie žiadosti sa posúvajú
 // v stavoch, aby bolo v ukážke vidno priebeh (ageRequests).
 import { DEMO_ANNOUNCEMENTS, DEMO_STAYS, demoBookingsFor, demoRequestsFor } from './seed.js';
+import { enqueue, isOnline, registerHandler } from './outbox.js';
 
 const KEY = 'primaHome:demo:v1';
 const listeners = new Set();
@@ -36,12 +37,13 @@ function ageRequests() {
   const now = Date.now();
   let changed = false;
   for (const r of st.requests) {
-    if (r.demoSeeded || r.status === 'cancelled') continue;
+    if (r.demoSeeded || r.status === 'cancelled' || r.sync === 'queued') continue;   // neodoslané personál nevidí
+    const base = r.syncedAt || r.createdAt;
     const flow = r.kind === 'service' && r.service === 'room' ? [[1, 'forwarded', { sk: 'Preposlané koordinátorovi vašej firmy.', en: 'Forwarded to your company coordinator.' }]] : (FLOW[r.kind] || []);
-    const age = (now - new Date(r.createdAt).getTime()) / MIN;
+    const age = (now - new Date(base).getTime()) / MIN;
     for (const [mins, status, note] of flow) {
       if (age >= mins && !r.timeline.some(e => e.status === status)) {
-        r.timeline.push({ at: new Date(new Date(r.createdAt).getTime() + mins * MIN).toISOString(), status, note });
+        r.timeline.push({ at: new Date(new Date(base).getTime() + mins * MIN).toISOString(), status, note });
         r.status = status; r.updatedAt = new Date().toISOString(); changed = true;
       }
     }
@@ -83,9 +85,11 @@ export function createRequest(stayId, data) {
   st.seq += 1;
   const now = new Date().toISOString();
   const req = { ...data, id: 'r_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), ref: 'H-' + st.seq, stayId,
-    status: 'reported', createdAt: now, updatedAt: now, timeline: [{ at: now, status: 'reported' }] };
+    status: 'reported', createdAt: now, updatedAt: now, timeline: [{ at: now, status: 'reported' }],
+    sync: isOnline() ? 'synced' : 'queued' };   // offline: uložené v telefóne, odošle outbox
   st.requests.push(req);
   save();
+  if (req.sync === 'queued') enqueue('syncRequest', { id: req.id });
   return req;
 }
 export function cancelRequest(id) {
@@ -134,3 +138,13 @@ export function submitFeedback(stayId, data) { const st = load(); st.feedback.pu
 export function getNotificationsPref() { return load().notifications !== false; }
 export function setNotificationsPref(v) { const st = load(); st.notifications = !!v; save(); }
 export function resetDemo() { state = blank(); save(); }
+
+// Outbox: v DEMO režime je „odoslanie“ = označiť žiadosť ako odoslanú (Supabase adaptér v1.1 tu
+// spraví skutočný zápis). Simulácia personálu beží až od odoslania (syncedAt), nie od uloženia.
+registerHandler('syncRequest', async ({ id }) => {
+  const st = load();
+  const r = st.requests.find(x => x.id === id);
+  if (!r || r.sync === 'synced') return;
+  r.sync = 'synced'; r.syncedAt = new Date().toISOString(); r.updatedAt = r.syncedAt;
+  save();
+});

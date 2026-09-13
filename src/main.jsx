@@ -1,5 +1,7 @@
 // Písma sú súčasťou buildu (offline PWA, žiadne volanie na Google Fonts). Poppins = písmo značky
 // (latinka + dévanágarí), Montserrat = sekundárne písmo manuálu a záloha pre cyriliku a vietnamčinu.
+// Zachytenie ?qr= z QR štítku na dverách musí bežať pred všetkým ostatným.
+import './boot/deep-link.js';
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
 import '@fontsource/poppins/600.css';

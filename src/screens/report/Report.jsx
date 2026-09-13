@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { C } from '../../config/theme.js';
 import { shadow } from '../../config/app-config.js';
 import { ISSUE_BY_KEY, ISSUE_CATEGORIES, PLACES, URGENCY } from '../../config/catalog.js';
@@ -7,18 +7,31 @@ import { useApp } from '../../app-context.js';
 import { createRequest } from '../../data/adapter.js';
 import { back, navigate } from '../../router.js';
 import { compressImage } from '../../lib/photo.js';
-import { roomLabel } from '../../domain/room-codes.js';
-import { Banner, Chip, Field, IconBox, ListRow, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
+import { describeRoom, normalizeRoomCode, roomLabel } from '../../domain/room-codes.js';
+import { clearQrPending, peekQrPending } from '../../boot/deep-link.js';
+import { DictateButton, Tag, Banner, Chip, Field, IconBox, ListRow, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
 const addTile = { width: 84, height: 84, borderRadius: 14, border: 'none', background: C.card, boxShadow: 'inset 0 0 0 1.5px ' + C.borderStrong, color: C.textMuted, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 12, fontWeight: 600 };
+
+// Potvrdenie ručne zadaného kódu izby: 111/2 → „Bunka 111 · izba 2 · 1. poschodie“, B214 → „Blok B · 2. poschodie“.
+function roomHint(info, t) {
+  const parts = [];
+  if (info.cell) parts.push(info.sub ? t('report.roomParsedCell', { cell: info.cell, sub: info.sub }) : t('report.roomParsedCellOnly', { cell: info.cell }));
+  if (info.block) parts.push(t('report.roomParsedBlock', { block: info.block }));
+  if (info.floor !== null && info.floor !== undefined) parts.push(info.floor === '0' ? t('report.roomParsedGround') : t('report.roomParsedFloor', { floor: info.floor }));
+  return parts.join(' · ');
+}
 
 export function Report({ query }) {
   const { t, lang } = useT();
   const { stay } = useApp();
   const [category, setCategory] = useState(query.get('cat') || '');
-  const [place, setPlace] = useState('room');
-  const [roomOther, setRoomOther] = useState('');
+  // QR štítok na dverách (?qr=IC23:111/2): ak mieri na inú izbu než hosťovu, predvyplní ju.
+  const [qrRoom] = useState(() => { const q = peekQrPending(); const r = q && q.room ? normalizeRoomCode(q.room) : ''; return r && r !== normalizeRoomCode(stay.room) ? r : ''; });
+  useEffect(() => { clearQrPending(); }, []);
+  const [place, setPlace] = useState(qrRoom ? 'other' : 'room');
+  const [roomOther, setRoomOther] = useState(qrRoom);
   const [photos, setPhotos] = useState([]);
   const [text, setText] = useState('');
   const [urgency, setUrgency] = useState('normal');
@@ -26,6 +39,7 @@ export function Report({ query }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(null);
   const fileRef = useRef(null);
+  const roomInfo = place !== 'room' ? describeRoom(normalizeRoomCode(roomOther)) : null;
 
   const onFiles = async (e) => {
     const files = Array.from(e.target.files || []).slice(0, 3 - photos.length);
@@ -38,7 +52,7 @@ export function Report({ query }) {
     if (place === 'other' && !roomOther.trim()) { setError(t('report.needPlace')); return; }
     setBusy(true);
     try {
-      const req = createRequest(stay.id, { kind: 'issue', category, place, room: place === 'room' ? stay.room : null, roomOther: roomOther.trim(), urgency, text: text.trim(), lang, photos: photos.filter(p => p.dataUrl).map(p => p.dataUrl) });
+      const req = createRequest(stay.id, { kind: 'issue', category, place, room: place === 'room' ? stay.room : null, roomOther: roomInfo ? normalizeRoomCode(roomOther) : roomOther.trim(), roomCode: roomInfo ? normalizeRoomCode(roomOther) : null, urgency, text: text.trim(), lang, photos: photos.filter(p => p.dataUrl).map(p => p.dataUrl) });
       setDone(req);
     } catch { setError(t('common.error')); }
     setBusy(false);
@@ -46,11 +60,12 @@ export function Report({ query }) {
   const cat = ISSUE_BY_KEY[category];
 
   if (done) {
+    const queued = done.sync === 'queued';
     return (
       <div className="fade-in" style={{ textAlign: 'center', paddingTop: 32 }}>
-        <div style={{ width: 84, height: 84, borderRadius: '50%', boxShadow: 'inset 0 0 0 1.5px ' + C.successBorder, color: C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name="CheckCircle2" size={40}/></div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em' }}>{t('report.sentTitle')}</h1>
-        <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.5, marginBottom: 18 }}>{t('report.sentSub', { ref: done.ref })}</div>
+        <div style={{ width: 84, height: 84, borderRadius: '50%', boxShadow: 'inset 0 0 0 1.5px ' + (queued ? C.warningBorder : C.successBorder), color: queued ? C.warning : C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name={queued ? 'CloudOff' : 'CheckCircle2'} size={40}/></div>
+        <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em' }}>{queued ? t('offline.queuedTitle') : t('report.sentTitle')}</h1>
+        <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.5, marginBottom: 18 }}>{queued ? t('offline.queuedSub') : t('report.sentSub', { ref: done.ref })}</div>
         {cat && cat.ddd && <Banner tone="warning" icon="Bug" style={{ textAlign: 'left', marginBottom: 10 }}>{t('report.pestsNote')}</Banner>}
         {cat && cat.reception && <Banner tone="info" icon="Headset" style={{ textAlign: 'left', marginBottom: 10 }}>{t('report.noiseNote')}</Banner>}
         <button type="button" style={{ ...primaryBtn, marginTop: 8 }} onClick={() => navigate('/requests/' + done.id, { replace: true })}><Icon name="ClipboardList" size={18}/>{t('requests.title')}</button>
@@ -83,7 +98,11 @@ export function Report({ query }) {
         <div className="chips">
           {PLACES.map(p => <Chip key={p.key} active={place === p.key} onClick={() => setPlace(p.key)}>{p.key === 'room' ? t(p.t) + ' ' + roomLabel(stay.room) : t(p.t)}</Chip>)}
         </div>
-        {place !== 'room' && <input value={roomOther} onChange={e => setRoomOther(e.target.value)} placeholder={t('report.roomOther')} style={inputStyle}/>}
+        {place !== 'room' && <>
+          <input value={roomOther} onChange={e => setRoomOther(e.target.value)} onBlur={() => setRoomOther(v => (describeRoom(normalizeRoomCode(v)) ? normalizeRoomCode(v) : v))} placeholder={t('report.roomOther')} style={inputStyle}/>
+          {roomInfo && <div className="hint" style={{ marginTop: 6 }}>{roomHint(roomInfo, t)}</div>}
+          {qrRoom && roomOther === qrRoom && <div style={{ marginTop: 8 }}><Tag tone="muted" icon="MapPin">{t('report.fromQr')}</Tag></div>}
+        </>}
       </Field>
 
       <Field label={t('report.photo')} hint={t('report.photoHint')} optional style={{ marginTop: 22 }}>
@@ -101,6 +120,7 @@ export function Report({ query }) {
 
       <Field label={t('report.describe')} optional style={{ marginTop: 22 }}>
         <textarea value={text} onChange={e => setText(e.target.value)} rows={3} placeholder={t('report.describePh')} style={{ ...inputStyle, minHeight: 90 }}/>
+        <DictateButton lang={lang} onText={(s) => setText(v => (v ? v.replace(/\s+$/, '') + ' ' : '') + s)} label={t('common.dictate')} listeningLabel={t('common.listening')} style={{ marginTop: 8 }}/>
       </Field>
 
       <Field label={t('report.urgency')} style={{ marginTop: 22 }}>

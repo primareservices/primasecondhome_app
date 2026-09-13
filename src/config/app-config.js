@@ -1,6 +1,6 @@
 export const APP_NAME = 'PRIMA SECOND HOME';
 export const APP_SHORT = 'PRIMA Home';
-export const APP_VERSION = 'v0.1.0';
+export const APP_VERSION = 'v0.2.0';
 export const APP_ENV = import.meta.env.VITE_APP_ENV || 'production';
 export const IS_STAGING = APP_ENV === 'staging';
 // DEMO režim: bez Supabase URL beží appka nad localStorage (src/data/demo-store.js).

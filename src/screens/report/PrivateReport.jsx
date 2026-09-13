@@ -7,7 +7,7 @@ import { useApp } from '../../app-context.js';
 import { createRequest } from '../../data/adapter.js';
 import { back, navigate } from '../../router.js';
 import { compressImage } from '../../lib/photo.js';
-import { Banner, Card, Field, IconBox, PageHeader, Tag, Toggle, ghostBtn, inkBtn, inputStyle, primaryBtn } from '../../ui/primitives.jsx';
+import { Banner, Card, DictateButton, Field, IconBox, PageHeader, Tag, Toggle, ghostBtn, inkBtn, inputStyle, primaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
 const CAT_ICON = { guest: 'Users', staff: 'Headset', safety: 'ShieldCheck', other: 'Info' };
@@ -40,7 +40,7 @@ export function PrivateReport() {
     <div className="fade-in" style={{ textAlign: 'center', paddingTop: 32 }}>
       <div style={{ width: 84, height: 84, borderRadius: '50%', boxShadow: 'inset 0 0 0 1.5px ' + C.successBorder, color: C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name="ShieldCheck" size={40}/></div>
       <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em' }}>{t('private.sentTitle')}</h1>
-      <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.5 }}>{t('private.sentSub')}<br/>{t('detail.ref')} <b className="num" style={{ color: C.text }}>{done.ref}</b></div>
+      <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.5 }}>{done.sync === 'queued' ? t('offline.queuedSub') : t('private.sentSub')}<br/>{t('detail.ref')} <b className="num" style={{ color: C.text }}>{done.ref}</b></div>
       <button type="button" style={{ ...inkBtn, marginTop: 22 }} onClick={() => navigate('/requests/' + done.id, { replace: true })}><Icon name="ClipboardList" size={18}/>{t('requests.title')}</button>
       <button type="button" style={{ ...ghostBtn, marginTop: 8 }} onClick={() => navigate('/', { replace: true })}>{t('nav.home')}</button>
     </div>
@@ -62,7 +62,7 @@ export function PrivateReport() {
           })}
         </div>
       </Field>
-      <Field label={t('private.what')} style={{ marginTop: 18 }}><textarea value={text} onChange={e => setText(e.target.value)} rows={4} placeholder={t('private.whatPh')} style={{ ...inputStyle, minHeight: 120 }}/></Field>
+      <Field label={t('private.what')} style={{ marginTop: 18 }}><textarea value={text} onChange={e => setText(e.target.value)} rows={4} placeholder={t('private.whatPh')} style={{ ...inputStyle, minHeight: 120 }}/><DictateButton lang={lang} onText={(s) => setText(v => (v ? v.replace(/\s+$/, '') + ' ' : '') + s)} label={t('common.dictate')} listeningLabel={t('common.listening')} style={{ marginTop: 8 }}/></Field>
       <Field label={t('private.photo')} optional style={{ marginTop: 18 }}>
         <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onFiles}/>
         <div className="photo-strip">

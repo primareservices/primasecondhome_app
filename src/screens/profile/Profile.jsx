@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { C } from '../../config/theme.js';
-import { APP_VERSION, DEMO_MODE } from '../../config/app-config.js';
+import { BRAND, C } from '../../config/theme.js';
+import { APP_VERSION, DEMO_MODE, IS_STAGING } from '../../config/app-config.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
 import { getNotificationsPref, setNotificationsPref, signOut } from '../../data/adapter.js';
@@ -52,7 +52,7 @@ export function Profile() {
       <SectionLabel>{t('profile.privacy')}</SectionLabel>
       <Card><div style={{ fontSize: 14, lineHeight: 1.5, color: C.text }}>{t('profile.privacyText')}</div></Card>
       {DEMO_MODE && <Banner tone="warning" icon="AlertTriangle" style={{ marginTop: 12 }}>{t('profile.demo')}</Banner>}
-      <div style={{ fontSize: 12, color: C.textFaint, textAlign: 'center', margin: '18px 0 10px' }}>PRIMA SECOND HOME · {t('profile.version')} {APP_VERSION}</div>
+      <div style={{ fontSize: 12, color: C.textFaint, textAlign: 'center', margin: '18px 0 10px' }}>PRIMA SECOND HOME · {t('profile.version')} {APP_VERSION}{IS_STAGING && <> · <span style={{ color: BRAND.red, fontWeight: 700 }}>STAGING</span></>}</div>
       {stay && <button type="button" style={{ ...secondaryBtn, color: C.textMuted }} onClick={() => setConfirm(true)}><Icon name="LogOut" size={16}/>{t('profile.signOut')}</button>}
       <Sheet open={confirm} title={t('profile.signOutConfirm')} onClose={() => setConfirm(false)}>
         <div style={{ display: 'flex', gap: 10 }}>

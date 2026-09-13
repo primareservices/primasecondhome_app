@@ -6,7 +6,7 @@ import { listRequests, subscribe } from '../../data/adapter.js';
 import { navigate } from '../../router.js';
 import { fmtDay } from '../../lib/format.js';
 import { isOpen } from '../../domain/request-status.js';
-import { Chip, EmptyState, ListRow, PageHeader, StatusBadge } from '../../ui/primitives.jsx';
+import { Chip, EmptyState, ListRow, PageHeader, StatusBadge, Tag } from '../../ui/primitives.jsx';
 
 export function requestTitle(r, t) {
   if (r.kind === 'issue') return t((ISSUE_BY_KEY[r.category] || ISSUE_BY_KEY.other).t);
@@ -38,7 +38,7 @@ export function Requests() {
       </div>
       {list.length ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {list.map(r => <ListRow key={r.id} icon={requestIcon(r)} title={requestTitle(r, t)} sub={r.ref + ' · ' + t('requests.kind.' + r.kind) + ' · ' + fmtDay(r.createdAt, lang, t)} meta={<StatusBadge status={r.status}/>} onClick={() => navigate('/requests/' + r.id)}/>)}
+          {list.map(r => <ListRow key={r.id} icon={requestIcon(r)} title={requestTitle(r, t)} sub={r.ref + ' · ' + t('requests.kind.' + r.kind) + ' · ' + fmtDay(r.createdAt, lang, t)} meta={r.sync === 'queued' ? <Tag tone="warning" icon="CloudOff">{t('requests.queued')}</Tag> : <StatusBadge status={r.status}/>} onClick={() => navigate('/requests/' + r.id)}/>)}
         </div>
       ) : <EmptyState icon="Inbox" title={t('requests.empty')} subtitle={t('requests.emptySub')}/>}
     </>

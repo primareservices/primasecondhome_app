@@ -10,7 +10,7 @@ import { fmtDateTime } from '../../lib/format.js';
 import { isOpen, statusMeta } from '../../domain/request-status.js';
 import { roomLabel } from '../../domain/room-codes.js';
 import { pickText } from '../../content/index.js';
-import { Card, KeyValue, PageHeader, Sheet, StatusBadge, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
+import { Banner, Card, KeyValue, PageHeader, Sheet, StatusBadge, Tag, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 import { requestIcon, requestTitle } from './Requests.jsx';
 
@@ -28,7 +28,8 @@ export function RequestDetail({ id }) {
   const timeline = r.timeline.slice().sort((a, b) => (a.at < b.at ? -1 : 1));
   return (
     <>
-      <PageHeader title={requestTitle(r, t)} sub={t('detail.ref') + ' ' + r.ref} onBack={() => back('/requests')} action={<StatusBadge status={r.status}/>}/>
+      <PageHeader title={requestTitle(r, t)} sub={t('detail.ref') + ' ' + r.ref} onBack={() => back('/requests')} action={r.sync === 'queued' ? <Tag tone="warning" icon="CloudOff">{t('requests.queued')}</Tag> : <StatusBadge status={r.status}/>}/>
+      {r.sync === 'queued' && <Banner tone="warning" icon="CloudOff" style={{ marginBottom: 12 }}>{t('offline.queuedSub')}</Banner>}
       <Card>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <span style={{ color: C.textMuted, display: 'flex' }}><Icon name={requestIcon(r)} size={22}/></span>
