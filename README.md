@@ -97,6 +97,7 @@ Založiť Supabase projekt pre hostí, nasadiť `supabase/migrations/`, napísa�
 rozhraním ako `src/data/demo-store.js`, modul „Hostia" v PRIMA TOOLS (kódy pri check-ine) a most do
 RE SERVICE — podrobne v [docs/INTEGRATION.md](docs/INTEGRATION.md).
 Čo prevziať zo sesterských appiek (TOOLS, RE SERVICE): [docs/SESTERSKE_APPKY.md](docs/SESTERSKE_APPKY.md).
+Check-in v appke (podpis poriadku, overenie totožnosti): [docs/CHECKIN_PODPIS_OVERENIE.md](docs/CHECKIN_PODPIS_OVERENIE.md).
 
 ## v2 — Tarif (8. 9. 2026)
 
