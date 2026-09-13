@@ -113,6 +113,36 @@ the report form; scanning with the phone camera opens the RE SERVICE URL, which 
 redirect unauthenticated non-staff to `home.primare.sk/#/report?qr=...` (one line in
 RE SERVICE `boot/deep-link.js`, guarded by "no staff session").
 
+### 1.7 Verified against RE SERVICE v11.63 and TOOLS v0.52 (13 Sep 2026)
+
+Read directly from the sibling repositories (`primareservices/prima-udrzba`,
+`primareservices/prima-tools`); details in Slovak in `SESTERSKE_APPKY.md`.
+
+- **Ticket insert path.** RE SERVICE `tickets_p_insert` requires `app_has_perm('tickets.write')`
+  for `authenticated`; there is no anonymous write except `pw_resets`. So the bridge must run
+  server-side (service role in an edge function `guest-report`, or a `SECURITY DEFINER` RPC), never
+  from the guest client. Ticket ids come from `rpc/alloc_ticket_ids` (prefix `T`); row shape is
+  `ticketToRow()` in `src/data/tickets-tb.js` (`id, property_id, status, for_housekeeping,
+  project_id, created_at, scheduled_for, data`). After the insert, write a `notifications` row and
+  POST `send-push` to roles Admin / Property Lead / Property Manager / Vedúci údržby / Údržbár
+  (housekeeping: Chyžná). Photos go to the private bucket `ticket-photos`, only the path is stored.
+- **Next cleaning.** `clean_plan` rows have id `<pid>|<YYYY-MM-DD>|<room>` and text `plan_date`;
+  the next cleaning for a room is the first row with `room = code` and `plan_date >= today`.
+  Last cleaning = newest `cleanings` row for the room; current state = `room_status`
+  (`<pid>|<room>`, `dirty|cleaning|clean|inspected`). Read through the same server-side function.
+- **QR.** Door labels are `https://service.primare.sk/?qr=<PID>:<CODE>`, parsed by
+  `src/qr/payload.js` (host-locked) and captured before React in `src/boot/deep-link.js`. The
+  redirect of non-staff to the guest app is a one-line addition there.
+- **Guest role.** RE SERVICE has a disabled `Hosť` role with a note (v9.24) that the guest side
+  will be a separate app — this plan matches.
+- **Stays.** TOOLS `GeneratorPCA.jsx` already parses the monthly Casist XLSX with one row per
+  person (Meno, Príchod, Odchod, Izba, Poznámka, Dlhodobo ubytovaný od). §1.1 can therefore create
+  stays and codes in bulk from that export; manual entry at check-in stays as the fallback.
+- **Coordinators.** TOOLS `firmy.kontakty` holds the client company's contact persons; the guest
+  app's Contacts screen can show the guest's agency coordinator from there.
+- **Master data.** Rooms exist in both apps (RE SERVICE `rooms`, TOOLS `izby`); pick one source
+  of truth — proposal: RE SERVICE for rooms and QR, TOOLS for companies and capacities.
+
 ---
 
 ## 2. Database (guest app project)
