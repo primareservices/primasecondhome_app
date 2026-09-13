@@ -106,6 +106,14 @@ komponentov je v [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md); alternatívy B 
 sú na strane 2 plátna. Nové drobnosti: „Moje doklady“ (fotky pasu a karty len v telefóne), písma v builde
 (offline PWA bez Google Fonts), živšia ukážková obsadenosť práčovne.
 
+## v4 — dizajn podľa brand manuálu PRIMA (13. 9. 2026)
+
+Appka je prerobená podľa PRIMA Ubytovňa Design Manual 2026: písmo Poppins (ExtraBold verzálky na
+nadpisy, Regular na text; Montserrat pre cyriliku a vietnamčinu), paleta PRIMA červená #EE2A24 /
+#B82025, Carbon, Unity, Sunburst a White Fence ako pozadie, strieška ako grafický prvok (akcent nad
+nadpismi, pás cez kartu izby ako na menovkách dverí), highlighter štítky, pilulkové tlačidlá, logo
+bez gradientu. Karta pobytu v Dokumentoch má podobu ubytovacieho preukazu. Popis: `docs/DESIGN_SYSTEM.md`.
+
 ### v3.1 — brand PRIMA v appke
 
 Oficiálne logo PRIMA (strieška + PRIMA + YOUR SECOND HOME, `src/ui/PrimaLogo.jsx`) v hlavičke, na
@@ -115,7 +123,7 @@ hosťa. Obrázky sú voliteľné — pozri `docs/DESIGN_SYSTEM.md` §7: skopíru
 a `prevadzky/*.jpg` z PRIMA TOOLS do `public/brand/` a `public/prevadzky/` a spustite
 `node tools/crop-buildings.mjs`; dovtedy appka používa vínový hero a ikonu budovy.
 
-## Ukážky (demo, 390 px, dizajn v3 — smer A)
+## Ukážky (demo, 390 px, dizajn v4 podľa brand manuálu)
 
 Dizajnový systém: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Plátno s obrazovkami a alternatívami B/C:
 https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02.

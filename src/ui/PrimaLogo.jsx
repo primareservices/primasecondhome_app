@@ -55,11 +55,26 @@ export function PrimaLogo({ height = 28, variant = 'horizontal', tone = 'brand',
     </svg>
   );
 }
-// Kompaktná značka do rohu appky: strieška v červenom štvorci (rovnaká ako ikona PWA).
+// Kompaktná značka do rohu appky: biela strieška na plnej PRIMA červenej (rovnaká ako ikona PWA).
 export function PrimaAppMark({ size = 30, style }) {
   return (
-    <span style={{ width: size, height: size, borderRadius: size * 0.3, background: BRAND.redGradient, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...style }} aria-hidden="true">
+    <span style={{ width: size, height: size, borderRadius: size * 0.3, background: BRAND.red, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...style }} aria-hidden="true">
       <PrimaLogo variant="roof" tone="white" height={size * 0.3}/>
     </span>
   );
+}
+// Pás striešky cez celú šírku karty — ako na menovkách dverí z manuálu (101/2 · Izba | Room).
+// Svetlá strana vľavo, tmavá vpravo; karta pod ním nesie veľké číslo izby.
+export function RoofBand({ tone = 'brand', style }) {
+  const c = colors(tone);
+  return (
+    <svg viewBox="0 0 341 137" preserveAspectRatio="xMinYMin meet" aria-hidden="true" style={{ display: 'block', width: '100%', height: 'auto', ...style }}>
+      <path d={ROOF_DARK} fill={c.dark}/>
+      <path d={ROOF_LIGHT} fill={c.light}/>
+    </svg>
+  );
+}
+// Malý akcent striešky nad nadpisom stránky (ako v hlavičkách manuálu).
+export function RoofAccent({ height = 12, tone = 'brand', style }) {
+  return <PrimaLogo variant="roof" tone={tone} height={height} style={{ display: 'block', ...style }}/>;
 }

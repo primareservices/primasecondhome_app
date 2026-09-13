@@ -40,13 +40,13 @@ export function Shell({ children, segs, badges }) {
           <button type="button" onClick={() => navigate('/')} aria-label="PRIMA" style={{ background: 'none', border: 'none', padding: 0, display: 'inline-flex', alignItems: 'center' }}>
             <PrimaLogo variant="mark" tone="brand" height={26}/>
           </button>
-          {property && <span style={{ display: 'inline-flex', alignItems: 'center', height: 32, padding: '0 12px', borderRadius: 999, background: C.card, boxShadow: shadow.sm, fontSize: 12, fontWeight: 800, color: C.text }}>{property.name.replace(/^PRIMA\s+/i, '')}</span>}
+          {property && <span style={{ display: 'inline-flex', alignItems: 'center', height: 30, padding: '0 10px', borderRadius: 8, background: BRAND.redSoft, fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: BRAND.redDark }}>{property.name.replace(/^PRIMA\s+/i, '')}</span>}
           <span style={{ flex: 1 }}/>
           <button type="button" onClick={() => navigate('/announcements')} aria-label={t('home.announcements')} style={{ width: 44, height: 44, borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: C.text, position: 'relative' }}>
             <Icon name="Bell" size={20}/>
             {unread ? <span style={{ position: 'absolute', top: 11, right: 11, width: 8, height: 8, borderRadius: '50%', background: BRAND.red, boxShadow: '0 0 0 2px #fff' }}/> : null}
           </button>
-          <button type="button" onClick={() => navigate('/profile')} aria-label={t('profile.language')} style={{ height: 44, padding: '0 12px', borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 800, color: C.text, letterSpacing: '0.06em' }}><Icon name="Languages" size={16}/>{langMeta(lang).short}</button>
+          <button type="button" onClick={() => navigate('/profile')} aria-label={t('profile.language')} style={{ height: 44, padding: '0 12px', borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: C.text, letterSpacing: '0.06em' }}><Icon name="Languages" size={16}/>{langMeta(lang).short}</button>
         </div>
       </div>
       {!online && (

@@ -83,7 +83,7 @@ export function Laundry() {
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ width: 14, height: 14, borderRadius: 4, background: BRAND.red }}/>{t('laundry.legendSel')}</span>
         </div>
       </Card>
-      <div className="hint" style={{ margin: '12px 2px 0' }}>{t('laundry.legend')} {t('laundry.fee', { price: L.price })}</div>
+      <div className="note" style={{ marginTop: 12 }}>{t('laundry.legend')} {t('laundry.fee', { price: L.price })}</div>
       {error && <Banner tone="danger" icon="AlertCircle" style={{ marginTop: 12 }}>{error}</Banner>}
 
       <SectionLabel>{t('laundry.mine')}</SectionLabel>
@@ -96,7 +96,7 @@ export function Laundry() {
                 <span style={{ display: 'block', fontSize: 15, fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.01em' }}>{(b.day === dayISO(now) ? t('common.today') : fmtDate(b.day, lang)) + ' ' + slotLabel(b.start, b.len || 2) + ' · ' + t('laundry.machine', { n: b.machine })}</span>
                 <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3 }}>{t('laundry.reminder')}</span>
               </span>
-              {canCancel(b) && <button type="button" style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 12, borderRadius: 999, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)' }} onClick={() => setConfirm(b.id)}>{t('laundry.cancel')}</button>}
+              {canCancel(b) && <button type="button" style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 12, borderRadius: 999, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)' }} onClick={() => setConfirm(b.id)}>{t('common.cancel')}</button>}
             </div>
           ))}
         </Card>
@@ -106,11 +106,11 @@ export function Laundry() {
       <div style={{ position: 'fixed', left: 16, right: 16, bottom: 'calc(100px + env(safe-area-inset-bottom))', zIndex: 18, pointerEvents: 'none' }}>
         <div style={{ pointerEvents: 'auto', maxWidth: 608, margin: '0 auto', background: C.card, borderRadius: C.radius, boxShadow: '0 -8px 30px rgba(23,22,26,0.08), 0 16px 40px rgba(23,22,26,0.14)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            {sel && <div className="label" style={{ color: BRAND.red }}>{t('laundry.selected')}</div>}
+            {sel && <div className="label" style={{ color: BRAND.redDark }}>{t('laundry.selected')}</div>}
             <div style={{ fontSize: 15, fontWeight: 700, marginTop: sel ? 4 : 0, lineHeight: 1.3, letterSpacing: '-0.01em', color: sel ? C.text : C.textMuted }}>{sel ? fmtDate(day, lang) + ' · ' + slotLabel(sel.start, L.slotHours) + ' · ' + t('laundry.machine', { n: sel.machine }) : t('laundry.pick')}</div>
             {sel && <div className="num" style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>{L.price}</div>}
           </div>
-          <button type="button" style={{ ...primaryBtn, width: 'auto', minWidth: 132, minHeight: 52, padding: '0 20px', fontSize: 16, opacity: sel ? 1 : 0.45, boxShadow: sel ? primaryBtn.boxShadow : 'none' }} onClick={book} disabled={!sel}>{t('laundry.book')}</button>
+          <button type="button" style={{ ...primaryBtn, width: 'auto', minWidth: 132, minHeight: 50, padding: '0 20px', opacity: sel ? 1 : 0.45, boxShadow: sel ? primaryBtn.boxShadow : 'none' }} onClick={book} disabled={!sel}>{t('laundry.book')}</button>
         </div>
       </div>
 

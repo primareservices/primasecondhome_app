@@ -1,34 +1,39 @@
-// Dizajnové tokeny PRIMA SECOND HOME — smer A „Teplý a sebavedomý" (docs/NAVRH_V2.md, plátno v3).
-// Teplé pozadie, atrament, PRIMA červená ako jediný silný akcent, tmavovínová karta pobytu,
-// tyrkysová a jantárová len pre stavy. Bez 1px rámikov — hierarchiu robia tóny a mäkké tiene.
-// Názvy kľúčov (C, BRAND) ostávajú kvôli kompatibilite so sesterskými appkami; hodnoty sú nové.
+// Dizajnové tokeny PRIMA SECOND HOME podľa PRIMA Ubytovňa Design Manual 2026 (docs/DESIGN_SYSTEM.md).
+// Paleta: PRIMA červená #EE2A24 a #B82025, Carbon #333333, Unity #0C66C2, Sunburst #F9E4B8,
+// White Fence #F8F2E4. Bez gradientov (manuál ich pri logu zakazuje) — hierarchiu robia
+// plné plochy, biele karty a mäkký tieň. Názvy kľúčov (C, BRAND) ostávajú kvôli sesterským appkám.
 export const C = {
-  bg: '#F6F2EE',
-  bgWarm: '#FCFAF8',
+  bg: '#F8F2E4',        // White Fence — pozadie stránky
+  bgWarm: '#FBF7EE',    // svetlejší krém (prázdne stavy)
   card: '#FFFFFF',
-  cardAlt: '#F1EAE3',
-  border: 'rgba(23,22,26,0.06)',
-  borderStrong: 'rgba(23,22,26,0.10)',
-  text: '#17161A',
-  textMuted: '#5C5860',
-  textFaint: '#9A959C',
-  navy: '#17161A',
-  radius: 22,
-  radiusSm: 16,
-  focusRing: '0 0 0 3px rgba(189, 36, 53, 0.18)',
-  success: '#1B8A5A', successText: '#1B8A5A', successSoft: '#E4F5EC', successBorder: '#BFE8D2',
-  warning: '#D98A1E', warningText: '#B8721A', warningSoft: '#FDF1DC', warningBorder: '#F6DFB5',
-  info:    '#0E7C7B', infoText:    '#0E7C7B', infoSoft:    '#E3F3F1', infoBorder:    '#BFE3DF',
-  accent:  '#0E7C7B', accentText:  '#0E7C7B', accentSoft:  '#E3F3F1', accentBorder:  '#BFE3DF',
+  cardAlt: '#F3EDE0',   // krémový box ikony
+  border: 'rgba(51,51,51,0.08)',
+  borderStrong: 'rgba(51,51,51,0.14)',
+  text: '#333333',      // Carbon
+  textMuted: '#6A6A6A',
+  textFaint: '#9C9C9C',
+  navy: '#333333',      // Carbon — tmavé karty a tlačidlá (názov kľúča je historický)
+  radius: 20,
+  radiusSm: 14,
+  focusRing: '0 0 0 3px rgba(238, 42, 36, 0.22)',
+  success: '#1E8E5A', successText: '#1E7A4E', successSoft: '#E3F4EA', successBorder: '#BFE5CF',
+  warning: '#F2B94A', warningText: '#8A5A00', warningSoft: '#F9E4B8', warningBorder: '#F2D48C',   // Sunburst
+  info:    '#0C66C2', infoText:    '#0C66C2', infoSoft:    '#DCE8F6', infoBorder:    '#B9D0EC',   // Unity
+  accent:  '#0C66C2', accentText:  '#0C66C2', accentSoft:  '#DCE8F6', accentBorder:  '#B9D0EC',
 };
 export const BRAND = {
-  red: '#BD2435',
-  redDark: '#8E1A28',
-  redSoft: '#FBEDEF',
-  redText: '#BD2435',
-  redGlow: 'rgba(189, 36, 53, 0.32)',
-  wine: '#4A0F1B',
-  wineDeep: '#2B0B12',
-  wineGradient: 'radial-gradient(120% 90% at 100% 0%, rgba(189,36,53,0.6) 0%, rgba(189,36,53,0) 55%), linear-gradient(135deg, #5B1322 0%, #2B0B12 100%)',
-  redGradient: 'radial-gradient(120% 80% at 100% 0%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 55%), linear-gradient(160deg, #C9273A 0%, #8E1A28 100%)',
+  red: '#EE2A24',       // PRIMA primárna (teplá)
+  redDark: '#B82025',   // PRIMA tmavá — nadpisy, stlačený stav, tmavá strana striešky
+  redSoft: '#FBE4E2',   // highlighter — svetloružový podklad s červeným textom
+  redText: '#B82025',
+  redGlow: 'rgba(238, 42, 36, 0.26)',
+  carbon: '#333333',
+  cream: '#F8F2E4',
+  sunburst: '#F9E4B8',
+  unity: '#0C66C2',
+  // Aliasy pre staršie miesta v kóde — plné farby, žiadne gradienty.
+  wine: '#B82025',
+  wineDeep: '#B82025',
+  wineGradient: '#B82025',
+  redGradient: '#EE2A24',
 };

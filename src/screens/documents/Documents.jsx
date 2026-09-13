@@ -11,9 +11,9 @@ import { compressImage } from '../../lib/photo.js';
 import { permitStatus } from '../../domain/permit.js';
 import { Banner, Card, Field, IconBox, PageHeader, SectionLabel, Segmented, Sheet, StatusBadge, Tag, inkBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
+import { PrimaLogo } from '../../ui/PrimaLogo.jsx';
 
 const RING = 2 * Math.PI * 40; // obvod kruhu r=40 v 92px hero prstenci
-const RING_COLOR = { success: '#7ED9A6', warning: '#F6B26B', danger: '#FF8A96' };
 
 // Povolenie na pobyt: vínový hero s prstencom odpočtu (posledných 180 dní), pripomienky 90/60/30.
 function PermitHero({ stay, t, lang }) {
@@ -38,35 +38,41 @@ function PermitHero({ stay, t, lang }) {
     );
   }
   const pct = Math.max(0, Math.min(1, st.days / 180));
-  const glass = { background: 'rgba(255,255,255,0.16)', color: '#fff' };
+  const ringColor = st.tone === 'success' ? C.success : st.tone === 'warning' ? C.warning : BRAND.red;
+  // Karta ako „Ubytovací preukaz" z manuálu: červený pás s názvom a logom, pod ním údaje.
   return (
     <>
-      <div style={{ background: BRAND.wineGradient, color: '#fff', borderRadius: 28, padding: 20, position: 'relative', overflow: 'hidden', boxShadow: shadow.lg }}>
-        <svg width="200" height="200" viewBox="0 0 100 100" aria-hidden="true" style={{ position: 'absolute', right: -22, bottom: -30, opacity: 0.08 }}><path d="M50 24 L18 50 H27 V78 H44 V60 H56 V78 H73 V50 H82 Z" fill="#fff"/></svg>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
-            <svg width="92" height="92" viewBox="0 0 92 92" style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
-              <circle cx="46" cy="46" r="40" stroke="rgba(255,255,255,0.18)" strokeWidth="8" fill="none"/>
-              <circle cx="46" cy="46" r="40" stroke={RING_COLOR[st.tone] || RING_COLOR.danger} strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={RING} strokeDashoffset={RING * (1 - pct)}/>
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <b className="num" style={{ fontSize: 26, lineHeight: 1 }}>{st.expired ? 0 : st.days}</b>
-              <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', opacity: 0.8 }}>{t('docs.daysUnit')}</span>
+      <div style={{ background: C.card, borderRadius: 22, overflow: 'hidden', boxShadow: shadow.md }}>
+        <div style={{ background: BRAND.red, color: '#fff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ flex: 1, fontSize: 14, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t('docs.permit')}</span>
+          <PrimaLogo variant="horizontal" tone="white" height={30}/>
+        </div>
+        <div style={{ padding: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
+              <svg width="92" height="92" viewBox="0 0 92 92" style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
+                <circle cx="46" cy="46" r="40" stroke={C.cardAlt} strokeWidth="8" fill="none"/>
+                <circle cx="46" cy="46" r="40" stroke={ringColor} strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={RING} strokeDashoffset={RING * (1 - pct)}/>
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <b className="num" style={{ fontSize: 26, lineHeight: 1, fontWeight: 800 }}>{st.expired ? 0 : st.days}</b>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: C.textMuted }}>{t('docs.daysUnit')}</span>
+              </div>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="label">{t('docs.permitValidUntil')}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, marginTop: 2, lineHeight: 1.15 }}>{fmtDate(expiry, lang)}</div>
+              <div style={{ marginTop: 8 }}><Tag tone={st.tone === 'success' ? 'success' : st.tone === 'warning' ? 'warning' : 'danger'}>{st.expired ? t('docs.permitExpired') : t('docs.permitDays', { n: st.days })}</Tag></div>
             </div>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.08em', opacity: 0.75, textTransform: 'uppercase' }}>{t('docs.permit')}</div>
-            <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em', marginTop: 4, lineHeight: 1.2 }}>{t('docs.permitValidUntil')} {fmtDate(expiry, lang)}</div>
-            <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>{st.expired ? t('docs.permitExpired') : t('docs.permitDays', { n: st.days })}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 18, flexWrap: 'wrap' }}>
+            <span className="label" style={{ flex: 1 }}>{t('docs.permitReminders')}</span>
+            {st.reminders.map(r => <Tag key={r.days} tone={r.due ? 'danger' : 'muted'} icon={r.due ? 'Check' : undefined}>{t('docs.daysN', { n: r.days })}</Tag>)}
           </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 18, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 12, fontWeight: 800, opacity: 0.75, flex: 1 }}>{t('docs.permitReminders')}</span>
-          {st.reminders.map(r => <Tag key={r.days} icon={r.due ? 'Check' : undefined} style={r.due ? glass : { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}>{t('docs.daysN', { n: r.days })}</Tag>)}
-        </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-          <a href={NETWORK.foreignPoliceUrl} target="_blank" rel="noreferrer" style={{ ...secondaryBtn, flex: 1, minHeight: 46, fontSize: 14, textDecoration: 'none', boxShadow: 'none' }}>{t('docs.bookAppointment')}</a>
-          <button type="button" style={{ ...secondaryBtn, flex: 1, minHeight: 46, fontSize: 14, ...glass, boxShadow: 'none' }} onClick={() => { setDate(expiry); setEditing(true); }}>{t('docs.permitChange')}</button>
+          <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+            <a href={NETWORK.foreignPoliceUrl} target="_blank" rel="noreferrer" style={{ ...primaryBtn, flex: 1, minHeight: 48, fontSize: 12.5, textDecoration: 'none' }}>{t('docs.bookAppointment')}</a>
+            <button type="button" style={{ ...secondaryBtn, flex: 1, minHeight: 48, fontSize: 12.5 }} onClick={() => { setDate(expiry); setEditing(true); }}>{t('docs.permitChange')}</button>
+          </div>
         </div>
       </div>
       <div className="hint" style={{ margin: '12px 2px 0' }}>{t('docs.permitHint')}</div>

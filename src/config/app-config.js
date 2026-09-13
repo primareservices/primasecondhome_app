@@ -8,15 +8,17 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 export const DEMO_MODE = !SUPABASE_URL;
 
-// Manrope pokrýva latinku, cyriliku aj vietnamčinu; dévanágarí (hi, ne) padá na Noto Sans Devanagari.
-export const fontFamily = "'Manrope', 'Noto Sans Devanagari', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
-// Čísla (izba, referencie, časy) nie sú v monospace — Manrope 800 s tabulkovými číslicami.
+// Poppins je písmo značky (Design Manual 2026): ExtraBold verzálky na nadpisy, Regular na text.
+// Poppins nemá cyriliku ani vietnamčinu — tie preberá Montserrat (sekundárne písmo manuálu);
+// dévanágarí (hi, ne) má Poppins vlastné. Všetko je v builde cez @fontsource.
+export const fontFamily = "'Poppins', 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
+// Čísla (izba, referencie, časy) nie sú v monospace — Poppins ExtraBold s tabulkovými číslicami.
 export const monoFamily = fontFamily;
 
 export const shadow = {
-  sm: '0 1px 2px rgba(23,22,26,0.04), 0 10px 30px rgba(23,22,26,0.06)',
-  md: '0 1px 2px rgba(23,22,26,0.04), 0 12px 34px rgba(23,22,26,0.10)',
-  lg: '0 22px 44px rgba(74,15,27,0.28)',
+  sm: '0 1px 2px rgba(51,51,51,0.05), 0 8px 24px rgba(51,51,51,0.06)',
+  md: '0 2px 4px rgba(51,51,51,0.05), 0 14px 34px rgba(51,51,51,0.10)',
+  lg: '0 18px 40px rgba(184,32,37,0.22)',
 };
 
 // Kontakty spoločné pre celú sieť (verejné údaje z primare.sk / ubytovnaprima.sk).

@@ -35,16 +35,16 @@ function Row({ icon, title, sub, walk, q, t, tone = 'default', right }) {
 // Ilustračná mapka (bez siete, bez API) so špendlíkom budovy a adresou.
 function MapCard({ p }) {
   return (
-    <div style={{ position: 'relative', height: 170, borderRadius: 24, overflow: 'hidden', background: '#EFE7DE', boxShadow: shadow.sm }}>
+    <div style={{ position: 'relative', height: 170, borderRadius: 24, overflow: 'hidden', background: '#F1EAD9', boxShadow: shadow.sm }}>
       <svg viewBox="0 0 350 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
-        <rect width="350" height="170" fill="#EFE7DE"/>
+        <rect width="350" height="170" fill="#F1EAD9"/>
         <path d="M-10 118 C 60 112, 120 96, 200 92 S 330 84, 370 70" stroke="#FFFFFF" strokeWidth="16" fill="none" strokeLinecap="round"/>
-        <path d="M-10 118 C 60 112, 120 96, 200 92 S 330 84, 370 70" stroke="#E3D9CD" strokeWidth="2" fill="none" strokeDasharray="6 8"/>
+        <path d="M-10 118 C 60 112, 120 96, 200 92 S 330 84, 370 70" stroke="#E0D6C3" strokeWidth="2" fill="none" strokeDasharray="6 8"/>
         <path d="M120 -10 C 126 40, 150 90, 172 180" stroke="#FFFFFF" strokeWidth="12" fill="none"/>
         <path d="M250 -10 C 236 50, 240 110, 262 180" stroke="#FFFFFF" strokeWidth="10" fill="none"/>
-        <rect x="40" y="30" width="46" height="34" rx="6" fill="#E4DBCF"/><rect x="196" y="112" width="60" height="38" rx="6" fill="#E4DBCF"/><rect x="290" y="100" width="44" height="50" rx="6" fill="#E4DBCF"/>
+        <rect x="40" y="30" width="46" height="34" rx="6" fill="#E6DCC6"/><rect x="196" y="112" width="60" height="38" rx="6" fill="#E6DCC6"/><rect x="290" y="100" width="44" height="50" rx="6" fill="#E6DCC6"/>
         <circle cx="318" cy="52" r="26" fill="#DCE8DA"/><circle cx="40" cy="150" r="30" fill="#DCE8DA"/>
-        <circle cx="176" cy="86" r="22" fill="rgba(189,36,53,0.16)"/>
+        <circle cx="176" cy="86" r="22" fill="rgba(238,42,36,0.16)"/>
         <path d="M176 60 c-9 0-16 7-16 16 0 12 16 26 16 26s16-14 16-26c0-9-7-16-16-16z" fill={BRAND.red}/><circle cx="176" cy="76" r="6" fill="#FFFFFF"/>
       </svg>
       <a href={mapUrl(p)} target="_blank" rel="noreferrer" style={{ position: 'absolute', left: 14, bottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 999, background: C.navy, color: '#fff', fontSize: 12, fontWeight: 800, textDecoration: 'none' }}><Icon name="MapPin" size={14}/>{p.street}</a>
@@ -86,12 +86,12 @@ export function Around() {
             <Row icon="TramFront" tone="info" title={F.tram.line + ' · ' + F.tram.name} sub={I('tram')} walk={F.tram.walkMin} q={F.tram.map} t={t}/>
           </Card>
           <Card>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}><b style={{ fontSize: 16, flex: 1, letterSpacing: '-0.01em' }}>{t('around.tickets')}</b><span style={{ fontSize: 12, color: C.textFaint, fontWeight: 700 }}>{t('around.ticketsFrom', { date: '1. 7. 2026' })}</span></div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}><b style={{ fontSize: 14, flex: 1, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t('around.tickets')}</b><span style={{ fontSize: 12, color: C.textFaint, fontWeight: 700 }}>{t('around.ticketsFrom', { date: '1. 7. 2026' })}</span></div>
             <div style={{ marginTop: 6 }}>
               {pack.facts.tickets.single.map(([k, paper, app]) => <KeyValue key={k} label={k} value={<span className="num">{paper} <span style={{ color: C.infoText }}>· {app} {t('around.inApp')}</span></span>}/>)}
               {pack.facts.tickets.passes.map(([k, v]) => <KeyValue key={k} label={k} value={v} mono/>)}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 16, background: C.warningSoft, color: '#7A4B0C', fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 16, background: C.warningSoft, color: C.warningText, fontSize: 13, fontWeight: 600, lineHeight: 1.4 }}>
               <Icon name="AlertTriangle" size={18} style={{ flexShrink: 0 }}/><span>{t('around.fine', { a: pack.facts.tickets.fine[0], b: pack.facts.tickets.fine[1], c: pack.facts.tickets.fine[2] })} {t('around.reimburse')}</span>
             </div>
           </Card>

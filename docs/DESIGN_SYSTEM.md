@@ -1,123 +1,100 @@
-# PRIMA SECOND HOME — dizajnový systém v3 („Teplý a sebavedomý", smer A)
+# PRIMA SECOND HOME — dizajnový systém v4 (podľa PRIMA Ubytovňa Design Manual 2026)
 
-Stav: 8. 9. 2026. Platí pre demo appku v tomto repozitári aj pre plátno
-https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02 (strana 1 = smer A,
-strana 2 = alternatívy B „Editorial" a C „Bold"). Cieľ: úroveň appky z App Store, nie interný nástroj.
+Stav: 13. 9. 2026. Zdroj pravdy je brand manuál (PDF od PRIMA): písmo Poppins, paleta PRIMA
+červená / Carbon / Unity / Sunburst / White Fence, strieška ako grafický prvok, logo bez gradientu
+a bez tieňa. Appka ho prekladá do mobilného rozhrania pre hostí v 12 jazykoch.
 
-## 1. Princípy
+## 1. Čo z manuálu platí v appke
 
-1. **Jedna červená akcia na obrazovku.** Červená (`#BD2435`) je len pre hlavné tlačidlo a stav
-   „vybrané". Všetko ostatné je atramentové, biele alebo tónované.
-2. **Bez 1px rámikov.** Karty sa oddeľujú tieňom a tónom pozadia, nie čiarou. Vstupné polia majú
-   vnútorný prstenec 1,5 px (`inset 0 0 0 1.5px rgba(23,22,26,0.08)`).
-3. **Veľké čísla, veľké ciele.** Izba 56 px, 112 na 40 px, minimálna výška tlačidla 52–56 px,
-   dlaždice práčky 44 px. Hostia appku používajú jednou rukou, často v rukaviciach po zmene.
-4. **Tón = význam.** Tyrkysová (info, moja rezervácia), jantárová (upozornenie, pripomienka),
-   zelená (hotovo), červená (núdza, vybrané), atrament (súkromné/vážne, mapa, „prehrať").
-5. **Jazyk napred.** Názvy jazykov vo vlastnom písme, bez vlajok. Písma sú v builde (offline PWA).
+| Manuál | V appke |
+|---|---|
+| Poppins ExtraBold **výhradne verzálkami** na nadpisy a výrazné prvky | H1 stránok, názvy sekcií, tlačidlá, štítky, rýchle akcie, navigácia |
+| Poppins Regular na bežný text | text kariet, podtitulky, formuláre (400/500/600) |
+| Montserrat ako sekundárne písmo | záloha pre cyriliku (uk, ru, sr) a vietnamčinu — Poppins ich nemá; dévanágarí má Poppins vlastné |
+| Primárna #EE2A24 a #B82025 | akcie (#EE2A24), nadpisy a text na ružovom podklade (#B82025) |
+| Unity #0C66C2 | informačný tón, moja rezervácia práčovne |
+| Sunburst #F9E4B8 | upozornenia, hodnotenie hviezdičkami |
+| White Fence #F8F2E4 | pozadie stránky |
+| Carbon #333333 | text, tmavé karty (cudzinecká polícia), atramentové tlačidlo súkromného nahlásenia |
+| Strieška z loga ako grafický prvok | akcent nad H1, pás cez kartu izby na domove (menovka dverí), vodoznak |
+| Highlighter (ružový podklad, červený text) | štítky `Tag tone="danger"`: názov budovy, pripomienky, kategórie |
+| Logo: červené na bielom, biele na červenej, bez gradientu | hlavička appky, Vitajte, ikona PWA (biela strieška na #EE2A24) |
+| Menovky dverí „101/2 · Izba \| Room" | hero domova: pás striešky + číslo izby 64 px + „Izba \| Room" |
+| Ubytovací preukaz (červený pás + logo, údaje) | karta povolenia na pobyt v Dokumentoch |
+| Sivé zaoblené boxy s červeným textom | `.note` — pravidlá práčovne, pokyny |
 
 ## 2. Tokeny (`src/config/theme.js`, `src/config/app-config.js`)
 
 | Token | Hodnota | Použitie |
 |---|---|---|
-| `C.bg` | `#F6F2EE` | pozadie stránky (teplá šedá) |
-| `C.card` / `C.cardAlt` | `#FFFFFF` / `#F1EAE3` | karty / boxy ikon, štítky „sand" |
-| `C.text` / `C.textMuted` / `C.textFaint` | `#17161A` / `#5C5860` / `#9A959C` | text / podtitulky / popisky |
-| `C.navy` | `#17161A` | atramentové tlačidlá a karty (názov je historický) |
-| `BRAND.red` / `redDark` / `redSoft` | `#BD2435` / `#8E1A28` / `#FBEDEF` | hlavná akcia / text v ružovom boxe / blush |
-| `BRAND.wine` / `wineGradient` | `#4A0F1B` / radial+linear | hero domov, hero pobytu, aktívne chipy a dni |
-| `BRAND.redGradient` | linear `#C9273A → #8E1A28` | hlavička núdzovej karty |
-| `C.info*` | `#0E7C7B` / `#E3F3F1` | tyrkysová |
-| `C.warning*` | `#B8721A` / `#FDF1DC` | jantárová |
-| `C.success*` | `#1B8A5A` / `#E4F5EC` | zelená |
-| `C.radius` / `C.radiusSm` | 22 / 16 | karty / ovládacie prvky (hero a nav 28) |
-| `shadow.sm` | `0 1px 2px rgba(23,22,26,.04), 0 10px 30px rgba(23,22,26,.06)` | karty |
-| `shadow.md` | `… 0 12px 34px rgba(23,22,26,.10)` | plávajúce prvky |
-| `shadow.lg` | `0 22px 44px rgba(74,15,27,.28)` | vínový hero |
+| `C.bg` | `#F8F2E4` White Fence | pozadie stránky |
+| `C.card` / `C.cardAlt` | `#FFFFFF` / `#F3EDE0` | karty / krémové boxy ikon |
+| `C.text` / `C.textMuted` / `C.textFaint` | `#333333` / `#6A6A6A` / `#9C9C9C` | text / podtitulky / popisky |
+| `C.navy` | `#333333` Carbon | tmavé karty a tlačidlá (názov kľúča je historický) |
+| `BRAND.red` / `redDark` / `redSoft` | `#EE2A24` / `#B82025` / `#FBE4E2` | akcie / nadpisy / highlighter |
+| `C.info*` | `#0C66C2` / `#DCE8F6` | Unity |
+| `C.warning*` | `#F2B94A` / `#8A5A00` / `#F9E4B8` | Sunburst |
+| `C.success*` | `#1E8E5A` / `#E3F4EA` | hotovo (manuál zelenú nemá; potrebná pre stavy) |
+| `C.radius` / `C.radiusSm` | 20 / 14 | karty / vstupy; tlačidlá sú pilulky (999) |
+| `shadow.sm` / `md` | mäkké sivé tiene | karty / plávajúce prvky |
 
-Písmo: **Manrope** 400–800 (latinka, cyrilika, vietnamčina) + **Noto Sans Devanagari** 400/600/700
-(hindčina, nepálčina), oboje z `@fontsource` v `src/main.jsx`. Čísla používajú tabulkové číslice
-(trieda `.num`), nie monospace.
+Písmo: `'Poppins', 'Montserrat', system-ui` z `@fontsource` v `src/main.jsx` (400–800). Čísla
+majú tabulkové číslice (`.num`). Škála: H1 26/800 verzálky, sekcia 15/800 verzálky, titulok riadku
+15/700, text 14–15/400, popisok polí 11/700 verzálky s 0,08em, štítok 11/700 verzálky.
 
-Typografická škála: H1 28/800/−0,03em (hero izba 56, núdza 30), H2 sekcie 19/800/−0,02em,
-titulok riadku 15/700, podtitulok 13, popisok polí 12/800 verzálky s 0,06em, štítok 12/800.
+## 3. Komponenty (`src/ui/primitives.jsx`, `src/ui/PrimaLogo.jsx`, `src/ui/GlobalStyles.jsx`)
 
-## 3. Komponenty (`src/ui/primitives.jsx`, `src/ui/GlobalStyles.jsx`)
+| Komponent | Poznámka |
+|---|---|
+| `PrimaLogo` (`horizontal`/`mark`/`roof`, tóny `brand`/`ink`/`white`/`mono`) | oficiálne cesty SVG; nikdy gradient ani tieň |
+| `RoofBand` | pás striešky cez šírku karty (menovka dverí) |
+| `RoofAccent` | malá strieška nad H1 (`PageHeader roof`) |
+| `PrimaAppMark` | biela strieška na plnej červenej — rovnaká ako ikona PWA |
+| `PageHeader` | strieška + H1 verzálkami v `#B82025` + podtitul |
+| `SectionLabel` | verzálky Carbon, akcia vpravo |
+| `primaryBtn` / `secondaryBtn` / `inkBtn` | pilulky, verzálky Poppins 700 14 px; červená / biela s prstencom / Carbon |
+| `Tag` (`danger` = highlighter, `info`, `warning`, `success`, `muted`, `ink`, `red`) | rádius 8, verzálky 11 px |
+| `Chip` | aktívna plná červená |
+| `IconBox` (`brand`, `info`, `warning`, `success`, `danger`, `ink`, `default`) | 46 px, rádius 16 |
+| `QuickAction`, `Tile`, `BigAction`, `ListRow (meta)`, `Segmented`, `Toggle`, `Sheet`, `KeyValue`, `Banner`, `EmptyState` | |
+| `.pill-day`, `.m`, `.opt`, `.step .n`, `.note`, `.hatch`, `.rows/.row`, `.bleed` | triedy v `GlobalStyles.jsx` |
 
-| Komponent | Kde | Poznámka |
-|---|---|---|
-| `Card` (+ `className="rows"`) | všade | biela, rádius 22, tieň sm; `.rows` oddeľuje riadky 1px linkou vnútri karty |
-| `IconBox` (`tone`: default/brand/info/warning/success/danger) | riadky, hlavičky | 46 px, rádius 16 |
-| `ListRow` (`meta` = štítky pod podtitulom) | zoznamy | štítok stavu ide pod text, nie vpravo — text sa nezalamuje |
-| `Tag` (`tone`: muted/info/warning/danger/success/ink) | stavy, „3 min", „Anonymne" | 26 px pilulka |
-| `Chip` | filtre, kategórie | aktívny = vínový s tieňom |
-| `QuickAction` | domov | 62 px biely box + názov pod ním, 4 v rade |
-| `BigAction` | domov | jediné červené tlačidlo na domove |
-| `primaryBtn` / `secondaryBtn` / `inkBtn` / `ghostBtn` / `iconBtn` | tlačidlá | 56 / 52 / 56 / 44 / 44 px |
-| `Segmented` | formuláre | zvislé možnosti s rádiom, vybraná má červený vnútorný prstenec |
-| `Toggle`, `Stars`, `Sheet`, `KeyValue`, `Banner`, `EmptyState`, `PageHeader` | | |
-| `.pill-day`, `.m` (`.taken.hatch`, `.mine`, `.sel`, `.past`) | práčovňa | dni 56×74, práčky 44×44 |
-| `.opt` / `.opt.on` | kategórie hlásení | biela karta, vybraná = červený prstenec + ružový tieň |
-| `.step .n` | postup pri alarme | číslo v ružovom štvorci |
-| `.bleed` | núdzová hlavička | roztiahne blok cez okraje `.page` (−20 px) |
-| `.bottom-nav-inner` | navigácia | plávajúca pilulka 74 px, rádius 28, blur |
+## 4. Obrazovky
 
-## 4. Obrazovky a ich „podpis"
+- **Vitajte** — biela hlavička: logo, ilustrácia budov (ak je v `public/brand/`) alebo strieška,
+  „VITAJTE V PRIMA / Welcome home.", mriežka jazykov (názvy vo vlastnom písme, bez vlajok).
+- **Domov** — menovka dverí: pás striešky, číslo izby 64 px, „Izba | Room", štítky budova / odchod /
+  upratovanie; červená pilulka „NAHLÁSIŤ PROBLÉM"; 4 rýchle akcie; „DNES"; Carbon riadok Núdza; oznamy.
+- **Práčovňa** — dni ako pilulky (aktívny červený), mriežka práčok (šrafované obsadené, Unity moja,
+  červená vybraná), plávajúci súhrn s cenou, pravidlá v `.note`.
+- **Núdzová situácia** — plná červená hlavička, biela karta 112, tri čísla, adresa po slovensky.
+- **Dokumenty** — karta pobytu ako ubytovací preukaz (červený pás + biele logo), prstenec odpočtu,
+  pripomienky 90/60/30 ako highlighter štítky, „Moje doklady" len v telefóne.
+- **Okolie** — krémová mapka so špendlíkom, červené chipy, Carbon karta cudzineckej polície.
+- **Súkromné nahlásenie** — 2×2 karty kategórií s červeným prstencom, Carbon tlačidlo.
 
-- **Domov** — vínový hero (pozdrav, izba 56 px, poschodie, chipy budova/odchod/upratovanie), červené
-  „Nahlásiť problém", 4 rýchle akcie, karta „Dnes" (rezervácia práčovne, pobyt, otvorené žiadosti),
-  atramentový riadok Núdzová situácia, oznamy.
-- **Práčovňa** — dni ako pilulky, mriežka práčok (šrafované obsadené, tyrkysová moja, červená
-  vybraná), plávajúci súhrn s cenou nad navigáciou.
-- **Okolie** — ilustračná mapka so špendlíkom a adresou, chipy kategórií, riadky s časom pešo a
-  okrúhlym tlačidlom Mapa, cudzinecká polícia ako atramentová karta.
-- **Núdzová situácia** — červená hlavička, biela karta 112, tri malé čísla, adresa po slovensky
-  (kopírovať / prehrať), postup pri alarme, lekárnička.
-- **Dokumenty** — vínový hero pobytu s prstencom odpočtu (posledných 180 dní) a pripomienkami
-  90/60/30, riadky hlásenia a potvrdení, „Moje doklady" (fotky len v telefóne).
-- **Súkromné nahlásenie** — 2×2 karty kategórií, atramentové tlačidlo (nie červené — nie je to
-  bežný ticket), štítok „Anonymne" v hlavičke.
-- **Vitajte** — vínová hlavička so „Welcome home." v jazyku hosťa, mriežka jazykov 2 stĺpce; kód
-  ako veľký vstup s verzálkami.
+## 5. Pravidlá
 
-## 5. Alternatívy na plátne (strana 2)
+1. Jedna červená akcia na obrazovku; ostatné sú biele alebo Carbon.
+2. Verzálky len tam, kde manuál: nadpisy, tlačidlá, štítky. Text vždy vo vetách.
+3. Žiadne gradienty a tiene na logu; plné plochy PRIMA červenej.
+4. Bez 1px rámikov okolo kariet — biela karta na krémovom pozadí + mäkký tieň; vstupy majú
+   vnútorný prstenec.
+5. Dotykové ciele min. 44 px, čísla veľké (izba 64, 112 na 40 px).
+6. Dvojjazyčný vzor z menoviek („Izba | Room") sa používa len v hero.
 
-- **B „Editorial"** — Playfair Display + Manrope, krémové pozadie, tenké linky, redakčný tón. Menej
-  „appkový", vhodný pre prémiovejšie budovy; horšie znáša 12 jazykov (serif bez cyriliky/dévanágarí).
-- **C „Bold"** — tmavý režim, Unbounded, `#FF3B52`. Výrazný a mladý, ale v núdzovej situácii je
-  tmavá obrazovka horšie čitateľná na slnku a červená stráca význam „pozor".
+## 6. Brandové obrázky (voliteľné)
 
-Odporúčanie: **A**. B/C sú na plátne ako referenčné body pre diskusiu, nie ako druhá implementácia.
+`src/ui/brand.jsx` overí existenciu súboru a bez neho použije záložný vzhľad:
+- `public/brand/prima-buildings.webp` — izometrická ilustrácia všetkých budov (rovnaký súbor ako
+  `login-buildings.webp` v PRIMA TOOLS / RE SERVICE) → Vitajte.
+- `public/brand/buildings/<qr>.webp` — výrezy budov (`tools/crop-buildings.mjs`) → Info, verejný režim.
+- `public/prevadzky/<qr>.jpg` — náhľady prevádzok → výber budovy vo verejnom režime.
 
-## 6. Čo sa zmenilo oproti v2 (interný vzhľad údržbárskej appky)
+Kopírovanie z PRIMA TOOLS do tohto verejného repozitára musí spraviť človek (bezpečnostná politika
+sedenia to blokuje); potom `NPM_GLOBAL_ROOT=$(npm root -g) node tools/crop-buildings.mjs`.
 
-Teplé pozadie namiesto studenej šedej, Manrope namiesto Inter/monospace, žiadne 1px rámiky,
-väčšie rádiusy (22/28), plávajúca navigácia, hero s gradientom, tónované boxy ikon namiesto
-sivých, jedna červená akcia na obrazovku, vlastné písma v builde (funguje offline a bez
-Google Fonts).
+## 7. Ikony PWA
 
-## 7. Brand (v3.1, 8. 9. 2026) — oficiálne logo a ilustrácie
-
-Appka používa tie isté brandové prvky ako PRIMA RE SERVICE, PRIMA TOOLS a web primare.sk:
-
-- **Logo** `src/ui/PrimaLogo.jsx` — cesty z oficiálneho brandového SVG (strieška v dvoch červených
-  `#EE2A24` / `#B82025`, slovná značka PRIMA, slogan YOUR SECOND HOME). Varianty `horizontal`
-  (celé logo), `mark` (strieška + PRIMA — hlavička appky), `roof` (iba strieška — vodoznak v hero,
-  ikona). Tóny `brand`, `ink` (PRIM atramentové, A červené ako na webe), `white`, `mono`.
-  Oficiálne červené sú len v logu; akcie v UI ostávajú v `BRAND.red` `#BD2435` ako v celej rodine appiek.
-- **Ikona PWA a favicon** — `tools/make-icons.mjs` rasterizuje bielu striešku na červenom gradiente
-  (`public/icon-*.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon.svg`).
-- **Ilustrácia všetkých budov** `public/brand/prima-buildings.webp` — izometrická 3D ilustrácia
-  PRIMA Nitra, Tarif, Nukleon, IC 15, IC 23 a Galanta s červenou strieškou uprostred; rovnaký súbor
-  ako `login-buildings.webp` na prihlásení PRIMA TOOLS / RE SERVICE. Ukazuje sa na obrazovke Vitajte
-  (rozloženie ako prihlásenie: logo, ilustrácia, karta s obsahom).
-- **Výrezy budov** `public/brand/buildings/<qr>.webp` — `tools/crop-buildings.mjs` ich vyreže
-  z ilustrácie (súradnice v skripte). Hlavička domova hosťa je potom svetlá karta s budovou hosťa,
-  Info o budove má výrez nad adresou, verejný režim tiež.
-- **Náhľady prevádzok** `public/prevadzky/<qr>.jpg` — malé ilustrácie z PRIMA TOOLS pre výber
-  budovy vo verejnom režime.
-
-Všetky obrázky sú **voliteľné**: `src/ui/brand.jsx` (`useBrandImage`, `BuildingArt`, `BuildingThumb`)
-najprv overí, že súbor existuje; bez neho obrazovka použije záložný vzhľad (vínový hero s vodoznakom
-striešky, ikona budovy). Do repozitára ich treba skopírovať z PRIMA TOOLS (`public/login-buildings.webp`,
-`public/prevadzky/*.jpg`) a spustiť `NPM_GLOBAL_ROOT=$(npm root -g) node tools/crop-buildings.mjs`.
+`tools/make-icons.mjs` rasterizuje bielu striešku na `#EE2A24` (ikony, apple-touch-icon, favicon).
+Farba témy prehliadača je `#EE2A24`.

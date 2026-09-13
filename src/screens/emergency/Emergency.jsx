@@ -33,12 +33,12 @@ export function Emergency() {
 
   return (
     <>
-      <div className="bleed" style={{ background: BRAND.redGradient, color: '#fff', padding: '14px 20px 24px', marginTop: -8, borderRadius: '0 0 36px 36px', boxShadow: '0 18px 40px rgba(142,26,40,0.3)' }}>
+      <div className="bleed" style={{ background: BRAND.red, color: '#fff', padding: '14px 20px 24px', marginTop: -8, borderRadius: '0 0 32px 32px', boxShadow: '0 18px 40px rgba(184,32,37,0.28)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button type="button" onClick={() => back('/')} aria-label={t('common.back')} style={{ ...iconBtn, background: 'rgba(255,255,255,0.16)', color: '#fff', boxShadow: 'none' }}><Icon name="ChevronLeft" size={22}/></button>
           <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.85 }}>{p.name}</span>
         </div>
-        <h1 style={{ margin: '22px 0 0', fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>{t('home.emergency')}</h1>
+        <h1 style={{ margin: '22px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: '0.02em', lineHeight: 1.1, textTransform: 'uppercase' }}>{t('home.emergency')}</h1>
         <div style={{ fontSize: 14, opacity: 0.88, marginTop: 8, lineHeight: 1.45 }}>{t('emg.sub')}</div>
         <a href={'tel:' + E.general} className="press" style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 16, padding: '18px 20px', borderRadius: 24, background: '#fff', color: C.text, boxShadow: '0 16px 36px rgba(23,22,26,0.2)', textDecoration: 'none' }}>
           <IconBox name="Phone" tone="danger" size={54} iconSize={26} radius={18}/>
@@ -49,9 +49,9 @@ export function Emergency() {
         </a>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 10 }}>
           {[['e155', E.ambulance], ['e150', E.fire], ['e158', E.police]].map(([k, num]) => (
-            <a key={k} href={'tel:' + num} className="press" style={{ padding: 12, borderRadius: 18, background: 'rgba(255,255,255,0.14)', textAlign: 'center', color: '#fff', textDecoration: 'none' }}>
-              <b className="num" style={{ display: 'block', fontSize: 22 }}>{num}</b>
-              <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.85 }}>{t('contacts.' + k)}</span>
+            <a key={k} href={'tel:' + num} className="press" style={{ padding: 12, borderRadius: 18, background: 'rgba(255,255,255,0.16)', textAlign: 'center', color: '#fff', textDecoration: 'none' }}>
+              <b className="num" style={{ display: 'block', fontSize: 22, fontWeight: 800 }}>{num}</b>
+              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', opacity: 0.9 }}>{t('contacts.' + k)}</span>
             </a>
           ))}
         </div>
@@ -59,8 +59,8 @@ export function Emergency() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 18 }}>
         <Card>
-          <div className="label" style={{ color: BRAND.red }}>{t('emg.read')}</div>
-          <div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.3, letterSpacing: '-0.02em', marginTop: 8 }}>{base}{place && <>, <span style={{ color: BRAND.red }}>{place}</span></>}</div>
+          <div className="label" style={{ color: BRAND.redDark }}>{t('emg.read')}</div>
+          <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.35, marginTop: 8 }}>{base}{place && <>, <span style={{ color: BRAND.red, fontWeight: 800 }}>{place}</span></>}</div>
           {stay && <div className="hint" style={{ marginTop: 8 }}>{t('emg.readHint')}</div>}
           <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
             <button type="button" style={{ ...secondaryBtn, flex: 1, minHeight: 46, fontSize: 14 }} onClick={copy}><Icon name={copied ? 'Check' : 'Copy'} size={16}/>{copied ? t('common.copied') : t('common.copy')}</button>
@@ -68,7 +68,7 @@ export function Emergency() {
           </div>
         </Card>
         <Card>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}><IconBox name="Flame" tone="warning"/><b style={{ fontSize: 16, letterSpacing: '-0.01em' }}>{t('emg.fire')}</b></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}><IconBox name="Flame" tone="warning"/><b style={{ fontSize: 14, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t('emg.fire')}</b></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {steps.map((s, i) => (
               <div key={i} className="step">

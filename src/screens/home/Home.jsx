@@ -14,8 +14,8 @@ import { permitStatus } from '../../domain/permit.js';
 import { pickText } from '../../content/index.js';
 import { BigAction, Card, IconBox, ListRow, QuickAction, SectionLabel, Tag, Tile, primaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
-import { PrimaLogo } from '../../ui/PrimaLogo.jsx';
-import { BuildingArt, buildingArt, useBrandImage } from '../../ui/brand.jsx';
+import { RoofBand } from '../../ui/PrimaLogo.jsx';
+import { BuildingArt } from '../../ui/brand.jsx';
 
 function HeroChip({ icon, children }) {
   return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 999, background: 'rgba(255,255,255,0.14)', color: '#fff', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}><Icon name={icon} size={14}/>{children}</span>;
@@ -62,41 +62,24 @@ export function Home() {
   const cleaning = nextCleaningDate();
   const today = new Date().toISOString().slice(0, 10);
   const loc = stay ? parseRoomLoc(stay.room) : null;
-  const art = useBrandImage(buildingArt(property));
 
   return (
     <>
-      {stay && art ? (
-        <div style={{ background: C.card, borderRadius: 28, overflow: 'hidden', boxShadow: shadow.md }}>
-          <div style={{ position: 'relative' }}>
-            <BuildingArt property={property} height={186}/>
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0) 55%, #FFFFFF 100%)' }}/>
-            <span style={{ position: 'absolute', left: 16, top: 14 }}><Tag tone="ink" icon="MapPin" style={{ height: 30, fontSize: 12.5 }}>{property.name}</Tag></span>
-          </div>
-          <div style={{ padding: '0 20px 20px' }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: C.textMuted }}>{t('home.hello', { name: stay.displayName })}</div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 6 }}>
-              <div className="num" style={{ fontSize: 54, fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.03em' }}>{roomLabel(stay.room)}</div>
-              <div style={{ paddingBottom: 6, fontSize: 13, color: C.textMuted, lineHeight: 1.3, fontWeight: 600 }}>{t('home.room')}{loc && loc.floor != null ? <><br/>{loc.floor}. p.</> : null}</div>
+      {stay ? (
+        <div style={{ background: C.card, borderRadius: 24, overflow: 'hidden', boxShadow: shadow.md, position: 'relative' }}>
+          <RoofBand style={{ width: '100%' }}/>
+          <div style={{ padding: '0 20px 20px', marginTop: -52, position: 'relative' }}>
+            <div className="label" style={{ color: C.textMuted }}>{t('home.hello', { name: stay.displayName })}</div>
+            <div className="num" style={{ fontSize: 64, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em', marginTop: 6, color: C.text }}>{roomLabel(stay.room)}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4, fontSize: 17, fontWeight: 800, color: C.text }}>
+              <span>{t('home.room')}</span><span style={{ color: C.textFaint, fontWeight: 400 }}>|</span><span style={{ fontWeight: 400, color: C.textMuted }}>Room</span>
+              {loc && loc.floor != null && <span style={{ marginLeft: 'auto', fontSize: 14, fontWeight: 700, color: C.textMuted }}>{loc.floor}. p.</span>}
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-              <Tag tone="muted" icon="Calendar" style={{ height: 32, fontSize: 12.5 }}>{t('home.checkOut')} {fmtDate(stay.checkOut, lang)}</Tag>
-              <Tag tone="muted" icon="Sparkles" style={{ height: 32, fontSize: 12.5 }}>{t('home.nextCleaning')} {fmtDate(cleaning.toISOString(), lang)}</Tag>
+              <Tag tone="danger" icon="MapPin" wrap>{property.name}</Tag>
+              <Tag tone="muted" icon="Calendar" wrap>{t('home.checkOut')} {fmtDate(stay.checkOut, lang)}</Tag>
+              <Tag tone="muted" icon="Sparkles" wrap>{t('home.nextCleaning')} {fmtDate(cleaning.toISOString(), lang)}</Tag>
             </div>
-          </div>
-        </div>
-      ) : stay ? (
-        <div style={{ background: BRAND.wineGradient, color: '#fff', borderRadius: 28, padding: '22px 20px 20px', position: 'relative', overflow: 'hidden', boxShadow: '0 22px 44px rgba(74,15,27,0.28)' }}>
-          <PrimaLogo variant="roof" tone="white" height={120} style={{ position: 'absolute', right: -40, bottom: -18, opacity: 0.1 }}/>
-          <div style={{ fontSize: 15, fontWeight: 500, opacity: 0.8 }}>{t('home.hello', { name: stay.displayName })}</div>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 10 }}>
-            <div className="num" style={{ fontSize: 56, fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.03em' }}>{roomLabel(stay.room)}</div>
-            <div style={{ paddingBottom: 8, fontSize: 13, opacity: 0.75, lineHeight: 1.3 }}>{t('home.room')}{loc && loc.floor != null ? <><br/>{loc.floor}. p.</> : null}</div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 18, flexWrap: 'wrap' }}>
-            <HeroChip icon="MapPin">{property.name}</HeroChip>
-            <HeroChip icon="Calendar">{t('home.checkOut')} {fmtDate(stay.checkOut, lang)}</HeroChip>
-            <HeroChip icon="Sparkles">{t('home.nextCleaning')} {fmtDate(cleaning.toISOString(), lang)}</HeroChip>
           </div>
         </div>
       ) : (
@@ -133,7 +116,7 @@ export function Home() {
 
       {stay && (booking || permit || open.length > 0) && (
         <>
-          <SectionLabel action={<span style={{ fontSize: 13, fontWeight: 800, color: BRAND.red }}>{fmtDate(new Date().toISOString(), lang)}</span>}>{t('home.today')}</SectionLabel>
+          <SectionLabel action={<span style={{ fontSize: 12, fontWeight: 700, color: BRAND.redDark }}>{fmtDate(new Date().toISOString(), lang)}</span>}>{t('home.today')}</SectionLabel>
           <Card style={{ padding: '4px 18px' }}>
             {booking && <TodayRow icon="WashingMachine" tone="info" title={t('home.laundryBooking', { slot: (booking.day === today ? '' : fmtDate(booking.day, lang) + ' ') + slotLabel(booking.start, booking.len || 2), n: booking.machine })} sub={t('laundry.fee', { price: (pack && pack.facts && pack.facts.laundry && pack.facts.laundry.price) || '2,30 €' })} right={<Tag tone="ink" style={{ height: 30, fontSize: 13 }}><span className="num">{String(booking.start).padStart(2, '0')}:00</span></Tag>} onClick={() => navigate('/laundry')} last={!permit && !open.length}/>}
             {permit && <TodayRow icon="FileCheck" tone={permit.set ? (permit.tone === 'success' ? 'success' : permit.tone) : 'info'} title={!permit.set ? t('home.permitSet') : permit.expired ? t('home.permitExpired') : t('home.permitDays', { n: permit.days })} sub={permit.set ? t('docs.permitValidUntil') + ' ' + fmtDate(permitExpiry, lang) + ' · ' + t('docs.permitReminders') + ' 90 / 60 / 30' : t('docs.permitSet')} onClick={() => navigate('/documents')} last={!open.length}/>}
@@ -148,7 +131,7 @@ export function Home() {
         <Icon name="ChevronRight" size={20} style={{ opacity: 0.6 }}/>
       </button>
 
-      <SectionLabel action={anns.length > 2 && <button type="button" onClick={() => navigate('/announcements')} style={{ background: 'none', border: 'none', color: BRAND.red, fontSize: 13, fontWeight: 800 }}>{t('common.all')}</button>}>
+      <SectionLabel action={anns.length > 2 && <button type="button" onClick={() => navigate('/announcements')} style={{ background: 'none', border: 'none', color: BRAND.redDark, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('common.all')}</button>}>
         {t('home.announcements')}
       </SectionLabel>
       {anns.length ? (

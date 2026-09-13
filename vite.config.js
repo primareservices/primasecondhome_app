@@ -31,7 +31,7 @@ export default defineConfig({
         name: 'PRIMA SECOND HOME',
         short_name: 'PRIMA Home',
         description: 'PRIMA SECOND HOME — everything about your stay in PRIMA buildings',
-        theme_color: '#BD2435',
+        theme_color: '#EE2A24',
         background_color: '#FFFFFF',
         display: 'standalone',
         orientation: 'portrait',

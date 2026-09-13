@@ -10,7 +10,8 @@ import { DEMO_STAYS, DEMO_SURNAMES } from '../../data/seed.js';
 import { Banner, Card, Field, Spinner, Tag, ghostBtn, iconBtn, inputStyle, primaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 import { LangCard } from '../../ui/LangPicker.jsx';
-import { PrimaLogo } from '../../ui/PrimaLogo.jsx';
+import { PrimaLogo, RoofBand } from '../../ui/PrimaLogo.jsx';
+import { shadow } from '../../config/app-config.js';
 import { BRAND_ART, BuildingThumb, useBrandImage } from '../../ui/brand.jsx';
 
 // Kroky: 'lang' → 'code' → ('public'). ?c=KÓD z QR na lístku predvyplní kód.
@@ -43,23 +44,22 @@ export function Welcome({ query, initialStep, hasLang }) {
   if (step === 'lang') {
     return (
       <div className="fade-in" style={{ minHeight: '100dvh' }}>
-        {art ? (
-          <div style={{ background: 'linear-gradient(180deg, #E9EDF2 0%, #F6F2EE 100%)', padding: '22px 20px 0', overflow: 'hidden' }}>
-            <div style={{ maxWidth: 640, margin: '0 auto' }}>
-              <PrimaLogo variant="horizontal" tone="brand" height={46}/>
-              <img src={BRAND_ART} alt="" style={{ display: 'block', width: '110%', maxWidth: 560, maxHeight: '36dvh', objectFit: 'contain', margin: '4px auto -6px', transform: 'translateX(-3%)' }}/>
+        <div style={{ background: C.card, padding: '24px 20px 0', overflow: 'hidden', borderRadius: '0 0 32px 32px', boxShadow: shadow.sm }}>
+          <div style={{ maxWidth: 640, margin: '0 auto' }}>
+            <PrimaLogo variant="horizontal" tone="brand" height={48}/>
+            {art ? (
+              <img src={BRAND_ART} alt="" style={{ display: 'block', width: '110%', maxWidth: 560, maxHeight: '34dvh', objectFit: 'contain', margin: '6px auto -4px', transform: 'translateX(-3%)' }}/>
+            ) : (
+              <RoofBand style={{ width: '62%', margin: '18px 0 -8px auto', opacity: 0.9 }}/>
+            )}
+            <div style={{ padding: '10px 0 22px' }}>
+              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: '0.02em', lineHeight: 1.1, textTransform: 'uppercase', color: BRAND.redDark }}>{title}</h1>
+              <div style={{ fontSize: 22, fontWeight: 500, color: C.text, marginTop: 2 }}>Welcome home.</div>
             </div>
           </div>
-        ) : (
-          <div style={{ position: 'relative', background: BRAND.wineGradient, color: '#fff', padding: '26px 24px 30px', borderRadius: '0 0 40px 40px', overflow: 'hidden', boxShadow: '0 22px 44px rgba(74,15,27,0.28)' }}>
-            <PrimaLogo variant="roof" tone="white" height={150} style={{ position: 'absolute', right: -60, top: 60, opacity: 0.1 }}/>
-            <PrimaLogo variant="horizontal" tone="white" height={44}/>
-            <h1 style={{ margin: '48px 0 0', fontSize: 34, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, maxWidth: 300 }}>{title}<br/><span style={{ fontWeight: 500, opacity: 0.85 }}>Welcome home.</span></h1>
-          </div>
-        )}
+        </div>
         <div className="page page-nonav" style={{ paddingTop: 18 }}>
-          {art && <h1 style={{ margin: '4px 0 0', fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>{title} <span style={{ fontWeight: 500, color: C.textMuted }}>Welcome home.</span></h1>}
-          <div style={{ fontSize: 14, color: C.textMuted, margin: art ? '10px 0 18px' : '0 0 16px', fontWeight: 600 }}>{t('welcome.chooseLanguage')} · Choose your language</div>
+          <div className="label" style={{ margin: '0 0 14px' }}>{t('welcome.chooseLanguage')} · Choose your language</div>
           <div className="lang-grid">
             {LANGS.map(l => <LangCard key={l.code} l={l} active={l.code === lang} onClick={() => { setLang(l.code); setStep('code'); }}/>)}
           </div>
@@ -79,7 +79,7 @@ export function Welcome({ query, initialStep, hasLang }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
             <Tag tone="danger" icon="KeyRound" style={{ marginBottom: 14 }}>{t('welcome.code')}</Tag>
-            <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>{t('welcome.codeTitle')}</h1>
+            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '0.01em', lineHeight: 1.12, textTransform: 'uppercase', color: BRAND.redDark }}>{t('welcome.codeTitle')}</h1>
             <div style={{ fontSize: 15, color: C.textMuted, marginTop: 10, lineHeight: 1.45 }}>{t('welcome.codeHint')}</div>
           </div>
           <Field label={t('welcome.code')}>
@@ -97,7 +97,7 @@ export function Welcome({ query, initialStep, hasLang }) {
       {step === 'public' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08 }}>{t('welcome.publicTitle')}</h1>
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: '0.01em', lineHeight: 1.12, textTransform: 'uppercase', color: BRAND.redDark }}>{t('welcome.publicTitle')}</h1>
             <div style={{ fontSize: 14, color: C.textMuted, marginTop: 8, lineHeight: 1.45 }}>{t('welcome.publicHint')}</div>
           </div>
           <Card className="rows" style={{ padding: '4px 18px' }}>
