@@ -71,5 +71,8 @@ knihy v TOOLS (modul Hostia).
 
 ## 3. Poradie
 
+Stav 14. 9. 2026: podpis poriadku je hotový (v0.3.0: klient + edge funkcia `sign-rules`);
+overenie totožnosti čaká na výber poskytovateľa.
+
 Kolo B (backend) → kolo C (TOOLS „Hostia“) → tento check-in (podpis + overenie) ako kolo C2:
 potrebuje backend, e-mail a modul Hostia. Podpisové plátno a PDF šablónu viem pripraviť už v kole B.

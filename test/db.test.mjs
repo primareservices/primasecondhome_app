@@ -188,3 +188,14 @@ test('guest_cleanup: 30 dní po odchode zmizne väzba, kód, správy; meno sa vy
   });
   await as(A, 'authenticated', async () => { assert.equal((await q('select id from public.guest_stays')).length, 0); });
 });
+
+test('rules: seed z tools/export-rules.mjs sa dá aplikovať a je idempotentný', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const sql = execFileSync(process.execPath, [new URL('../tools/export-rules.mjs', import.meta.url).pathname], { encoding: 'utf8' });
+  await as(null, 'service_role', async () => {
+    await db.exec(sql); await db.exec(sql);
+    const rows = await q("select property_id, version, texts->'sk'->>'intro' as intro from public.rules order by property_id nulls first");
+    assert.ok(rows.length >= 1); assert.ok(rows[0].intro); assert.equal(rows[0].property_id, null);
+  });
+  await as(A, 'authenticated', async () => { assert.ok((await q('select version from public.rules')).length >= 1); });   // verejné čítanie
+});

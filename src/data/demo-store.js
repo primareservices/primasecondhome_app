@@ -8,7 +8,7 @@ const KEY = 'primaHome:demo:v1';
 const listeners = new Set();
 let state = null;
 
-function blank() { return { session: null, publicPropertyId: null, requests: [], readAnn: [], rulesAck: {}, feedback: [], seq: 1100, notifications: true, bookings: [], permits: {} }; }
+function blank() { return { session: null, publicPropertyId: null, requests: [], readAnn: [], rulesAck: {}, feedback: [], seq: 1100, notifications: true, bookings: [], permits: {}, signatures: [], messages: [] }; }
 function load() {
   if (state) return state;
   try { const raw = localStorage.getItem(KEY); state = raw ? { ...blank(), ...JSON.parse(raw) } : blank(); }
@@ -138,6 +138,40 @@ export function submitFeedback(stayId, data) { const st = load(); st.feedback.pu
 export function getNotificationsPref() { return load().notifications !== false; }
 export function setNotificationsPref(v) { const st = load(); st.notifications = !!v; save(); }
 export function resetDemo() { state = blank(); save(); }
+
+// ── podpis poriadku (PDF vyrobené v telefóne), fotky, správy s recepciou ──
+export function listSignatures(stayId) { return load().signatures.filter(x => x.stayId === stayId).sort((a, b) => (a.signedAt < b.signedAt ? 1 : -1)); }
+export function signRules(stayId, { version, name, email, lang, pdfDataUrl, sha256 }) {
+  const st = load();
+  const sig = { id: 'sig_' + Date.now().toString(36), stayId, version, name: name || null, email: email || null, lang: lang || null, signedAt: new Date().toISOString(), pdfDataUrl: pdfDataUrl || null, sha256: sha256 || null, sync: 'synced' };
+  st.signatures = st.signatures.filter(x => !(x.stayId === stayId && x.version === version));   // nový podpis nahrádza starý pre tú istú verziu
+  st.signatures.push(sig);
+  st.rulesAck[stayId] = { version, at: sig.signedAt, signatureId: sig.id };
+  save();
+  return sig;
+}
+export async function getDocumentUrl(sig) { return sig && sig.pdfDataUrl ? sig.pdfDataUrl : null; }
+export async function getPhotoUrls(req) { return (req && req.photos) || []; }
+const DEMO_REPLY = { sk: 'Ďakujeme za správu. Recepcia sa vám ozve do 30 minút.', en: 'Thank you for your message. Reception will reply within 30 minutes.' };
+export function listMessages(stayId) { return load().messages.filter(m => m.stayId === stayId).sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1)); }
+export function sendMessage(stayId, text, lang) {
+  const st = load();
+  const body = String(text || '').trim().slice(0, 2000);
+  if (!body) return null;
+  const now = new Date().toISOString();
+  const m = { id: 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), stayId, sender: 'guest', text: body, tr: {}, lang: lang || null, createdAt: now, readAt: now, sync: 'synced' };
+  st.messages.push(m);
+  // ukážková odpoveď recepcie o pár sekúnd (v ostrej prevádzke odpovedá recepcia z TOOLS, preklad DeepL)
+  st.messages.push({ id: m.id + '_r', stayId, sender: 'reception', text: DEMO_REPLY.sk, tr: DEMO_REPLY, lang: 'sk', createdAt: new Date(Date.now() + 4000).toISOString(), readAt: null, sync: 'synced' });
+  save();
+  return m;
+}
+export function markMessagesRead(stayId) {
+  const st = load(); let changed = false; const at = new Date().toISOString();
+  for (const m of st.messages) if (m.stayId === stayId && m.sender === 'reception' && !m.readAt && m.createdAt <= at) { m.readAt = at; changed = true; }
+  if (changed) save();
+}
+export function start() {}
 
 // Outbox: v DEMO režime je „odoslanie“ = označiť žiadosť ako odoslanú (Supabase adaptér v1.1 tu
 // spraví skutočný zápis). Simulácia personálu beží až od odoslania (syncedAt), nie od uloženia.

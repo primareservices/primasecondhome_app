@@ -91,13 +91,11 @@ Nastavenie v Cloudflare (raz): Workers & Pages → Import a repository → tento
 Postup zmeny: vetva → `npm run check` (importy, preklady, testy, build) → náhľad na staging →
 zlúčenie do `main` = produkcia. Verzia sa dvíha spolu so zápisom do [CHANGELOG.md](CHANGELOG.md).
 
-## Ďalší krok (v1.1)
+## Ďalší krok (kolo C)
 
-Založiť Supabase projekt pre hostí, nasadiť `supabase/migrations/`, napísať Supabase adaptér s rovnakým
-rozhraním ako `src/data/demo-store.js`, modul „Hostia" v PRIMA TOOLS (kódy pri check-ine) a most do
-RE SERVICE — podrobne v [docs/INTEGRATION.md](docs/INTEGRATION.md).
-Čo prevziať zo sesterských appiek (TOOLS, RE SERVICE): [docs/SESTERSKE_APPKY.md](docs/SESTERSKE_APPKY.md).
-Check-in v appke (podpis poriadku, overenie totožnosti): [docs/CHECKIN_PODPIS_OVERENIE.md](docs/CHECKIN_PODPIS_OVERENIE.md).
+Nasadiť backend podľa `docs/SETUP_SUPABASE.md` (Supabase projekt, secrets, webhooky, cron), modul
+„Hostia“ v PRIMA TOOLS (pobyty a kódy z XLSX exportu, tlač lístka, odpovede na správy), overenie
+totožnosti (eKYC poskytovateľ, `docs/CHECKIN_PODPIS_OVERENIE.md`), potom store verzia (Capacitor).
 
 ## v2 — Tarif (8. 9. 2026)
 
@@ -144,6 +142,13 @@ hosťa. Obrázky sú voliteľné — pozri `docs/DESIGN_SYSTEM.md` §7: skopíru
 a `prevadzky/*.jpg` z PRIMA TOOLS do `public/brand/` a `public/prevadzky/` a spustite
 `node tools/crop-buildings.mjs`; dovtedy appka používa vínový hero a ikonu budovy.
 
+## v0.3.0 — kolo B: API a hotelový check-in (14. 9. 2026)
+
+Backend na Supabase je napísaný a otestovaný (schéma, RLS, adaptér, šesť edge funkcií vrátane mostu
+do PRIMA RE SERVICE), čaká len na nasadenie podľa [docs/SETUP_SUPABASE.md](docs/SETUP_SUPABASE.md).
+Na klientovi pribudol podpis ubytovacieho poriadku s PDF v Dokumentoch, správy s recepciou a push.
+Podrobne v [CHANGELOG.md](CHANGELOG.md).
+
 ## v0.2.0 — kolo A: čo sme prevzali zo sesterských appiek (13. 9. 2026)
 
 Diktovanie v jazyku hosťa, outbox (hlásenie sa offline uloží a odošle sa samo), QR štítok z dverí
@@ -175,4 +180,5 @@ https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02.
 | Kontakty (UK) | Profil (UK) | Domov (HI) | Verejný režim (HI) |
 |---|---|---|---|
 | ![kontakty](docs/screens/13-contacts-uk.png) | ![profil](docs/screens/14-profile-uk.png) | ![hindi](docs/screens/15-home-hi.png) | ![verejný](docs/screens/16-home-public-hi.png) |
-| ![offline: uložené](docs/screens/18-report-queued-uk.png) | ![offline: žiadosti](docs/screens/17-requests-queued-uk.png) | | |
+| ![offline: uložené](docs/screens/18-report-queued-uk.png) | ![offline: žiadosti](docs/screens/17-requests-queued-uk.png) | ![podpis poriadku](docs/screens/19-rules-sign-uk.png) | ![správy s recepciou](docs/screens/20-messages-uk.png) |
+| ![podpísané dokumenty](docs/screens/21-documents-signed-uk.png) | | | |

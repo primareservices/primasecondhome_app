@@ -4,6 +4,33 @@ Verzia je v `src/config/app-config.js` (`APP_VERSION`) a v `package.json`; obe s
 Commit začína verziou (`v0.2.0 - …`), rovnako ako v PRIMA RE SERVICE a PRIMA TOOLS. Bez zdvihnutia
 verzie sa hosťom nová verzia neponúkne.
 
+## v0.3.0 — 14. 9. 2026 · kolo B (API: Supabase + most do RE SERVICE) a hotelový check-in
+
+- **Backend pripravený na nasadenie** (`docs/SETUP_SUPABASE.md`): migrácia v1.1 (práčovňa, povolenia,
+  podpisy, overenie totožnosti, správy s recepciou, limit pokusov o kód, office funkcie, čistenie
+  a anonymizácia, privátne buckety s prístupom len k vlastnému priečinku) — overená testami nad
+  PGlite vrátane RLS izolácie hostí.
+- **Supabase adaptér** s rovnakým rozhraním ako demo: lokálna cache, synchronizácia zo servera,
+  zápisy cez outbox (fotky do privátneho bucketu, idempotentné vklady), rezervácia práčovne
+  potvrdená serverom (konflikt = obsadené), anonymné prihlásenie bez SDK. Appka prepne z DEMO
+  na ostrý režim nastavením `VITE_SUPABASE_URL` a `VITE_SUPABASE_ANON_KEY`.
+- **Edge funkcie**: `guest-request-bridge` (hlásenie → ticket a notifikácia v RE SERVICE, DeepL
+  SK/EN, odkazy na fotky), `sync-ticket-status` (stav ticketu → stav žiadosti + push hosťovi),
+  `send-push` (oznamy hosťom budovy v ich jazyku), `sign-rules` (PDF podpísaného poriadku cez
+  Cloudflare Browser Rendering, e-mail cez Resend), `guest-cleanup`, `translate`. Web Push bez
+  knižníc (VAPID + aes128gcm vo WebCrypto, overené proti RFC 8291).
+- **Check-in v appke**: po prečítaní poriadku hosť podpíše prstom; PDF (jazyk hosťa + slovensky,
+  podpis, auditný blok) vznikne hneď v telefóne a je v Dokumentoch → „Podpísané dokumenty“
+  (otvoriť, zdieľať). Server doplní textové PDF a pošle kópiu e-mailom.
+- **Správy s recepciou**: vlákno v jazyku hosťa (Kontakty → Napísať recepcii), diktovanie,
+  odpovede recepcie s prekladom; v deme ukážková odpoveď.
+- **Push na klientovi**: prepínač v profile žiada povolenie a ukladá predplatné; `sw-push.js`
+  zobrazí notifikáciu a klik otvorí správnu obrazovku.
+- Nástroje: `tools/export-rules.mjs` (poriadok do tabuľky `rules`, `supabase/seed/rules.sql`),
+  `.env.example`, návrh presmerovania QR pre RE SERVICE (`integrations/re-service/`).
+- 57 + 12 testov (`npm run check`): DB nad PGlite, adaptér nad falošným PostgREST, handlery
+  edge funkcií, parita ticket-bridge, web-push.
+
 ## v0.2.0 — 13. 9. 2026 · kolo A (klient, bez backendu)
 
 - Diktovanie do textu hlásenia, súkromného hlásenia a poznámky k službe (Web Speech API v jazyku

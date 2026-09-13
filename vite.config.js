@@ -46,6 +46,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        importScripts: ['sw-push.js'],   // push + klik na notifikáciu (public/sw-push.js)
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,

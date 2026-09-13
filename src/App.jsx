@@ -35,6 +35,7 @@ import { Laundry } from './screens/laundry/Laundry.jsx';
 import { Around } from './screens/around/Around.jsx';
 import { Emergency } from './screens/emergency/Emergency.jsx';
 import { PrivateReport } from './screens/report/PrivateReport.jsx';
+import { Messages } from './screens/messages/Messages.jsx';
 
 // Obrazovky, ktoré vyžadujú prihláseného hosťa; v informačnom režime dostanú výzvu na kód.
 function NeedCode({ t }) {
@@ -65,6 +66,7 @@ function screenFor(route, stay, t) {
     case 'around': return <Around/>;
     case 'emergency': return <Emergency/>;
     case 'private': return guard(<PrivateReport/>);
+    case 'messages': return guard(<Messages/>);
     default: return <Home/>;
   }
 }

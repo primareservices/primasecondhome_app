@@ -95,6 +95,8 @@ RE SERVICE), `tools/verify-imports.mjs`, `_headers` (zatiaľ bez HSTS a CSP).
   verzia + STAGING v pätičke profilu, HSTS + CSP hlavičky, zachytenie `?qr=` pred Reactom,
   normalizácia a popis kódu izby podľa `room-codes`. `lazySafe` nebolo treba — appka nemá lazy
   chunky a PWA `autoUpdate` rieši zastarané súbory.
-- **B — backend v1.1:** Supabase projekt hostí + adaptér, edge funkcia `guest-report` v RE SERVICE,
-  čítanie `clean_plan`, DeepL, push.
+- **B — hotové vo v0.3.0 (14. 9. 2026), čaká na nasadenie:** schéma + adaptér, edge funkcie
+  (most do RE SERVICE so service role namiesto funkcie v RE SERVICE, sync stavov, push, DeepL,
+  podpis poriadku), správy s recepciou. Čítanie `clean_plan` (najbližšie upratovanie) ostáva na
+  kolo C spolu s modulom Hostia.
 - **C — TOOLS:** modul „Hostia“ (kódy z XLSX exportu, tlač lístka), koordinátori firiem do appky.

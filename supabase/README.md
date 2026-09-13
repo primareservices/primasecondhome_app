@@ -3,10 +3,22 @@
 Samostatný projekt pre hostí (NIE ten istý ako PRIMA RE SERVICE ani PRIMA TOOLS — anonymná
 autentifikácia hostí nesmie zdieľať databázu so zamestnaneckými dátami).
 
-- `migrations/` — jediný zdroj zmien schémy (`npx supabase db push`), časová pečiatka v UTC,
-  migrácie idempotentné — rovnaká konvencia ako v `prima-udrzba`.
-- `functions/guest-request-bridge/` — edge funkcia: hlásenie hosťa → ticket v PRIMA RE SERVICE.
-  Secrets: `RE_SERVICE_URL`, `RE_SERVICE_SERVICE_KEY` (service_role RE SERVICE projektu, nikdy v klientovi).
+```
+migrations/     jediný zdroj zmien schémy (`supabase db push`), UTC pečiatka, idempotentné
+  20260906120000_guest_schema.sql   základ: prevádzky, pobyty, kódy, väzby, žiadosti, oznamy, RLS
+  20260914090000_guest_v1_1.sql     v1.1: práčovňa, povolenia, podpisy, identita, správy, limity, office, čistenie, storage
+functions/      edge funkcie (Deno, bez externých balíkov) — `supabase functions deploy`
+  _shared/      env, http (webhook secret), supa (service REST), deepl, ticket-bridge, push-texts, guest-push, webpush
+  guest-request-bridge   INSERT guest_requests → ticket + notifikácia v RE SERVICE
+  sync-ticket-status     cron: stav ticketu → stav žiadosti + push
+  send-push              INSERT guest_announcements → push hosťom budovy; interné cielené push
+  sign-rules             INSERT guest_signatures → PDF (Cloudflare Browser Rendering) → guest-docs → e-mail
+  guest-cleanup          cron: anonymizácia + zmazanie súborov
+  translate              DeepL pre appku
+seed/rules.sql  ubytovací poriadok (generuje tools/export-rules.mjs)
+config.toml     verify_jwt podľa funkcie
+```
 
-Stav: **návrh (v1.1)** — schéma je pripravená, ešte nebola nasadená na žiadny projekt.
-Postup napojenia appky je v `docs/INTEGRATION.md`.
+Testy bez siete: `test/db.test.mjs` (PGlite: migrácie, RLS, RPC), `test/edge-functions.test.mjs`,
+`test/webpush.test.mjs`, `test/ticket-bridge-parity.test.mjs`. Nasadenie krok za krokom:
+[docs/SETUP_SUPABASE.md](../docs/SETUP_SUPABASE.md).

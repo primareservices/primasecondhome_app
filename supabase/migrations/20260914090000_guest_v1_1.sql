@@ -284,3 +284,6 @@ create policy guest_files_select on storage.objects for select to authenticated
 drop policy if exists guest_files_insert on storage.objects;
 create policy guest_files_insert on storage.objects for insert to authenticated
   with check (bucket_id in ('guest-photos', 'guest-docs') and public.guest_owns_stay_text((storage.foldername(name))[1]));
+
+-- ── 11) pravidlá: jedna verzia na sieť/budovu (upsert z tools/export-rules.mjs) ──
+create unique index if not exists rules_scope_version_uq on public.rules ((coalesce(property_id, '')), version);

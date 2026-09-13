@@ -3,8 +3,8 @@ import { NETWORK, shadow } from '../../config/app-config.js';
 import { telHref, telegramHref, viberHref, whatsappHref } from '../../config/properties.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
-import { back } from '../../router.js';
-import { Banner, Card, IconBox, PageHeader, SectionLabel, secondaryBtn } from '../../ui/primitives.jsx';
+import { back, navigate } from '../../router.js';
+import { Banner, Card, IconBox, ListRow, PageHeader, SectionLabel, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
 function LinkBtn({ href, icon, children, primary }) {
@@ -33,6 +33,7 @@ export function Contacts() {
   return (
     <>
       <PageHeader title={t('contacts.title')} sub={p.name} onBack={() => back('/')}/>
+      {stay && <Card className="rows" style={{ marginBottom: 12 }}><ListRow icon="MessagesSquare" title={t('contacts.write')} sub={t('msg.intro')} onClick={() => navigate('/messages')}/></Card>}
       <ContactCard icon="Headset" title={t('contacts.reception') + ' · ' + p.name} sub={p.reception.hours247 ? t('info.reception247') : ''} note={t('contacts.langNote')}>
         <LinkBtn href={telHref(p.reception.phone)} icon="Phone" primary>{t('common.call')}</LinkBtn>
         <LinkBtn href={'mailto:' + p.reception.email} icon="Mail">{t('common.email')}</LinkBtn>

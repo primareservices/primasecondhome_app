@@ -1,6 +1,6 @@
 export const APP_NAME = 'PRIMA SECOND HOME';
 export const APP_SHORT = 'PRIMA Home';
-export const APP_VERSION = 'v0.2.0';
+export const APP_VERSION = 'v0.3.0';
 // (import.meta.env && …) — v node testoch import.meta.env neexistuje; Vite výraz aj tak nahradí.
 export const APP_ENV = (import.meta.env && import.meta.env.VITE_APP_ENV) || 'production';
 export const IS_STAGING = APP_ENV === 'staging';
@@ -8,6 +8,7 @@ export const IS_STAGING = APP_ENV === 'staging';
 export const SUPABASE_URL = (import.meta.env && import.meta.env.VITE_SUPABASE_URL) || '';
 export const SUPABASE_ANON_KEY = (import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || '';
 export const DEMO_MODE = !SUPABASE_URL;
+export const VAPID_PUBLIC_KEY = (import.meta.env && import.meta.env.VITE_VAPID_PUBLIC_KEY) || '';
 
 // Poppins je písmo značky (Design Manual 2026): ExtraBold verzálky na nadpisy, Regular na text.
 // Poppins nemá cyriliku ani vietnamčinu — tie preberá Montserrat (sekundárne písmo manuálu);

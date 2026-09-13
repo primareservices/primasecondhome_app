@@ -370,4 +370,16 @@ registerHandler('supa:insertSignature', async ({ id }) => {
   delete load().photosLocal['sig:' + id]; save();
 });
 
+// ── push predplatné ──────────────────────────────────────────────────────────
+export function savePushSubscription(sub) { if (!sub || !sub.endpoint) return; enqueue('supa:pushSave', { endpoint: sub.endpoint, keys: sub.keys || {} }); if (isOnline()) flush().catch(() => {}); }
+export function removePushSubscription(endpoint) { if (!endpoint) return; enqueue('supa:pushRemove', { endpoint }); if (isOnline()) flush().catch(() => {}); }
+registerHandler('supa:pushSave', async ({ endpoint, keys }) => {
+  const uid = getUid(); if (!uid) throw new Error('no_uid');
+  await rest('guest_push_subscriptions?on_conflict=uid,endpoint', { method: 'POST', body: { uid, endpoint, keys }, prefer: 'resolution=merge-duplicates,return=minimal' });
+});
+registerHandler('supa:pushRemove', async ({ endpoint }) => {
+  const uid = getUid(); if (!uid) return;
+  await rest('guest_push_subscriptions?uid=eq.' + uid + '&endpoint=eq.' + encodeURIComponent(endpoint), { method: 'DELETE', prefer: 'return=minimal' });
+});
+
 export function _resetStoreForTests() { state = blank(); lastSync = 0; syncing = null; }

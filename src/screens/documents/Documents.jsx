@@ -4,12 +4,13 @@ import { NETWORK, shadow } from '../../config/app-config.js';
 import { DOC_PICKUPS, DOC_PURPOSES } from '../../config/catalog.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
-import { createRequest, getPermitExpiry, listRequests, setPermitExpiry, subscribe } from '../../data/adapter.js';
+import { createRequest, getDocumentUrl, getPermitExpiry, listRequests, listSignatures, setPermitExpiry, subscribe } from '../../data/adapter.js';
+import { dataUrlToBlob } from '../../lib/pdf.js';
 import { back, navigate } from '../../router.js';
-import { fmtDate, fmtDay, todayISO } from '../../lib/format.js';
+import { fmtDate, fmtDateTime, fmtDay, todayISO } from '../../lib/format.js';
 import { compressImage } from '../../lib/photo.js';
 import { permitStatus } from '../../domain/permit.js';
-import { Banner, Card, Field, IconBox, PageHeader, SectionLabel, Segmented, Sheet, StatusBadge, Tag, inkBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
+import { Banner, Card, Field, IconBox, ListRow, PageHeader, SectionLabel, Segmented, Sheet, StatusBadge, Tag, inkBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 import { PrimaLogo } from '../../ui/PrimaLogo.jsx';
 
@@ -82,6 +83,37 @@ function PermitHero({ stay, t, lang }) {
 
 // Fotky dokladov ostávajú len v telefóne (localStorage) — PRIMA ich nevidí.
 const WALLET = [['passport', 'docs.wallet.passport'], ['permit', 'docs.wallet.permit'], ['insurance', 'docs.wallet.insurance']];
+
+// Podpísané dokumenty (ubytovací poriadok): PDF z telefónu hneď, zo servera po synchronizácii.
+function SignedDocs({ stay, t, lang }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => subscribe(() => setTick(x => x + 1)), []);
+  const sigs = useMemo(() => listSignatures(stay.id), [stay, tick]);
+  const open = async (sig) => {
+    const url = await getDocumentUrl(sig); if (!url) return;
+    if (url.startsWith('data:')) { const u = URL.createObjectURL(dataUrlToBlob(url)); window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); }
+    else window.open(url, '_blank');
+  };
+  const share = async (sig) => {
+    const url = await getDocumentUrl(sig); if (!url) return;
+    try {
+      if (navigator.share && url.startsWith('data:')) {
+        const file = new File([dataUrlToBlob(url)], 'PRIMA-ubytovaci-poriadok.pdf', { type: 'application/pdf' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: t('docs.signedRules') }); return; }
+      }
+      if (navigator.share) await navigator.share({ url, title: t('docs.signedRules') }); else await open(sig);
+    } catch { /* zrušené používateľom */ }
+  };
+  const btn = { ...secondaryBtn, minHeight: 40, padding: '0 12px', fontSize: 13, width: 'auto' };
+  if (!sigs.length) return <Card><div style={{ fontSize: 14, color: C.textMuted }}>{t('docs.signedEmpty')}</div></Card>;
+  return (
+    <Card className="rows">
+      {sigs.map(s => <ListRow key={s.id} icon="FileSignature" title={t('docs.signedRules')} sub={t('docs.signedAt', { date: fmtDateTime(s.signedAt, lang) }) + ' · ' + t('rules.updated', { date: s.version }) + (s.emailSentAt ? ' · ' + t('docs.emailSent') : '')}
+        right={<div style={{ display: 'flex', gap: 6 }}><button type="button" style={btn} onClick={() => open(s)}>{t('docs.open')}</button>{typeof navigator !== 'undefined' && navigator.share ? <button type="button" aria-label={t('docs.share')} style={{ ...btn, padding: '0 10px' }} onClick={() => share(s)}><Icon name="Share2" size={15}/></button> : null}</div>}/>)}
+    </Card>
+  );
+}
+
 function Wallet({ stayId, t }) {
   const key = 'psh_wallet_' + stayId;
   const [docs, setDocs] = useState(() => { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; } });
@@ -195,6 +227,9 @@ export function Documents() {
 
       <SectionLabel action={<span style={{ fontSize: 13, fontWeight: 600, color: C.textFaint }}>{t('docs.walletLocal')}</span>}>{t('docs.wallet')}</SectionLabel>
       <Wallet stayId={stay.id} t={t}/>
+
+      <SectionLabel>{t('docs.signed')}</SectionLabel>
+      <SignedDocs stay={stay} t={t} lang={lang}/>
       <div className="hint" style={{ margin: '12px 2px 0' }}>{t('docs.walletHint')}</div>
     </>
   );

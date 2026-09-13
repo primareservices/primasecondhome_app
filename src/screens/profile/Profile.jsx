@@ -4,6 +4,7 @@ import { APP_VERSION, DEMO_MODE, IS_STAGING } from '../../config/app-config.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
 import { getNotificationsPref, setNotificationsPref, signOut } from '../../data/adapter.js';
+import { disablePush, enablePush, isPushSupported, pushPermission } from '../../data/push.js';
 import { navigate } from '../../router.js';
 import { fmtDate } from '../../lib/format.js';
 import { roomLabel } from '../../domain/room-codes.js';
@@ -15,6 +16,7 @@ export function Profile() {
   const { t, lang, setLang } = useT();
   const { stay, property } = useApp();
   const [notif, setNotif] = useState(() => getNotificationsPref());
+  const [pushState, setPushState] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const standalone = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
   return (
@@ -40,7 +42,9 @@ export function Profile() {
       <LangPicker value={lang} onChange={setLang} compact/>
 
       <SectionLabel>{t('profile.notifications')}</SectionLabel>
-      <Card style={{ padding: '4px 16px' }}><Toggle checked={notif} onChange={v => { setNotif(v); setNotificationsPref(v); }} label={t('profile.notifications')} sub={t('profile.notificationsSub')}/></Card>
+      <Card style={{ padding: '4px 16px' }}><Toggle checked={notif} onChange={async v => { setNotif(v); setNotificationsPref(v); if (v) { const r = await enablePush(); setPushState(r); } else { disablePush(); setPushState(null); } }} label={t('profile.notifications')} sub={t('profile.notificationsSub')}/></Card>
+      {(pushState === 'denied' || (notif && pushPermission() === 'denied')) && <Banner tone="warning" icon="AlertTriangle" style={{ marginTop: 10 }}>{t('profile.pushDenied')}</Banner>}
+      {notif && !isPushSupported() && <Banner tone="info" icon="Smartphone" style={{ marginTop: 10 }}>{t('profile.pushUnsupported')}</Banner>}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
         <ListRow icon="ShieldCheck" title={t('profile.rulesAgain')} onClick={() => navigate('/info/rules')}/>

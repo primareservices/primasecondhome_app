@@ -41,5 +41,7 @@ export const markMessagesRead = impl.markMessagesRead || noop;
 export const listSignatures = impl.listSignatures || empty;
 export const signRules = impl.signRules || (() => null);
 export const getDocumentUrl = impl.getDocumentUrl || (async (s) => (s && s.pdfDataUrl) || null);
+export const savePushSubscription = impl.savePushSubscription || noop;
+export const removePushSubscription = impl.removePushSubscription || noop;
 export const startStore = impl.start || noop;
 export const STORE_KIND = DEMO_MODE ? 'demo' : 'supabase';

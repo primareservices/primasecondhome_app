@@ -1,7 +1,10 @@
 # Integration with PRIMA systems
 
 How PRIMA SECOND HOME (guest app) connects to Casist, PRIMA RE SERVICE and PRIMA TOOLS.
-This is the v1.1 plan; the v1 demo in this repository runs on the `demo` data adapter.
+Status 14 Sep 2026 (v0.3.0): the guest side of v1.1 is implemented — migrations in
+`supabase/migrations/`, the Supabase adapter (`src/data/supabase-store.js`) and six edge functions
+(`supabase/functions/`). Deployment steps: `SETUP_SUPABASE.md`. Until the project is created the app
+runs on the `demo` adapter.
 
 ---
 
