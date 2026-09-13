@@ -428,4 +428,7 @@ export default {
   'offline.needOnline': 'Bước này cần kết nối internet.',
   'profile.pushDenied': 'Thông báo đang bị chặn trong trình duyệt. Hãy cho phép trong cài đặt trang.',
   'profile.pushUnsupported': 'Trình duyệt này không hỗ trợ thông báo. Trên iPhone hãy thêm ứng dụng vào màn hình chính (Chia sẻ → Thêm vào MH chính).',
+  'profile.forget': 'Xóa dữ liệu của tôi khỏi ứng dụng',
+  'profile.forgetConfirm': 'Xóa dữ liệu khỏi điện thoại này và máy chủ?',
+  'profile.forgetSub': 'Chúng tôi sẽ xóa tin nhắn, thông báo, cài đặt và liên kết với điện thoại này. Yêu cầu và tài liệu đã ký vẫn lưu trong hồ sơ của nơi lưu trú và được ẩn danh sau 30 ngày kể từ khi trả phòng.',
 };

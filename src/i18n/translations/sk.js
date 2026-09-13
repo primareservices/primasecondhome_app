@@ -446,4 +446,7 @@ export default {
   'offline.needOnline': 'Na tento krok treba pripojenie na internet.',
   'profile.pushDenied': 'Notifikácie sú v prehliadači zablokované. Povoľte ich v nastaveniach stránky.',
   'profile.pushUnsupported': 'Tento prehliadač notifikácie nepodporuje. Na iPhone pridajte appku na plochu (Zdieľať → Pridať na plochu).',
+  'profile.forget': 'Vymazať moje údaje z appky',
+  'profile.forgetConfirm': 'Vymazať údaje z tohto telefónu a servera?',
+  'profile.forgetSub': 'Odstránime správy, notifikácie, nastavenia a prepojenie tohto telefónu. Hlásenia a podpísané dokumenty ostávajú v evidencii ubytovateľa a anonymizujú sa 30 dní po odchode.',
 };

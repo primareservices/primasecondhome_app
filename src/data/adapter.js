@@ -43,5 +43,6 @@ export const signRules = impl.signRules || (() => null);
 export const getDocumentUrl = impl.getDocumentUrl || (async (s) => (s && s.pdfDataUrl) || null);
 export const savePushSubscription = impl.savePushSubscription || noop;
 export const removePushSubscription = impl.removePushSubscription || noop;
+export const forgetMe = impl.forgetMe || (async () => impl.signOut());
 export const startStore = impl.start || noop;
 export const STORE_KIND = DEMO_MODE ? 'demo' : 'supabase';

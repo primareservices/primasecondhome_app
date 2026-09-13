@@ -428,4 +428,7 @@ export default {
   'offline.needOnline': 'Acest pas necesită conexiune la internet.',
   'profile.pushDenied': 'Notificările sunt blocate în browser. Permiteți-le în setările site-ului.',
   'profile.pushUnsupported': 'Acest browser nu acceptă notificări. Pe iPhone adăugați aplicația pe ecranul principal (Partajare → Adaugă pe ecranul principal).',
+  'profile.forget': 'Șterge datele mele din aplicație',
+  'profile.forgetConfirm': 'Ștergeți datele de pe acest telefon și de pe server?',
+  'profile.forgetSub': 'Vom elimina mesajele, notificările, setările și legătura cu acest telefon. Solicitările și documentele semnate rămân în evidența cazării și sunt anonimizate la 30 de zile după plecare.',
 };

@@ -428,4 +428,7 @@ export default {
   'offline.needOnline': 'Ehhez a lépéshez internetkapcsolat szükséges.',
   'profile.pushDenied': 'Az értesítések le vannak tiltva a böngészőben. Engedélyezze őket az oldal beállításaiban.',
   'profile.pushUnsupported': 'Ez a böngésző nem támogatja az értesítéseket. iPhone-on adja hozzá az alkalmazást a kezdőképernyőhöz (Megosztás → Főképernyőhöz adás).',
+  'profile.forget': 'Adataim törlése az alkalmazásból',
+  'profile.forgetConfirm': 'Törli az adatokat erről a telefonról és a szerverről?',
+  'profile.forgetSub': 'Töröljük az üzeneteket, értesítéseket, beállításokat és a telefon összekapcsolását. A kérelmek és aláírt dokumentumok a szállásadó nyilvántartásában maradnak, és a kijelentkezés után 30 nappal anonimizáljuk őket.',
 };

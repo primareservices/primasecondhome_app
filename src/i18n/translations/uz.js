@@ -428,4 +428,7 @@ export default {
   'offline.needOnline': 'Bu qadam uchun internet aloqasi kerak.',
   'profile.pushDenied': 'Bildirishnomalar brauzerda bloklangan. Sayt sozlamalarida ruxsat bering.',
   'profile.pushUnsupported': 'Bu brauzer bildirishnomalarni qo‘llab-quvvatlamaydi. iPhone’da ilovani asosiy ekranga qo‘shing (Ulashish → Asosiy ekranga qo‘shish).',
+  'profile.forget': 'Ma’lumotlarimni ilovadan o‘chirish',
+  'profile.forgetConfirm': 'Bu telefon va serverdagi ma’lumotlar o‘chirilsinmi?',
+  'profile.forgetSub': 'Xabarlar, bildirishnomalar, sozlamalar va bu telefon bilan bog‘lanish o‘chiriladi. So‘rovlar va imzolangan hujjatlar yotoqxona hisobida qoladi va chiqishdan 30 kun o‘tgach anonimlashtiriladi.',
 };

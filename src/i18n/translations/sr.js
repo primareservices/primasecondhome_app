@@ -428,4 +428,7 @@ export default {
   'offline.needOnline': 'Za ovaj korak je potrebna internet veza.',
   'profile.pushDenied': 'Obaveštenja su blokirana u pregledaču. Dozvolite ih u podešavanjima sajta.',
   'profile.pushUnsupported': 'Ovaj pregledač ne podržava obaveštenja. Na iPhone-u dodajte aplikaciju na početni ekran (Deli → Dodaj na početni ekran).',
+  'profile.forget': 'Obriši moje podatke iz aplikacije',
+  'profile.forgetConfirm': 'Obrisati podatke sa ovog telefona i servera?',
+  'profile.forgetSub': 'Uklonićemo poruke, obaveštenja, podešavanja i vezu sa ovim telefonom. Zahtevi i potpisana dokumenta ostaju u evidenciji smeštaja i anonimizuju se 30 dana nakon odjave.',
 };

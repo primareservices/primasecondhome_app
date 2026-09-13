@@ -199,3 +199,48 @@ test('rules: seed z tools/export-rules.mjs sa dá aplikovať a je idempotentný'
   });
   await as(A, 'authenticated', async () => { assert.ok((await q('select version from public.rules')).length >= 1); });   // verejné čítanie
 });
+
+const O = '44444444-4444-4444-8444-444444444444', ADM = '55555555-5555-4555-8555-555555555555';
+test('office: recepcia vidí len svoje budovy, mení stav, píše ako recepcia, zakladá pobyt s kódom; admin všetko', async () => {
+  let stayT;
+  await as(null, 'service_role', async () => {
+    await q("insert into public.office_users (uid, email, name, role, property_ids) values ($1, 'recepcia@primare.sk', 'Recepcia IC23', 'reception', '{p_ic23}'), ($2, 'admin@primare.sk', 'Admin', 'admin', '{}')", [O, ADM]);
+    stayT = (await q("insert into public.guest_stays (property_id, room, surname_prefix, check_in) values ('p_tarif', 'B214', 'iva', current_date) returning id"))[0].id;
+  });
+  await as(O, 'authenticated', async () => {
+    const stays = await q('select id, property_id from public.guest_stays');
+    assert.ok(stays.length >= 1); assert.ok(stays.every(s => s.property_id === 'p_ic23'));
+    assert.equal((await q('select id from public.guest_requests')).length >= 1, true);
+    await q("update public.guest_requests set status = 'assigned' where stay_id = $1 and kind = 'private'", [stayB]);   // office smie
+    await q("insert into public.guest_messages (stay_id, sender, text) values ($1, 'reception', 'Dobrý deň, riešime.')", [stayB]);
+    await fails(() => q("insert into public.guest_messages (stay_id, sender, text) values ($1, 'guest', 'x')", [stayB]), /row-level security/);
+    const r = (await q("select public.office_create_stay('p_ic23', '115/1', 'Novotný', 'Pavol N.', 'Firma s.r.o.', current_date, current_date + 60, 'sk', null, '{\"name\":\"Peter\"}', 'IC23-7788', 14) as r"))[0].r;
+    assert.match(String(r.code), /^IC237788$/); assert.ok(r.id);
+    await fails(() => q("select public.office_create_stay('p_tarif', 'B001', 'X', null, null, current_date, null, 'sk', null, null, 'TARIF-0001', 14)"), /forbidden/);
+    await fails(() => q("select public.office_issue_code($1, 'TARIF-9999', 14)", [stayT]), /forbidden/);
+    await q("insert into public.guest_announcements (property_id, severity, texts) values ('p_ic23', 'info', '{\"sk\":{\"title\":\"Test\",\"body\":\"x\"}}')");
+    await fails(() => q("insert into public.guest_announcements (property_id, severity, texts) values ('p_tarif', 'info', '{}')"), /row-level security/);
+  });
+  await as(ADM, 'authenticated', async () => {
+    assert.ok((await q('select id from public.guest_stays')).some(s => s.id === stayT));
+    await q("insert into public.guest_announcements (property_id, severity, texts) values (null, 'urgent', '{\"sk\":{\"title\":\"Sieť\",\"body\":\"x\"}}')");
+  });
+  await as(B, 'authenticated', async () => {   // hosť B vidí správu recepcie, office riadky nie
+    assert.ok((await q("select sender from public.guest_messages where sender = 'reception'")).length >= 1);
+    assert.equal((await q('select * from public.office_users')).length, 0);
+  });
+});
+
+test('guest_forget_me: zmaže správy, notifikácie, nastavenia a väzbu; hlásenia ostávajú', async () => {
+  await as(B, 'authenticated', async () => {
+    await q("insert into public.guest_prefs (uid, notifications) values (auth.uid(), true) on conflict (uid) do nothing");
+    await q("insert into public.guest_requests (stay_id, kind, category, text) values ($1, 'issue', 'wifi', 'nejde wifi')", [stayB]);
+    assert.equal(typeof (await q('select public.guest_forget_me() as n'))[0].n, 'number');
+    assert.equal((await q('select id from public.guest_stays')).length, 0);   // väzba preč
+  });
+  await as(null, 'service_role', async () => {
+    assert.equal((await q('select * from public.guest_links where uid = $1', [B])).length, 0);
+    assert.equal((await q('select * from public.guest_messages where stay_id = $1', [stayB])).length, 0);
+    assert.ok((await q('select * from public.guest_requests where stay_id = $1', [stayB])).length >= 1);
+  });
+});

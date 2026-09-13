@@ -428,4 +428,7 @@ export default {
   'offline.needOnline': 'Kailangan ng koneksyon sa internet para sa hakbang na ito.',
   'profile.pushDenied': 'Naka-block ang mga notification sa browser. Payagan ito sa settings ng site.',
   'profile.pushUnsupported': 'Hindi sinusuportahan ng browser na ito ang mga notification. Sa iPhone, idagdag ang app sa home screen (Share → Add to Home Screen).',
+  'profile.forget': 'Burahin ang data ko sa app',
+  'profile.forgetConfirm': 'Burahin ang data sa teleponong ito at sa server?',
+  'profile.forgetSub': 'Aalisin namin ang mga mensahe, notification, setting at ang koneksyon ng teleponong ito. Ang mga kahilingan at pirmadong dokumento ay mananatili sa talaan ng tirahan at gagawing anonymous 30 araw pagkatapos ng check-out.',
 };

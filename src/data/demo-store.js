@@ -172,6 +172,7 @@ export function markMessagesRead(stayId) {
   if (changed) save();
 }
 export function start() {}
+export async function forgetMe() { const st = load(); const sid = st.session && st.session.stayId; if (sid) { st.messages = st.messages.filter(m => m.stayId !== sid); st.signatures = st.signatures.filter(x => x.stayId !== sid); delete st.rulesAck[sid]; } st.session = null; st.notifications = true; save(); }
 
 // Outbox: v DEMO režime je „odoslanie“ = označiť žiadosť ako odoslanú (Supabase adaptér v1.1 tu
 // spraví skutočný zápis). Simulácia personálu beží až od odoslania (syncedAt), nie od uloženia.

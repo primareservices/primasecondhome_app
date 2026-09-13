@@ -26,6 +26,15 @@ verzie sa hosťom nová verzia neponúkne.
   odpovede recepcie s prekladom; v deme ukážková odpoveď.
 - **Push na klientovi**: prepínač v profile žiada povolenie a ukladá predplatné; `sw-push.js`
   zobrazí notifikáciu a klik otvorí správnu obrazovku.
+- **Office prístup** (migrácia v1.2): tabuľka `office_users` (recepcia/manažér/admin, budovy),
+  politiky pre personál na pobyty, žiadosti, správy, oznamy, pravidlá; `office_create_stay` založí
+  pobyt aj kód jedným volaním — základ pre modul „Hostia“ v TOOLS.
+- **Upratovanie z RE SERVICE**: `sync-cleaning` (cron) plní `next_cleaning`, `last_cleaning`,
+  `room_state` na pobyte; Domov ukazuje skutočný termín namiesto odhadu.
+- **Správy**: webhook prekladá odpoveď recepcie do jazyka hosťa a pošle push; text hosťa sa
+  prekladá do SK/EN pre recepciu.
+- **Vymazať moje údaje** v profile (`guest_forget_me`): správy, notifikácie, nastavenia a väzba
+  telefónu preč; hlásenia a podpísané dokumenty ostávajú do anonymizácie po odchode.
 - Nástroje: `tools/export-rules.mjs` (poriadok do tabuľky `rules`, `supabase/seed/rules.sql`),
   `.env.example`, návrh presmerovania QR pre RE SERVICE (`integrations/re-service/`).
 - 57 + 12 testov (`npm run check`): DB nad PGlite, adaptér nad falošným PostgREST, handlery

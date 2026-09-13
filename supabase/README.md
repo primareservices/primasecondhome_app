@@ -6,12 +6,14 @@ autentifikácia hostí nesmie zdieľať databázu so zamestnaneckými dátami).
 ```
 migrations/     jediný zdroj zmien schémy (`supabase db push`), UTC pečiatka, idempotentné
   20260906120000_guest_schema.sql   základ: prevádzky, pobyty, kódy, väzby, žiadosti, oznamy, RLS
-  20260914090000_guest_v1_1.sql     v1.1: práčovňa, povolenia, podpisy, identita, správy, limity, office, čistenie, storage
+  20260914090000_guest_v1_1.sql     v1.1: práčovňa, povolenia, podpisy, identita, správy, limity, office kódy, čistenie, storage
+  20260914120000_office_cleaning_forget.sql  v1.2: office používatelia a politiky, upratovanie z RE SERVICE, guest_forget_me
 functions/      edge funkcie (Deno, bez externých balíkov) — `supabase functions deploy`
   _shared/      env, http (webhook secret), supa (service REST), deepl, ticket-bridge, push-texts, guest-push, webpush
   guest-request-bridge   INSERT guest_requests → ticket + notifikácia v RE SERVICE
   sync-ticket-status     cron: stav ticketu → stav žiadosti + push
-  send-push              INSERT guest_announcements → push hosťom budovy; interné cielené push
+  sync-cleaning          cron: plán upratovania RE SERVICE → next/last cleaning, stav izby
+  send-push              INSERT guest_announcements → push hosťom budovy; INSERT guest_messages → preklad + push; cielené push
   sign-rules             INSERT guest_signatures → PDF (Cloudflare Browser Rendering) → guest-docs → e-mail
   guest-cleanup          cron: anonymizácia + zmazanie súborov
   translate              DeepL pre appku

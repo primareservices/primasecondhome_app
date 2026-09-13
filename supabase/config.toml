@@ -12,3 +12,5 @@ verify_jwt = false
 verify_jwt = false
 [functions.translate]
 verify_jwt = true
+[functions.sync-cleaning]
+verify_jwt = false

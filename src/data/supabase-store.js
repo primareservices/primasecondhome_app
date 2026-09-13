@@ -44,7 +44,8 @@ const PAYLOAD_KEYS = ['roomOther', 'roomCode', 'urgency', 'bags', 'slot', 'plate
 export function stayFromRow(r) {
   if (!r) return null;
   return { id: r.id, propertyId: r.property_id, room: r.room, displayName: r.display_name, company: r.client_company, coordinator: r.coordinator || null,
-    checkIn: r.check_in, checkOut: r.check_out, registeredAt: r.registered_at, lang: r.lang, email: r.email || null };
+    checkIn: r.check_in, checkOut: r.check_out, registeredAt: r.registered_at, lang: r.lang, email: r.email || null,
+    nextCleaning: r.next_cleaning || null, lastCleaning: r.last_cleaning || null, roomState: r.room_state || null };
 }
 export function requestFromRow(r, photosLocal) {
   const local = photosLocal && photosLocal[r.id];
@@ -381,5 +382,11 @@ registerHandler('supa:pushRemove', async ({ endpoint }) => {
   const uid = getUid(); if (!uid) return;
   await rest('guest_push_subscriptions?uid=eq.' + uid + '&endpoint=eq.' + encodeURIComponent(endpoint), { method: 'DELETE', prefer: 'return=minimal' });
 });
+
+// GDPR: zabudnutie hosťa — na serveri zmaže správy, notifikácie, nastavenia a väzbu; potom odhlásenie.
+export async function forgetMe() {
+  try { await rpc('guest_forget_me', {}); } catch (e) { if (e && e.name === 'NetworkError') throw e; }
+  signOut();
+}
 
 export function _resetStoreForTests() { state = blank(); lastSync = 0; syncing = null; }

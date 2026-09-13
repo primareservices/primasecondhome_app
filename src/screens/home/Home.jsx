@@ -59,7 +59,7 @@ export function Home() {
   const permitExpiry = useMemo(() => stay ? getPermitExpiry(stay.id) : null, [stay, tick]);
   const permit = useMemo(() => stay ? permitStatus(permitExpiry) : null, [stay, permitExpiry]);
   const open = reqs.filter(isOpen);
-  const cleaning = nextCleaningDate();
+  const cleaning = stay && stay.nextCleaning ? new Date(stay.nextCleaning + 'T09:00:00') : nextCleaningDate();   // z RE SERVICE (sync-cleaning), inak odhad
   const today = new Date().toISOString().slice(0, 10);
   const loc = stay ? parseRoomLoc(stay.room) : null;
 

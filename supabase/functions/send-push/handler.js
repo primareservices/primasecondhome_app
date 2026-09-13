@@ -3,6 +3,7 @@
 import { checkWebhookSecret, cors, json, readJson } from '../_shared/http.js';
 import { own as ownClient } from '../_shared/supa.js';
 import { pushText } from '../_shared/push-texts.js';
+import { translate } from '../_shared/deepl.js';
 import { pushTo, subscriptionsFor } from '../_shared/guest-push.js';
 
 export async function handle(req, deps = {}) {
@@ -22,6 +23,22 @@ export async function handle(req, deps = {}) {
       return { title: (a.severity === 'urgent' ? '❗ ' : '') + (tx.title || pushText(s.lang, 'announcement')), body: (tx.body || '').slice(0, 180), url: '/#/announcements', tag: 'ann-' + a.id, ttl: 12 * 3600 };
     }, { fetchImpl: deps.pushFetch });
     return json({ ok: true, recipients: subs.length, ...res });
+  }
+  if (body.record && body.record.sender && body.record.stay_id) {   // správa (webhook guest_messages INSERT)
+    const m = body.record;
+    const stay = (await own.rest('guest_stays?select=id,lang,property_id&id=eq.' + m.stay_id))[0];
+    if (!stay) return json({ error: 'stay_not_found' }, 404);
+    if (m.sender === 'reception') {
+      const lang = stay.lang || 'en';
+      const tr = await translate(m.text, ['en', lang], { source: 'sk', fetchImpl: deps.fetchImpl });
+      if (Object.keys(tr).length) await own.rest('guest_messages?id=eq.' + m.id, { method: 'PATCH', body: { tr }, prefer: 'return=minimal' });
+      const subs = await subscriptionsFor(own, { stayId: stay.id, lang });
+      const res = await pushTo(own, subs, (s) => ({ title: pushText(s.lang, 'message'), body: String(tr[s.lang] || tr.en || m.text).slice(0, 180), url: '/#/messages', tag: 'msg-' + stay.id }), { fetchImpl: deps.pushFetch });
+      return json({ ok: true, translated: !!tr[lang], recipients: subs.length, ...res });
+    }
+    const tr = await translate(m.text, ['sk', 'en'], { source: m.lang, fetchImpl: deps.fetchImpl });   // hosť → preklad pre recepciu
+    if (Object.keys(tr).length) await own.rest('guest_messages?id=eq.' + m.id, { method: 'PATCH', body: { tr }, prefer: 'return=minimal' });
+    return json({ ok: true, translated: !!tr.sk });
   }
   if (body.target && body.title) {
     const subs = await subscriptionsFor(own, body.target);

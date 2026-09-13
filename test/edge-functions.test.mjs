@@ -84,3 +84,16 @@ test('guest-cleanup: zavolá RPC a zmaže súbory anonymizovaných pobytov', asy
   assert.equal(res.anonymized, 2); assert.equal(res.filesRemoved, 4);
   assert.ok(own.calls.some(c => c.path === 'remove guest-docs' && c.body.includes('stay-old/b.pdf')));
 });
+
+test('send-push: správa recepcie → preklad (DeepL falošný) + push hosťovi; správa hosťa → preklad pre recepciu', async () => {
+  process.env.DEEPL_KEY = 'x:fx';
+  const own = fakeClient([[/^GET guest_stays/, [{ id: STAY.id, lang: 'uk', property_id: 'p_ic23' }]], [/^GET guest_links/, []]]);
+  const deepl = async (url, init) => { const b = JSON.parse(init.body); return new Response(JSON.stringify({ translations: [{ detected_source_language: 'SK', text: '[' + b.target_lang + '] ' + b.text[0] }] }), { status: 200 }); };
+  let res = await (await sendPush(post({ type: 'INSERT', table: 'guest_messages', record: { id: 'm1', stay_id: STAY.id, sender: 'reception', text: 'Deka je na recepcii.' } }), { own, fetchImpl: deepl })).json();
+  assert.equal(res.translated, true);
+  const patch = own.calls.find(c => c.method === 'PATCH' && c.path.startsWith('guest_messages'));
+  assert.equal(patch.body.tr.uk, '[UK] Deka je na recepcii.'); assert.equal(patch.body.tr.en, '[EN-GB] Deka je na recepcii.');
+  res = await (await sendPush(post({ record: { id: 'm2', stay_id: STAY.id, sender: 'guest', text: 'Потрібна ковдра', lang: 'uk' } }), { own, fetchImpl: deepl })).json();
+  assert.equal(res.translated, true);
+  delete process.env.DEEPL_KEY;
+});

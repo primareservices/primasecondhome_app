@@ -43,7 +43,7 @@ npx supabase secrets set \
   VAPID_PUBLIC_KEY=<…> VAPID_PRIVATE_KEY=<…> VAPID_SUBJECT=mailto:office@primare.sk \
   CF_ACCOUNT_ID=<Cloudflare account id> CF_API_TOKEN=<token s právom Browser Rendering: Edit> \
   RESEND_API_KEY=<…> MAIL_FROM="PRIMA SECOND HOME <noreply@primare.sk>"
-npx supabase functions deploy guest-request-bridge sync-ticket-status send-push translate sign-rules guest-cleanup
+npx supabase functions deploy guest-request-bridge sync-ticket-status sync-cleaning send-push translate sign-rules guest-cleanup
 ```
 
 `SUPABASE_URL` a `SUPABASE_SERVICE_ROLE_KEY` dostávajú funkcie automaticky. Bez `CF_*` funkcia
@@ -57,6 +57,7 @@ npx supabase functions deploy guest-request-bridge sync-ticket-status send-push 
 | `guest_requests` | INSERT | `guest-request-bridge` | `x-webhook-secret: <WEBHOOK_SECRET>` |
 | `guest_announcements` | INSERT | `send-push` | `x-webhook-secret: <WEBHOOK_SECRET>` |
 | `guest_signatures` | INSERT | `sign-rules` | `x-webhook-secret: <WEBHOOK_SECRET>` |
+| `guest_messages` | INSERT | `send-push` | `x-webhook-secret: <WEBHOOK_SECRET>` |
 
 ## 5. Cron (SQL editor; pg_cron + pg_net)
 
@@ -64,6 +65,11 @@ npx supabase functions deploy guest-request-bridge sync-ticket-status send-push 
 select cron.schedule('sync-ticket-status', '*/5 * * * *', $$
   select net.http_post(
     url := 'https://<ref>.supabase.co/functions/v1/sync-ticket-status',
+    headers := '{"Content-Type":"application/json","x-webhook-secret":"<WEBHOOK_SECRET>"}'::jsonb,
+    body := '{}'::jsonb) $$);
+select cron.schedule('sync-cleaning', '15 * * * *', $$
+  select net.http_post(
+    url := 'https://<ref>.supabase.co/functions/v1/sync-cleaning',
     headers := '{"Content-Type":"application/json","x-webhook-secret":"<WEBHOOK_SECRET>"}'::jsonb,
     body := '{}'::jsonb) $$);
 select cron.schedule('guest-cleanup-files', '40 3 * * *', $$
@@ -87,6 +93,16 @@ Kód má mať aspoň 6 znakov (`IC23-1102` → `IC231102`), platí 14 dní, ukla
 Oznam: `insert into public.guest_announcements (property_id, severity, texts, valid_to) values
 ('p_ic23', 'warning', '{"sk":{"title":"…","body":"…"},"uk":{"title":"…","body":"…"}}', now() + interval '3 days');`
 — webhook ho hneď pošle ako push.
+
+## 6b. Office účty (recepcia, manažéri) — pre modul „Hostia“ v TOOLS
+
+1. Authentication → Users → Add user (e-mail + heslo) pre každého pracovníka recepcie.
+2. SQL editor: `insert into public.office_users (uid, email, name, role, property_ids) values
+   ('<uid z Users>', 'recepcia.ic23@primare.sk', 'Recepcia IC 23', 'reception', '{p_ic23}');`
+   Roly: `reception` a `manager` vidia len svoje `property_ids`, `admin` všetko.
+3. Office potom zakladá pobyty a kódy volaním `office_create_stay(...)` a odpovedá na správy
+   (`guest_messages`, `sender = 'reception'`); webhook preloží odpoveď do jazyka hosťa a pošle push.
+   Modul „Hostia“ v TOOLS bude tieto volania robiť cez druhé prihlásenie do tohto projektu.
 
 ## 7. Appka (Cloudflare → Workers & Pages → projekt → Settings → Variables and Secrets)
 

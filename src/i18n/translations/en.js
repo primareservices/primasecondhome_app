@@ -448,4 +448,7 @@ export default {
   'offline.needOnline': 'This step needs an internet connection.',
   'profile.pushDenied': 'Notifications are blocked in your browser. Allow them in the site settings.',
   'profile.pushUnsupported': 'This browser does not support notifications. On iPhone add the app to your home screen (Share → Add to Home Screen).',
+  'profile.forget': 'Delete my data from the app',
+  'profile.forgetConfirm': 'Delete data from this phone and the server?',
+  'profile.forgetSub': 'We will remove messages, notifications, settings and the link to this phone. Requests and signed documents stay in the provider’s records and are anonymised 30 days after check-out.',
 };
