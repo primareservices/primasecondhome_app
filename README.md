@@ -114,6 +114,12 @@ nadpisy, Regular na text; Montserrat pre cyriliku a vietnamčinu), paleta PRIMA 
 nadpismi, pás cez kartu izby ako na menovkách dverí), highlighter štítky, pilulkové tlačidlá, logo
 bez gradientu. Karta pobytu v Dokumentoch má podobu ubytovacieho preukazu. Popis: `docs/DESIGN_SYSTEM.md`.
 
+### v4.1 — modernejšie prevedenie
+
+Na želanie: menej verzálok (ostávajú len ako brandové gesto), nadpisy a tlačidlá Poppins vo vetách,
+tlačidlá ako zaoblené bloky (rádius 16), sekundárne tlačidlá a vstupy vyplnené krémom bez rámika,
+štítky ako mäkké pilulky, tiene sotva viditeľné, rádius kariet 24.
+
 ### v3.1 — brand PRIMA v appke
 
 Oficiálne logo PRIMA (strieška + PRIMA + YOUR SECOND HOME, `src/ui/PrimaLogo.jsx`) v hlavičke, na

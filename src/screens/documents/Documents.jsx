@@ -44,7 +44,7 @@ function PermitHero({ stay, t, lang }) {
     <>
       <div style={{ background: C.card, borderRadius: 22, overflow: 'hidden', boxShadow: shadow.md }}>
         <div style={{ background: BRAND.red, color: '#fff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ flex: 1, fontSize: 14, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t('docs.permit')}</span>
+          <span style={{ flex: 1, fontSize: 16, fontWeight: 700, letterSpacing: '-0.01em' }}>{t('docs.permit')}</span>
           <PrimaLogo variant="horizontal" tone="white" height={30}/>
         </div>
         <div style={{ padding: 18 }}>
@@ -56,12 +56,12 @@ function PermitHero({ stay, t, lang }) {
               </svg>
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <b className="num" style={{ fontSize: 26, lineHeight: 1, fontWeight: 800 }}>{st.expired ? 0 : st.days}</b>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: C.textMuted }}>{t('docs.daysUnit')}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'lowercase' }}>{t('docs.daysUnit')}</span>
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="label">{t('docs.permitValidUntil')}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, marginTop: 2, lineHeight: 1.15 }}>{fmtDate(expiry, lang)}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2, lineHeight: 1.15, letterSpacing: '-0.01em' }}>{fmtDate(expiry, lang)}</div>
               <div style={{ marginTop: 8 }}><Tag tone={st.tone === 'success' ? 'success' : st.tone === 'warning' ? 'warning' : 'danger'}>{st.expired ? t('docs.permitExpired') : t('docs.permitDays', { n: st.days })}</Tag></div>
             </div>
           </div>
@@ -193,7 +193,7 @@ export function Documents() {
         </Card>
       )}
 
-      <SectionLabel action={<span style={{ fontSize: 13, fontWeight: 800, color: C.textFaint }}>{t('docs.walletLocal')}</span>}>{t('docs.wallet')}</SectionLabel>
+      <SectionLabel action={<span style={{ fontSize: 13, fontWeight: 600, color: C.textFaint }}>{t('docs.walletLocal')}</span>}>{t('docs.wallet')}</SectionLabel>
       <Wallet stayId={stay.id} t={t}/>
       <div className="hint" style={{ margin: '12px 2px 0' }}>{t('docs.walletHint')}</div>
     </>

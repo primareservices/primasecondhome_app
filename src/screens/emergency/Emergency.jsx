@@ -36,9 +36,9 @@ export function Emergency() {
       <div className="bleed" style={{ background: BRAND.red, color: '#fff', padding: '14px 20px 24px', marginTop: -8, borderRadius: '0 0 32px 32px', boxShadow: '0 18px 40px rgba(184,32,37,0.28)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button type="button" onClick={() => back('/')} aria-label={t('common.back')} style={{ ...iconBtn, background: 'rgba(255,255,255,0.16)', color: '#fff', boxShadow: 'none' }}><Icon name="ChevronLeft" size={22}/></button>
-          <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.85 }}>{p.name}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.9 }}>{p.name}</span>
         </div>
-        <h1 style={{ margin: '22px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: '0.02em', lineHeight: 1.1, textTransform: 'uppercase' }}>{t('home.emergency')}</h1>
+        <h1 style={{ margin: '22px 0 0', fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{t('home.emergency')}</h1>
         <div style={{ fontSize: 14, opacity: 0.88, marginTop: 8, lineHeight: 1.45 }}>{t('emg.sub')}</div>
         <a href={'tel:' + E.general} className="press" style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 16, padding: '18px 20px', borderRadius: 24, background: '#fff', color: C.text, boxShadow: '0 16px 36px rgba(23,22,26,0.2)', textDecoration: 'none' }}>
           <IconBox name="Phone" tone="danger" size={54} iconSize={26} radius={18}/>
@@ -51,7 +51,7 @@ export function Emergency() {
           {[['e155', E.ambulance], ['e150', E.fire], ['e158', E.police]].map(([k, num]) => (
             <a key={k} href={'tel:' + num} className="press" style={{ padding: 12, borderRadius: 18, background: 'rgba(255,255,255,0.16)', textAlign: 'center', color: '#fff', textDecoration: 'none' }}>
               <b className="num" style={{ display: 'block', fontSize: 22, fontWeight: 800 }}>{num}</b>
-              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', opacity: 0.9 }}>{t('contacts.' + k)}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, opacity: 0.92 }}>{t('contacts.' + k)}</span>
             </a>
           ))}
         </div>
@@ -68,7 +68,7 @@ export function Emergency() {
           </div>
         </Card>
         <Card>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}><IconBox name="Flame" tone="warning"/><b style={{ fontSize: 14, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t('emg.fire')}</b></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}><IconBox name="Flame" tone="warning"/><b style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.01em' }}>{t('emg.fire')}</b></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {steps.map((s, i) => (
               <div key={i} className="step">

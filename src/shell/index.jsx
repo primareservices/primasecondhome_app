@@ -40,7 +40,7 @@ export function Shell({ children, segs, badges }) {
           <button type="button" onClick={() => navigate('/')} aria-label="PRIMA" style={{ background: 'none', border: 'none', padding: 0, display: 'inline-flex', alignItems: 'center' }}>
             <PrimaLogo variant="mark" tone="brand" height={26}/>
           </button>
-          {property && <span style={{ display: 'inline-flex', alignItems: 'center', height: 30, padding: '0 10px', borderRadius: 8, background: BRAND.redSoft, fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: BRAND.redDark }}>{property.name.replace(/^PRIMA\s+/i, '')}</span>}
+          {property && <span style={{ display: 'inline-flex', alignItems: 'center', height: 30, padding: '0 11px', borderRadius: 999, background: BRAND.redSoft, fontSize: 12.5, fontWeight: 600, color: BRAND.redDark }}>{property.name.replace(/^PRIMA\s+/i, '')}</span>}
           <span style={{ flex: 1 }}/>
           <button type="button" onClick={() => navigate('/announcements')} aria-label={t('home.announcements')} style={{ width: 44, height: 44, borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: C.text, position: 'relative' }}>
             <Icon name="Bell" size={20}/>

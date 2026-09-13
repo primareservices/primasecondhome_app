@@ -1,14 +1,20 @@
-# PRIMA SECOND HOME — dizajnový systém v4 (podľa PRIMA Ubytovňa Design Manual 2026)
+# PRIMA SECOND HOME — dizajnový systém v4.1 (podľa PRIMA Ubytovňa Design Manual 2026, moderné prevedenie)
 
 Stav: 13. 9. 2026. Zdroj pravdy je brand manuál (PDF od PRIMA): písmo Poppins, paleta PRIMA
 červená / Carbon / Unity / Sunburst / White Fence, strieška ako grafický prvok, logo bez gradientu
 a bez tieňa. Appka ho prekladá do mobilného rozhrania pre hostí v 12 jazykoch.
 
+**v4.1 (moderné prevedenie):** verzálky ExtraBold ostávajú brandovým gestom (logo, slogan, tlač,
+polepy), v appke sú nadpisy, tlačidlá a štítky vo vetách — Poppins Bold s tesným prekladom písmen.
+Tlačidlá sú zaoblené bloky (rádius 16, 16 px SemiBold), sekundárne tlačidlá sú vyplnené krémom bez
+rámika, vstupy tiež, štítky sú mäkké pilulky, tiene sotva viditeľné, rádius kariet 24. Je to čitateľnejšie
+v 12 jazykoch (cyrilika a dévanágarí vo verzálkach strácajú rytmus) a pôsobí ako súčasná appka.
+
 ## 1. Čo z manuálu platí v appke
 
 | Manuál | V appke |
 |---|---|
-| Poppins ExtraBold **výhradne verzálkami** na nadpisy a výrazné prvky | H1 stránok, názvy sekcií, tlačidlá, štítky, rýchle akcie, navigácia |
+| Poppins ExtraBold **výhradne verzálkami** na nadpisy a výrazné prvky | brandové gestá: logo, slogan YOUR SECOND HOME, lístok, ikona; v appke nadpisy Poppins Bold vo vetách (v4.1) |
 | Poppins Regular na bežný text | text kariet, podtitulky, formuláre (400/500/600) |
 | Montserrat ako sekundárne písmo | záloha pre cyriliku (uk, ru, sr) a vietnamčinu — Poppins ich nemá; dévanágarí má Poppins vlastné |
 | Primárna #EE2A24 a #B82025 | akcie (#EE2A24), nadpisy a text na ružovom podklade (#B82025) |
@@ -35,12 +41,12 @@ a bez tieňa. Appka ho prekladá do mobilného rozhrania pre hostí v 12 jazykoc
 | `C.info*` | `#0C66C2` / `#DCE8F6` | Unity |
 | `C.warning*` | `#F2B94A` / `#8A5A00` / `#F9E4B8` | Sunburst |
 | `C.success*` | `#1E8E5A` / `#E3F4EA` | hotovo (manuál zelenú nemá; potrebná pre stavy) |
-| `C.radius` / `C.radiusSm` | 20 / 14 | karty / vstupy; tlačidlá sú pilulky (999) |
+| `C.radius` / `C.radiusSm` | 24 / 16 | karty / vstupy; tlačidlá rádius 16, štítky a chipy pilulky |
 | `shadow.sm` / `md` | mäkké sivé tiene | karty / plávajúce prvky |
 
 Písmo: `'Poppins', 'Montserrat', system-ui` z `@fontsource` v `src/main.jsx` (400–800). Čísla
-majú tabulkové číslice (`.num`). Škála: H1 26/800 verzálky, sekcia 15/800 verzálky, titulok riadku
-15/700, text 14–15/400, popisok polí 11/700 verzálky s 0,08em, štítok 11/700 verzálky.
+majú tabulkové číslice (`.num`). Škála: H1 28/700 (−0,02em), sekcia 18/700, titulok riadku 15/600,
+text 14–15/400, popisok polí 13/600, štítok 12,5/600 v pilulke, tlačidlo 16/600, navigácia 11/600.
 
 ## 3. Komponenty (`src/ui/primitives.jsx`, `src/ui/PrimaLogo.jsx`, `src/ui/GlobalStyles.jsx`)
 
@@ -50,10 +56,10 @@ majú tabulkové číslice (`.num`). Škála: H1 26/800 verzálky, sekcia 15/800
 | `RoofBand` | pás striešky cez šírku karty (menovka dverí) |
 | `RoofAccent` | malá strieška nad H1 (`PageHeader roof`) |
 | `PrimaAppMark` | biela strieška na plnej červenej — rovnaká ako ikona PWA |
-| `PageHeader` | strieška + H1 verzálkami v `#B82025` + podtitul |
-| `SectionLabel` | verzálky Carbon, akcia vpravo |
-| `primaryBtn` / `secondaryBtn` / `inkBtn` | pilulky, verzálky Poppins 700 14 px; červená / biela s prstencom / Carbon |
-| `Tag` (`danger` = highlighter, `info`, `warning`, `success`, `muted`, `ink`, `red`) | rádius 8, verzálky 11 px |
+| `PageHeader` | strieška + H1 Bold vo vetách (Carbon) + podtitul |
+| `SectionLabel` | 18/700 vo vetách, akcia vpravo |
+| `primaryBtn` / `secondaryBtn` / `inkBtn` | zaoblené bloky (rádius 16), 16 px SemiBold vo vetách; červená / krémová výplň / Carbon |
+| `Tag` (`danger` = highlighter, `info`, `warning`, `success`, `muted`, `ink`, `red`) | pilulka, 12,5 px SemiBold vo vetách |
 | `Chip` | aktívna plná červená |
 | `IconBox` (`brand`, `info`, `warning`, `success`, `danger`, `ink`, `default`) | 46 px, rádius 16 |
 | `QuickAction`, `Tile`, `BigAction`, `ListRow (meta)`, `Segmented`, `Toggle`, `Sheet`, `KeyValue`, `Banner`, `EmptyState` | |
@@ -76,7 +82,7 @@ majú tabulkové číslice (`.num`). Škála: H1 26/800 verzálky, sekcia 15/800
 ## 5. Pravidlá
 
 1. Jedna červená akcia na obrazovku; ostatné sú biele alebo Carbon.
-2. Verzálky len tam, kde manuál: nadpisy, tlačidlá, štítky. Text vždy vo vetách.
+2. Verzálky len ako brandové gesto (logo, slogan, lístok). Nadpisy, tlačidlá a štítky vo vetách.
 3. Žiadne gradienty a tiene na logu; plné plochy PRIMA červenej.
 4. Bez 1px rámikov okolo kariet — biela karta na krémovom pozadí + mäkký tieň; vstupy majú
    vnútorný prstenec.

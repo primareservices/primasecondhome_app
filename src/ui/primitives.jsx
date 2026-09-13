@@ -6,29 +6,29 @@ import { statusMeta } from '../domain/request-status.js';
 import { Icon } from './icons.jsx';
 import { RoofAccent } from './PrimaLogo.jsx';
 
-// Komponenty podľa PRIMA Design Manual 2026: Poppins ExtraBold verzálky na nadpisy a výzvy,
-// pilulkové tlačidlá v plnej PRIMA červenej, „highlighter" štítky (ružový podklad, červený text),
-// biele karty na krémovom pozadí, žiadne gradienty. Jedna červená akcia na obrazovku.
-const UPPER = { textTransform: 'uppercase', letterSpacing: '0.04em' };
+// Komponenty podľa PRIMA Design Manual 2026 v modernom prevedení: Poppins, PRIMA červená ako
+// jediná akcia, strieška ako brandový prvok. Verzálky len na drobné popisky — nadpisy, tlačidlá
+// a štítky sú vo vetách, tlačidlá sú zaoblené bloky (rádius 16), tiene sú sotva viditeľné,
+// vstupy sú vyplnené krémom bez rámika. Biele karty na krémovom pozadí, žiadne gradienty.
 export const inputStyle = {
   width: '100%', padding: '14px 16px', fontSize: 16, minHeight: 54,
-  background: C.card, border: 'none', borderRadius: C.radiusSm, boxShadow: 'inset 0 0 0 1.5px rgba(51,51,51,0.12)',
+  background: C.cardAlt, border: 'none', borderRadius: C.radiusSm,
   color: C.text, fontFamily: 'inherit',
 };
 export const primaryBtn = {
-  width: '100%', padding: '0 20px', borderRadius: 999, minHeight: 54,
+  width: '100%', padding: '0 20px', borderRadius: 16, minHeight: 54,
   background: BRAND.red, color: '#FFFFFF', border: 'none',
-  fontSize: 14, fontWeight: 700, ...UPPER, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-  boxShadow: '0 10px 24px ' + BRAND.redGlow,
+  fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+  boxShadow: '0 8px 20px ' + BRAND.redGlow,
 };
 export const secondaryBtn = {
-  ...primaryBtn, background: C.card, color: C.text, boxShadow: 'inset 0 0 0 1.5px rgba(51,51,51,0.14)', fontSize: 13, minHeight: 50,
+  ...primaryBtn, background: C.cardAlt, color: C.text, boxShadow: 'none', fontSize: 15, minHeight: 52,
 };
 export const ghostBtn = {
   background: 'transparent', border: 'none', color: C.textMuted, fontSize: 14, fontWeight: 600, padding: '10px 12px',
   display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 14, minHeight: 44,
 };
-export const inkBtn = { ...primaryBtn, background: C.navy, boxShadow: '0 10px 24px rgba(51,51,51,0.22)' };
+export const inkBtn = { ...primaryBtn, background: C.navy, boxShadow: '0 8px 20px rgba(51,51,51,0.2)' };
 export const iconBtn = {
   width: 44, height: 44, borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm,
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: C.text, flexShrink: 0,
@@ -42,11 +42,11 @@ export function Card({ children, style, onClick, className }) {
     }}>{children}</div>
   );
 }
-// Nadpis sekcie: verzálky Poppins ExtraBold, voliteľná akcia vpravo („Všetky").
+// Nadpis sekcie: Poppins Bold vo vetách, voliteľná akcia vpravo („Všetky").
 export function SectionLabel({ children, style, action }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '22px 2px 10px', ...style }}>
-      <span style={{ flex: 1, fontSize: 15, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', color: C.text }}>{children}</span>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '24px 2px 10px', ...style }}>
+      <span style={{ flex: 1, fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', color: C.text }}>{children}</span>
       {action}
     </div>
   );
@@ -73,9 +73,9 @@ export function EmptyState({ icon, title, subtitle }) {
 export function Chip({ active, onClick, children, icon }) {
   return (
     <button type="button" onClick={onClick} style={{
-      flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 38, borderRadius: 999, border: 'none',
-      background: active ? BRAND.red : C.card, color: active ? '#fff' : C.text, fontSize: 12.5, fontWeight: 700, ...UPPER,
-      boxShadow: active ? '0 8px 20px ' + BRAND.redGlow : shadow.sm, whiteSpace: 'nowrap',
+      flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 40, borderRadius: 999, border: 'none',
+      background: active ? BRAND.red : C.card, color: active ? '#fff' : C.text, fontSize: 14, fontWeight: 600,
+      boxShadow: active ? '0 6px 16px ' + BRAND.redGlow : shadow.sm, whiteSpace: 'nowrap',
     }}>{icon && <Icon name={icon} size={15}/>}{children}</button>
   );
 }
@@ -101,7 +101,7 @@ export function ListRow({ icon, title, sub, meta, right, onClick, tone, badge, f
     }}>
       {icon && <IconBox name={icon} tone={tone || 'default'}/>}
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{title}</span>
+        <span style={{ display: 'block', fontSize: 15, fontWeight: 600, lineHeight: 1.3 }}>{title}</span>
         {sub && <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3, lineHeight: 1.4 }}>{sub}</span>}
         {meta && <span style={{ display: 'flex', gap: 6, marginTop: 7, flexWrap: 'wrap' }}>{meta}</span>}
       </span>
@@ -111,7 +111,7 @@ export function ListRow({ icon, title, sub, meta, right, onClick, tone, badge, f
     </button>
   );
 }
-// Štítok „highlighter" z manuálu: verzálky, ružový podklad + červený text (danger), alebo iné tóny.
+// Štítok: mäkká pilulka vo vetách; „highlighter" z manuálu = ružový podklad + červený text (danger).
 const TONES = {
   muted:   { bg: C.cardAlt, fg: C.textMuted },
   accent:  { bg: C.accentSoft, fg: C.accentText },
@@ -124,7 +124,7 @@ const TONES = {
 };
 export function Tag({ tone = 'muted', icon, children, style, wrap }) {
   const t = TONES[tone] || TONES.muted;
-  return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minHeight: 26, padding: wrap ? '4px 10px' : '0 10px', borderRadius: 8, background: t.bg, color: t.fg, fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: 1.3, whiteSpace: wrap ? 'normal' : 'nowrap', maxWidth: '100%', ...style }}>{icon && <Icon name={icon} size={13} style={{ flexShrink: 0 }}/>}<span>{children}</span></span>;
+  return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minHeight: 28, padding: wrap ? '4px 11px' : '0 11px', borderRadius: 999, background: t.bg, color: t.fg, fontSize: 12.5, fontWeight: 600, lineHeight: 1.3, whiteSpace: wrap ? 'normal' : 'nowrap', maxWidth: '100%', ...style }}>{icon && <Icon name={icon} size={14} style={{ flexShrink: 0 }}/>}<span>{children}</span></span>;
 }
 export function StatusBadge({ status }) {
   const { t } = useT();
@@ -143,7 +143,7 @@ export function Banner({ tone = 'info', icon, children, style }) {
     </div>
   );
 }
-// Hlavička stránky ako v manuáli: malá strieška nad nadpisom, nadpis verzálkami v tmavej PRIMA červenej.
+// Hlavička stránky: malá strieška z manuálu nad nadpisom, nadpis Poppins Bold vo vetách.
 export function PageHeader({ title, sub, onBack, action, roof = true }) {
   return (
     <div style={{ margin: '4px 0 18px' }}>
@@ -154,9 +154,9 @@ export function PageHeader({ title, sub, onBack, action, roof = true }) {
           {action}
         </div>
       )}
-      {roof && <RoofAccent height={13} style={{ marginBottom: 6, marginLeft: 1 }}/>}
-      <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '0.01em', lineHeight: 1.12, textTransform: 'uppercase', color: BRAND.redDark }}>{title}</h1>
-      {sub && <div style={{ fontSize: 14, color: C.textMuted, marginTop: 8, lineHeight: 1.5 }}>{sub}</div>}
+      {roof && <RoofAccent height={12} style={{ marginBottom: 8, marginLeft: 1 }}/>}
+      <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.12, color: C.text }}>{title}</h1>
+      {sub && <div style={{ fontSize: 15, color: C.textMuted, marginTop: 8, lineHeight: 1.5 }}>{sub}</div>}
     </div>
   );
 }
@@ -167,10 +167,10 @@ export function Toggle({ checked, onChange, label, sub }) {
   return (
     <button type="button" onClick={() => onChange(!checked)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: 'none', border: 'none', padding: '12px 0', textAlign: 'left', color: C.text }}>
       <span style={{ flex: 1 }}>
-        <span style={{ display: 'block', fontSize: 15, fontWeight: 700 }}>{label}</span>
+        <span style={{ display: 'block', fontSize: 15, fontWeight: 600 }}>{label}</span>
         {sub && <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3, lineHeight: 1.4 }}>{sub}</span>}
       </span>
-      <span style={{ width: 50, height: 30, borderRadius: 999, background: checked ? C.navy : '#DAD4C8', position: 'relative', transition: 'background .15s', flexShrink: 0 }}>
+      <span style={{ width: 50, height: 30, borderRadius: 999, background: checked ? BRAND.red : '#DAD4C8', position: 'relative', transition: 'background .15s', flexShrink: 0 }}>
         <span style={{ position: 'absolute', top: 3, left: checked ? 23 : 3, width: 24, height: 24, borderRadius: '50%', background: '#fff', boxShadow: '0 2px 6px rgba(51,51,51,0.2)', transition: 'left .15s' }}/>
       </span>
     </button>
@@ -209,17 +209,17 @@ export function Segmented({ options, value, onChange }) {
 }
 export function BigAction({ icon, title, sub, onClick }) {
   return (
-    <button type="button" onClick={onClick} className="press" style={{ ...primaryBtn, minHeight: sub ? 64 : 56, justifyContent: 'flex-start', textAlign: 'left', padding: '0 20px 0 18px', borderRadius: 24 }}>
-      <span style={{ display: 'flex', flexShrink: 0 }}><Icon name={icon} size={24}/></span>
+    <button type="button" onClick={onClick} className="press" style={{ ...primaryBtn, minHeight: sub ? 68 : 56, justifyContent: 'flex-start', textAlign: 'left', padding: '0 20px 0 18px', borderRadius: 22 }}>
+      <span style={{ width: 40, height: 40, borderRadius: 14, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icon name={icon} size={22}/></span>
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', fontSize: 15, fontWeight: 800 }}>{title}</span>
-        {sub && <span style={{ display: 'block', fontSize: 12, opacity: 0.9, fontWeight: 500, marginTop: 1, textTransform: 'none', letterSpacing: 0 }}>{sub}</span>}
+        <span style={{ display: 'block', fontSize: 17, fontWeight: 700 }}>{title}</span>
+        {sub && <span style={{ display: 'block', fontSize: 13, opacity: 0.9, fontWeight: 500, marginTop: 1 }}>{sub}</span>}
       </span>
       <Icon name="ChevronRight" size={20}/>
     </button>
   );
 }
-// Rýchla akcia (4 v rade): biela dlaždica s červenou ikonou + názov verzálkami pod ňou.
+// Rýchla akcia (4 v rade): biela dlaždica s červenou ikonou + názov pod ňou.
 export function QuickAction({ icon, title, onClick, badge }) {
   return (
     <button type="button" onClick={onClick} className="press" style={{ background: 'none', border: 'none', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, color: C.text }}>
@@ -227,7 +227,7 @@ export function QuickAction({ icon, title, onClick, badge }) {
         <Icon name={icon} size={24}/>
         {badge ? <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, borderRadius: 999, background: BRAND.red, color: '#fff', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px' }}>{badge}</span> : null}
       </span>
-      <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', lineHeight: 1.25, textAlign: 'center' }}>{title}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.25, textAlign: 'center' }}>{title}</span>
     </button>
   );
 }
@@ -238,7 +238,7 @@ export function Tile({ icon, title, sub, onClick, badge }) {
       background: C.card, border: 'none', color: C.text, boxShadow: shadow.sm, position: 'relative',
     }}>
       <IconBox name={icon} tone="brand" size={40} iconSize={20} radius={14}/>
-      <span style={{ display: 'block', fontSize: 14, fontWeight: 800, lineHeight: 1.25, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{title}</span>
+      <span style={{ display: 'block', fontSize: 15, fontWeight: 700, lineHeight: 1.25, letterSpacing: '-0.01em' }}>{title}</span>
       {sub && <span style={{ display: 'block', fontSize: 12.5, color: C.textMuted, lineHeight: 1.35 }}>{sub}</span>}
       {badge ? <span style={{ position: 'absolute', top: 12, right: 12, background: BRAND.red, color: '#fff', fontSize: 12, fontWeight: 800, borderRadius: 999, padding: '2px 8px' }}>{badge}</span> : null}
     </button>
@@ -257,7 +257,7 @@ export function Sheet({ open, title, onClose, children }) {
       <div className="sheet" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
         <div style={{ width: 40, height: 5, borderRadius: 999, background: '#DAD4C8', margin: '-4px auto 14px' }}/>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <b style={{ flex: 1, fontSize: 16, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{title}</b>
+          <b style={{ flex: 1, fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}>{title}</b>
           <button type="button" onClick={onClose} aria-label="close" style={{ ...iconBtn, width: 36, height: 36, boxShadow: 'none', background: C.cardAlt }}><Icon name="X" size={18}/></button>
         </div>
         {children}
@@ -269,7 +269,7 @@ export function KeyValue({ label, value, mono }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: '1px solid ' + C.border, fontSize: 15 }}>
       <span style={{ color: C.textMuted }}>{label}</span>
-      <b className={mono ? 'num' : undefined} style={{ textAlign: 'right', fontFamily: mono ? monoFamily : undefined, fontWeight: 700 }}>{value}</b>
+      <b className={mono ? 'num' : undefined} style={{ textAlign: 'right', fontFamily: mono ? monoFamily : undefined, fontWeight: 600 }}>{value}</b>
     </div>
   );
 }

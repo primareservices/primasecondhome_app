@@ -86,7 +86,7 @@ export function Around() {
             <Row icon="TramFront" tone="info" title={F.tram.line + ' · ' + F.tram.name} sub={I('tram')} walk={F.tram.walkMin} q={F.tram.map} t={t}/>
           </Card>
           <Card>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}><b style={{ fontSize: 14, flex: 1, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t('around.tickets')}</b><span style={{ fontSize: 12, color: C.textFaint, fontWeight: 700 }}>{t('around.ticketsFrom', { date: '1. 7. 2026' })}</span></div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}><b style={{ fontSize: 16, flex: 1, fontWeight: 700, letterSpacing: '-0.01em' }}>{t('around.tickets')}</b><span style={{ fontSize: 12, color: C.textFaint, fontWeight: 700 }}>{t('around.ticketsFrom', { date: '1. 7. 2026' })}</span></div>
             <div style={{ marginTop: 6 }}>
               {pack.facts.tickets.single.map(([k, paper, app]) => <KeyValue key={k} label={k} value={<span className="num">{paper} <span style={{ color: C.infoText }}>· {app} {t('around.inApp')}</span></span>}/>)}
               {pack.facts.tickets.passes.map(([k, v]) => <KeyValue key={k} label={k} value={v} mono/>)}

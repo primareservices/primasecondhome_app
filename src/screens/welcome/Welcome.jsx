@@ -53,8 +53,8 @@ export function Welcome({ query, initialStep, hasLang }) {
               <RoofBand style={{ width: '62%', margin: '18px 0 -8px auto', opacity: 0.9 }}/>
             )}
             <div style={{ padding: '10px 0 22px' }}>
-              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: '0.02em', lineHeight: 1.1, textTransform: 'uppercase', color: BRAND.redDark }}>{title}</h1>
-              <div style={{ fontSize: 22, fontWeight: 500, color: C.text, marginTop: 2 }}>Welcome home.</div>
+              <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, color: BRAND.redDark }}>{title}</h1>
+              <div style={{ fontSize: 22, fontWeight: 500, color: C.textMuted, marginTop: 4, letterSpacing: '-0.01em' }}>Welcome home.</div>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@ export function Welcome({ query, initialStep, hasLang }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
             <Tag tone="danger" icon="KeyRound" style={{ marginBottom: 14 }}>{t('welcome.code')}</Tag>
-            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '0.01em', lineHeight: 1.12, textTransform: 'uppercase', color: BRAND.redDark }}>{t('welcome.codeTitle')}</h1>
+            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.12, color: C.text }}>{t('welcome.codeTitle')}</h1>
             <div style={{ fontSize: 15, color: C.textMuted, marginTop: 10, lineHeight: 1.45 }}>{t('welcome.codeHint')}</div>
           </div>
           <Field label={t('welcome.code')}>
@@ -97,7 +97,7 @@ export function Welcome({ query, initialStep, hasLang }) {
       {step === 'public' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: '0.01em', lineHeight: 1.12, textTransform: 'uppercase', color: BRAND.redDark }}>{t('welcome.publicTitle')}</h1>
+            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.12, color: C.text }}>{t('welcome.publicTitle')}</h1>
             <div style={{ fontSize: 14, color: C.textMuted, marginTop: 8, lineHeight: 1.45 }}>{t('welcome.publicHint')}</div>
           </div>
           <Card className="rows" style={{ padding: '4px 18px' }}>

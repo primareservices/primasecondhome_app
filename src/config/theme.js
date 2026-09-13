@@ -13,8 +13,8 @@ export const C = {
   textMuted: '#6A6A6A',
   textFaint: '#9C9C9C',
   navy: '#333333',      // Carbon — tmavé karty a tlačidlá (názov kľúča je historický)
-  radius: 20,
-  radiusSm: 14,
+  radius: 24,
+  radiusSm: 16,
   focusRing: '0 0 0 3px rgba(238, 42, 36, 0.22)',
   success: '#1E8E5A', successText: '#1E7A4E', successSoft: '#E3F4EA', successBorder: '#BFE5CF',
   warning: '#F2B94A', warningText: '#8A5A00', warningSoft: '#F9E4B8', warningBorder: '#F2D48C',   // Sunburst

@@ -71,7 +71,7 @@ export function Home() {
           <div style={{ padding: '0 20px 20px', marginTop: -52, position: 'relative' }}>
             <div className="label" style={{ color: C.textMuted }}>{t('home.hello', { name: stay.displayName })}</div>
             <div className="num" style={{ fontSize: 64, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em', marginTop: 6, color: C.text }}>{roomLabel(stay.room)}</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4, fontSize: 17, fontWeight: 800, color: C.text }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4, fontSize: 17, fontWeight: 700, color: C.text }}>
               <span>{t('home.room')}</span><span style={{ color: C.textFaint, fontWeight: 400 }}>|</span><span style={{ fontWeight: 400, color: C.textMuted }}>Room</span>
               {loc && loc.floor != null && <span style={{ marginLeft: 'auto', fontSize: 14, fontWeight: 700, color: C.textMuted }}>{loc.floor}. p.</span>}
             </div>
@@ -116,7 +116,7 @@ export function Home() {
 
       {stay && (booking || permit || open.length > 0) && (
         <>
-          <SectionLabel action={<span style={{ fontSize: 12, fontWeight: 700, color: BRAND.redDark }}>{fmtDate(new Date().toISOString(), lang)}</span>}>{t('home.today')}</SectionLabel>
+          <SectionLabel action={<span style={{ fontSize: 13, fontWeight: 600, color: C.textMuted }}>{fmtDate(new Date().toISOString(), lang)}</span>}>{t('home.today')}</SectionLabel>
           <Card style={{ padding: '4px 18px' }}>
             {booking && <TodayRow icon="WashingMachine" tone="info" title={t('home.laundryBooking', { slot: (booking.day === today ? '' : fmtDate(booking.day, lang) + ' ') + slotLabel(booking.start, booking.len || 2), n: booking.machine })} sub={t('laundry.fee', { price: (pack && pack.facts && pack.facts.laundry && pack.facts.laundry.price) || '2,30 €' })} right={<Tag tone="ink" style={{ height: 30, fontSize: 13 }}><span className="num">{String(booking.start).padStart(2, '0')}:00</span></Tag>} onClick={() => navigate('/laundry')} last={!permit && !open.length}/>}
             {permit && <TodayRow icon="FileCheck" tone={permit.set ? (permit.tone === 'success' ? 'success' : permit.tone) : 'info'} title={!permit.set ? t('home.permitSet') : permit.expired ? t('home.permitExpired') : t('home.permitDays', { n: permit.days })} sub={permit.set ? t('docs.permitValidUntil') + ' ' + fmtDate(permitExpiry, lang) + ' · ' + t('docs.permitReminders') + ' 90 / 60 / 30' : t('docs.permitSet')} onClick={() => navigate('/documents')} last={!open.length}/>}
@@ -131,7 +131,7 @@ export function Home() {
         <Icon name="ChevronRight" size={20} style={{ opacity: 0.6 }}/>
       </button>
 
-      <SectionLabel action={anns.length > 2 && <button type="button" onClick={() => navigate('/announcements')} style={{ background: 'none', border: 'none', color: BRAND.redDark, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('common.all')}</button>}>
+      <SectionLabel action={anns.length > 2 && <button type="button" onClick={() => navigate('/announcements')} style={{ background: 'none', border: 'none', color: BRAND.red, fontSize: 14, fontWeight: 600 }}>{t('common.all')}</button>}>
         {t('home.announcements')}
       </SectionLabel>
       {anns.length ? (
