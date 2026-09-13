@@ -41,3 +41,9 @@ test('sendWebPush: hlavičky a telo; 410 = predplatné zaniklo', async () => {
   assert.equal(seen.init.headers['Content-Encoding'], 'aes128gcm'); assert.equal(seen.init.headers.TTL, '60'); assert.equal(seen.init.headers.Topic, 'ann');
   assert.match(seen.init.headers.Authorization, /^vapid t=.+, k=.+$/); assert.ok(seen.init.body.length > 86 + 16);
 });
+
+test('shortTopic: max 32 znakov z URL-safe abecedy', async () => {
+  const { shortTopic } = await import('../supabase/functions/_shared/webpush.js');
+  assert.equal(shortTopic('req-0f3a9c2e-1111-4222-8333-444455556666').length, 32);
+  assert.equal(shortTopic('ann-ann-1'), 'ann-ann-1'); assert.equal(shortTopic(''), undefined);
+});

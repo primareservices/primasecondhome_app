@@ -1,6 +1,16 @@
 // Cron (denne): anonymizácia v DB (guest_cleanup) + zmazanie súborov anonymizovaných pobytov v bucketoch.
 import { checkWebhookSecret, cors, json } from '../_shared/http.js';
 import { own as ownClient } from '../_shared/supa.js';
+// Storage list nie je rekurzívny (fotky sú v <stay>/<žiadosť>/n.jpg): priečinky majú id = null.
+export async function listRecursive(own, bucket, prefix, depth = 0) {
+  const out = [];
+  if (depth > 4) return out;
+  for (const o of await own.list(bucket, prefix)) {
+    if (o.id === null) out.push(...await listRecursive(own, bucket, prefix + o.name + '/', depth + 1));
+    else out.push(prefix + o.name);
+  }
+  return out;
+}
 export async function handle(req, deps = {}) {
   const pre = cors(req); if (pre) return pre;
   if (!checkWebhookSecret(req)) return json({ error: 'forbidden' }, 403);
@@ -12,8 +22,7 @@ export async function handle(req, deps = {}) {
   for (const s of stays) {
     for (const bucket of ['guest-photos', 'guest-docs']) {
       try {
-        const objects = await own.list(bucket, s.id + '/');
-        const names = objects.map(o => s.id + '/' + o.name).filter(n => !n.endsWith('/'));
+        const names = await listRecursive(own, bucket, s.id + '/');
         if (names.length) { await own.remove(bucket, names); removed += names.length; }
       } catch { /* ďalší beh to dorobí */ }
     }

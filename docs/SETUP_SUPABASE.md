@@ -72,6 +72,11 @@ select cron.schedule('sync-cleaning', '15 * * * *', $$
     url := 'https://<ref>.supabase.co/functions/v1/sync-cleaning',
     headers := '{"Content-Type":"application/json","x-webhook-secret":"<WEBHOOK_SECRET>"}'::jsonb,
     body := '{}'::jsonb) $$);
+select cron.schedule('announcements-due', '*/5 * * * *', $$
+  select net.http_post(
+    url := 'https://<ref>.supabase.co/functions/v1/send-push',
+    headers := '{"Content-Type":"application/json","x-webhook-secret":"<WEBHOOK_SECRET>"}'::jsonb,
+    body := '{"dueAnnouncements":true}'::jsonb) $$);   -- naplánované oznamy (valid_from v budúcnosti)
 select cron.schedule('guest-cleanup-files', '40 3 * * *', $$
   select net.http_post(
     url := 'https://<ref>.supabase.co/functions/v1/guest-cleanup',

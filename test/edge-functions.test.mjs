@@ -68,6 +68,14 @@ test('send-push: oznam sa rozošle hosťom budovy v ich jazyku; 410 zmaže predp
   assert.equal(res.gone, 1); assert.ok(own.calls.some(c => c.method === 'DELETE' && c.path.startsWith('guest_push_subscriptions')));
 });
 
+test('send-push: naplánovaný oznam sa pri INSERT preskočí a pošle ho cron (dueAnnouncements)', async () => {
+  const future = { id: 'ann-2', property_id: 'p_ic23', severity: 'info', valid_from: new Date(Date.now() + 3600e3).toISOString(), texts: { sk: { title: 'Zajtra', body: 'x' } } };
+  const own = fakeClient([[/^GET guest_announcements/, [{ ...future, valid_from: new Date(Date.now() - 60e3).toISOString() }]], [/^GET guest_stays/, []], [/^GET guest_links/, []]]);
+  assert.deepEqual(await (await sendPush(post({ record: future }), { own })).json(), { skipped: 'scheduled' });
+  const res = await (await sendPush(post({ dueAnnouncements: true }), { own })).json();
+  assert.equal(res.due, 1); assert.ok(own.calls.some(c => c.method === 'PATCH' && c.path === 'guest_announcements?id=eq.ann-2' && c.body.pushed_at));
+});
+
 test('sign-rules: bez Cloudflare secrets vráti pdf:false; HTML má jazyk hosťa aj slovenčinu a auditný blok', async () => {
   delete process.env.CF_ACCOUNT_ID;
   const own = fakeClient([[/^GET guest_stays/, [STAY]], [/^GET properties/, [{ id: 'p_ic23', name: 'PRIMA IC 23', address: 'Ivanská cesta 23' }]], [/^GET rules/, [{ version: '2026-09', texts: { sk: { intro: 'Vitajte', items: [{ title: 'Kľúče', text: 'Nestrácajte.' }] }, uk: { intro: 'Ласкаво просимо', items: [{ title: 'Ключі', text: 'Не губіть.' }] } } }]]]);

@@ -70,7 +70,7 @@ export function Profile() {
       <Sheet open={confirm} title={t('profile.signOutConfirm')} onClose={() => setConfirm(false)}>
         <div style={{ display: 'flex', gap: 10 }}>
           <button type="button" style={{ ...secondaryBtn, flex: 1 }} onClick={() => setConfirm(false)}>{t('common.no')}</button>
-          <button type="button" style={{ ...primaryBtn, flex: 1 }} onClick={() => { signOut(); setConfirm(false); navigate('/welcome?step=code', { replace: true }); }}>{t('common.yes')}</button>
+          <button type="button" style={{ ...primaryBtn, flex: 1 }} onClick={async () => { try { await disablePush(); } catch { /* nič */ } signOut(); setConfirm(false); navigate('/welcome?step=code', { replace: true }); }}>{t('common.yes')}</button>
         </div>
       </Sheet>
     </>

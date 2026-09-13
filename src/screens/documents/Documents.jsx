@@ -89,10 +89,14 @@ function SignedDocs({ stay, t, lang }) {
   const [tick, setTick] = useState(0);
   useEffect(() => subscribe(() => setTick(x => x + 1)), []);
   const sigs = useMemo(() => listSignatures(stay.id), [stay, tick]);
+  // Okno sa otvára synchrónne v geste (iOS Safari blokuje window.open po await), adresa sa doplní potom.
   const open = async (sig) => {
-    const url = await getDocumentUrl(sig); if (!url) return;
-    if (url.startsWith('data:')) { const u = URL.createObjectURL(dataUrlToBlob(url)); window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); }
-    else window.open(url, '_blank');
+    const w = window.open('', '_blank');
+    const url = await getDocumentUrl(sig);
+    if (!url) { if (w) w.close(); return; }
+    const target = url.startsWith('data:') ? URL.createObjectURL(dataUrlToBlob(url)) : url;
+    if (w) w.location.href = target; else window.open(target, '_blank');
+    if (target !== url) setTimeout(() => URL.revokeObjectURL(target), 60000);
   };
   const share = async (sig) => {
     const url = await getDocumentUrl(sig); if (!url) return;

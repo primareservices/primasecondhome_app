@@ -18,7 +18,7 @@ export async function handle(req, deps = {}) {
   const own = deps.own || ownClient();
   const re = deps.re || reService();
   const now = new Date();
-  const stays = await own.rest('guest_stays?select=id,property_id,room&closed_at=is.null&anonymized_at=is.null&limit=5000');
+  const stays = await own.rest('guest_stays?select=id,property_id,room,next_cleaning,last_cleaning,room_state&closed_at=is.null&anonymized_at=is.null&limit=5000');
   const byProp = {};
   for (const s of stays) (byProp[s.property_id] = byProp[s.property_id] || []).push(s);
   const today = day(now), to = day(now.getTime() + 14 * 864e5), since = new Date(now.getTime() - 30 * 864e5).toISOString();
@@ -35,8 +35,9 @@ export async function handle(req, deps = {}) {
     const stateByRoom = {};
     for (const s of states) { const room = String(s.id).split('|').slice(1).join('|'); stateByRoom[room] = s.status || (s.data && s.data.status) || null; }
     for (const st of list) {
-      const patch = { next_cleaning: pickNext(nextByRoom, st.room), last_cleaning: lastByRoom[st.room] || null, room_state: stateByRoom[st.room] || null, cleaning_synced_at: now.toISOString() };
-      await own.rest('guest_stays?id=eq.' + st.id, { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+      const patch = { next_cleaning: pickNext(nextByRoom, st.room), last_cleaning: lastByRoom[st.room] || null, room_state: stateByRoom[st.room] || null };
+      if (patch.next_cleaning === (st.next_cleaning || null) && patch.last_cleaning === (st.last_cleaning || null) && patch.room_state === (st.room_state || null)) continue;   // bez zmeny
+      await own.rest('guest_stays?id=eq.' + st.id, { method: 'PATCH', body: { ...patch, cleaning_synced_at: now.toISOString() }, prefer: 'return=minimal' });
       updated += 1;
     }
   }

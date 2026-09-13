@@ -54,11 +54,13 @@ export async function vapidAuthorization(endpoint, { subject, publicKey, private
   return 'vapid t=' + h + '.' + p + '.' + b64u.encode(sig) + ', k=' + publicKey;
 }
 
+// Topic (RFC 8030 §5.4): max 32 znakov z URL-safe base64 abecedy — dlhší push služby odmietnu (400).
+export const shortTopic = (t) => { const s = String(t || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32); return s || undefined; };
 // Odošle notifikáciu. Vracia { ok, status, gone } — gone = 404/410, predplatné treba zmazať.
 export async function sendWebPush(subscription, payload, { vapid, ttl = 24 * 3600, urgency = 'normal', topic, fetchImpl } = {}) {
   const body = await encryptPayload(subscription, payload);
   const headers = { 'Content-Type': 'application/octet-stream', 'Content-Encoding': 'aes128gcm', TTL: String(ttl), Urgency: urgency, Authorization: await vapidAuthorization(subscription.endpoint, vapid) };
-  if (topic) headers.Topic = topic;
+  const tp = shortTopic(topic); if (tp) headers.Topic = tp;
   const r = await (fetchImpl || fetch)(subscription.endpoint, { method: 'POST', headers, body });
   return { ok: r.ok, status: r.status, gone: r.status === 404 || r.status === 410 };
 }

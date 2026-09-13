@@ -63,7 +63,7 @@ create policy office_house_info on public.house_info for all using (public.offic
 -- Stav žiadosti smie meniť personál (office) aj server; hosť naďalej len zrušiť.
 create or replace function public.guest_requests_guard() returns trigger language plpgsql as $$
 begin
-  if coalesce(current_setting('request.jwt.claim.role', true), '') = 'authenticated' and not public.is_office() then
+  if coalesce(auth.role(), '') = 'authenticated' and not public.is_office() then
     if new.status is distinct from old.status and new.status <> 'cancelled' then raise exception 'guest_may_only_cancel' using errcode = '42501'; end if;
     if new.status = 'cancelled' and old.status not in ('reported','assigned','forwarded','received') then raise exception 'cannot_cancel_now' using errcode = '42501'; end if;
     new.cancelled_at := case when new.status = 'cancelled' then coalesce(new.cancelled_at, now()) else old.cancelled_at end;
@@ -76,11 +76,11 @@ create or replace function public.office_issue_code(p_stay uuid, p_code text, p_
 returns text language plpgsql security definer set search_path = public as $$
 declare v_norm text := upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g'));
 begin
-  if not (public.office_stay_ok(p_stay) or coalesce(current_setting('request.jwt.claim.role', true), '') = 'service_role') then raise exception 'forbidden' using errcode = '42501'; end if;
+  if not (public.office_stay_ok(p_stay) or coalesce(auth.role(), '') = 'service_role') then raise exception 'forbidden' using errcode = '42501'; end if;
   if length(v_norm) < 6 then raise exception 'code_too_short'; end if;
   if not exists (select 1 from public.guest_stays where id = p_stay) then raise exception 'stay_not_found'; end if;
   insert into public.guest_codes(code_hash, stay_id, expires_at, created_by)
-    values (encode(sha256(convert_to(v_norm, 'UTF8')), 'hex'), p_stay, now() + make_interval(days => greatest(coalesce(p_days, 14), 1)), coalesce(p_by, current_setting('request.jwt.claim.email', true), 'office'))
+    values (encode(sha256(convert_to(v_norm, 'UTF8')), 'hex'), p_stay, now() + make_interval(days => greatest(coalesce(p_days, 14), 1)), coalesce(p_by, auth.jwt() ->> 'email', 'office'))
     on conflict (code_hash) do update set stay_id = excluded.stay_id, expires_at = excluded.expires_at, used_at = null, created_by = excluded.created_by;
   return v_norm;
 end $$;
@@ -93,7 +93,7 @@ create or replace function public.office_create_stay(p_property text, p_room tex
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_code text;
 begin
-  if not (public.office_property_ok(p_property) or coalesce(current_setting('request.jwt.claim.role', true), '') = 'service_role') then raise exception 'forbidden' using errcode = '42501'; end if;
+  if not (public.office_property_ok(p_property) or coalesce(auth.role(), '') = 'service_role') then raise exception 'forbidden' using errcode = '42501'; end if;
   insert into public.guest_stays (property_id, room, surname_prefix, display_name, client_company, check_in, check_out, lang, email, coordinator)
     values (p_property, p_room, public.guest_norm_surname(p_surname), p_display_name, p_company, coalesce(p_check_in, current_date), p_check_out, p_lang, p_email, p_coordinator)
     returning id into v_id;
@@ -126,3 +126,6 @@ begin
 end $$;
 revoke all on function public.guest_forget_me() from public, anon;
 grant execute on function public.guest_forget_me() to authenticated;
+
+-- ── 5) oznamy: kedy bol push odoslaný (naplánované oznamy posiela cron cez send-push {dueAnnouncements}) ──
+alter table public.guest_announcements add column if not exists pushed_at timestamptz;

@@ -41,20 +41,21 @@ export function flush() {
 async function flushNow() {
   let sent = 0;
   try {
-    let list = read();
-    for (const item of list.slice()) {
+    // Front sa číta znova pri každom zápise: kým handler čaká (napr. nahráva fotku), mohla pribudnúť
+    // ďalšia položka — starý snímok by ju pri zápise prepísal.
+    for (const item of read()) {
       const h = handlers[item.op];
       if (!h) continue;                       // neznámy handler — nechať v rade (iná verzia appky)
       try {
         await h(item.payload);
-        list = list.filter(x => x.id !== item.id); write(list); sent += 1;
+        write(read().filter(x => x.id !== item.id)); sent += 1;
       } catch (e) {
-        item.tries += 1; item.lastError = String((e && e.message) || e).slice(0, 160);
+        const msg = String((e && e.message) || e).slice(0, 160);
         if (e && e.permanent) {              // trvalá chyba (napr. RLS, validácia): vyradiť, nezastavovať front
-          failed.push({ ...item, failedAt: new Date().toISOString() }); failed.splice(0, Math.max(0, failed.length - 20));
-          list = list.filter(x => x.id !== item.id); write(list); continue;
+          failed.push({ ...item, tries: item.tries + 1, lastError: msg, failedAt: new Date().toISOString() }); failed.splice(0, Math.max(0, failed.length - 20));
+          write(read().filter(x => x.id !== item.id)); continue;
         }
-        write(list);
+        write(read().map(x => (x.id === item.id ? { ...x, tries: x.tries + 1, lastError: msg } : x)));
         break;                                // prechodná chyba (sieť, 5xx): skúsime neskôr
       }
     }

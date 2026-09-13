@@ -20,7 +20,12 @@ export class SupaError extends Error {
 }
 function networkError(e) { const err = new Error('network: ' + ((e && e.message) || e)); err.name = 'NetworkError'; err.permanent = false; return err; }
 
-function loadSession() { if (session) return session; try { session = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { session = null; } return session; }
+// Vždy z úložiska: druhé okno (PWA + Safari) mohlo token medzitým obnoviť.
+function loadSession() {
+  try { if (typeof localStorage !== 'undefined') { session = JSON.parse(localStorage.getItem(KEY) || 'null'); return session; } } catch {}
+  return session;
+}
+function hasStayCached() { try { const c = JSON.parse(localStorage.getItem('primaHome:cache:v1') || 'null'); return !!(c && c.stay); } catch { return false; } }
 function saveSession(s) { session = s; try { if (s) localStorage.setItem(KEY, JSON.stringify(s)); else localStorage.removeItem(KEY); } catch {} }
 export function getUid() { const s = loadSession(); return s && s.user ? s.user.id : null; }
 export function hasSession() { return !!loadSession(); }
@@ -63,7 +68,16 @@ export function ensureSession() {
     if (s && s.expires_at * 1000 - Date.now() > 60 * 1000) return s;
     if (s && s.refresh_token) {
       try { return await refreshSession(s.refresh_token); }
-      catch (e) { if (e.name === 'NetworkError') throw e; saveSession(null); }
+      catch (e) {
+        if (e.name === 'NetworkError') throw e;
+        const again = loadSession();   // iné okno mohlo token obnoviť (GoTrue reuse detection)
+        if (again && again.refresh_token && again.refresh_token !== s.refresh_token) {
+          try { return await refreshSession(again.refresh_token); } catch (e2) { if (e2.name === 'NetworkError') throw e2; }
+        }
+        // Kým je v cache pobyt, nový anonymný používateľ by hosťa odhlásil (nemá väzbu) — radšej chyba a ďalší pokus.
+        if (hasStayCached()) { const err = new SupaError(401, { message: 'session_expired' }); err.permanent = false; throw err; }
+        saveSession(null);
+      }
     }
     return signInAnonymously();
   })().finally(() => { inflight = null; });

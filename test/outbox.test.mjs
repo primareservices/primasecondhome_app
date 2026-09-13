@@ -47,3 +47,18 @@ test('outbox: trvalá chyba (permanent) položku vyradí a front pokračuje', as
   const r = await flush();
   assert.deepEqual(sent, ['ok']); assert.equal(r.sent, 1); assert.equal(pendingCount(), 0);
 });
+
+test('outbox: položka zaradená počas čakajúceho handlera sa nestratí', async () => {
+  _resetForTests();
+  let release; const gate = new Promise(r => { release = r; });
+  const sent = [];
+  registerHandler('slow', async (p) => { await gate; sent.push(p.id); });
+  registerHandler('syncRequest', async (p) => { sent.push(p.id); });
+  enqueue('slow', { id: 'first' });
+  const running = flush();
+  await new Promise(r => setTimeout(r, 10));
+  enqueue('syncRequest', { id: 'second' });   // pribudne, kým handler prvej položky čaká
+  release(); await running;
+  await flush();
+  assert.deepEqual(sent, ['first', 'second']); assert.equal(pendingCount(), 0);
+});

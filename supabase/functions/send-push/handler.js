@@ -13,16 +13,26 @@ export async function handle(req, deps = {}) {
   const own = deps.own || ownClient();
   const body = await readJson(req);
   if (!body) return json({ error: 'bad_json' }, 400);
-  if (body.record && body.record.texts) {   // oznam
-    const a = body.record;
-    if (a.valid_from && new Date(a.valid_from).getTime() > Date.now() + 60 * 1000) return json({ skipped: 'not_yet_valid' });
+  const pushAnnouncement = async (a) => {
     const subs = await subscriptionsFor(own, a.property_id ? { propertyId: a.property_id } : { all: true });
     const res = await pushTo(own, subs, (s) => {
       const tx = a.texts[s.lang] || a.texts.en || a.texts.sk || Object.values(a.texts)[0];
       if (!tx) return null;
       return { title: (a.severity === 'urgent' ? '❗ ' : '') + (tx.title || pushText(s.lang, 'announcement')), body: (tx.body || '').slice(0, 180), url: '/#/announcements', tag: 'ann-' + a.id, ttl: 12 * 3600 };
     }, { fetchImpl: deps.pushFetch });
-    return json({ ok: true, recipients: subs.length, ...res });
+    try { await own.rest('guest_announcements?id=eq.' + a.id, { method: 'PATCH', body: { pushed_at: new Date().toISOString() }, prefer: 'return=minimal' }); } catch { /* len značka */ }
+    return { recipients: subs.length, ...res };
+  };
+  if (body.dueAnnouncements) {   // cron: naplánované oznamy, ktorých čas práve nastal
+    const due = await own.rest('guest_announcements?select=*&pushed_at=is.null&valid_from=lte.' + encodeURIComponent(new Date().toISOString()) + '&order=valid_from.asc&limit=50');
+    let sent = 0;
+    for (const a of due) { const r = await pushAnnouncement(a); sent += r.sent; }
+    return json({ ok: true, due: due.length, sent });
+  }
+  if (body.record && body.record.texts) {   // webhook: nový oznam
+    const a = body.record;
+    if (a.valid_from && new Date(a.valid_from).getTime() > Date.now() + 60 * 1000) return json({ skipped: 'scheduled' });   // pošle cron
+    return json({ ok: true, ...(await pushAnnouncement(a)) });
   }
   if (body.record && body.record.sender && body.record.stay_id) {   // správa (webhook guest_messages INSERT)
     const m = body.record;

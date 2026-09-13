@@ -20,11 +20,12 @@ export function Messages() {
   const msgs = all.filter(m => new Date(m.createdAt).getTime() <= now);
   useEffect(() => { markMessagesRead(stay.id); }, [stay, msgs.length]);   // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {   // ukážková odpoveď má čas v budúcnosti — prekresliť, keď nastane
-    const future = all.find(m => new Date(m.createdAt).getTime() > now);
+    const t0 = Date.now();
+    const future = all.find(m => new Date(m.createdAt).getTime() > t0);
     if (!future) return undefined;
-    const id = setTimeout(() => setTick(x => x + 1), new Date(future.createdAt).getTime() - now + 50);
+    const id = setTimeout(() => setTick(x => x + 1), new Date(future.createdAt).getTime() - t0 + 50);
     return () => clearTimeout(id);
-  }, [all, now]);
+  }, [all]);
   const [text, setText] = useState('');
   const endRef = useRef(null);
   useEffect(() => { if (endRef.current && msgs.length) endRef.current.scrollIntoView({ block: 'end' }); }, [msgs.length]);

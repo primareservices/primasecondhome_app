@@ -48,7 +48,7 @@ create trigger guest_requests_touch before update on public.guest_requests for e
 -- Hosť smie svoju žiadosť len zrušiť; ostatné stavy nastavuje personál (service role, edge funkcie).
 create or replace function public.guest_requests_guard() returns trigger language plpgsql as $$
 begin
-  if coalesce(current_setting('request.jwt.claim.role', true), '') = 'authenticated' then
+  if coalesce(auth.role(), '') = 'authenticated' then
     if new.status is distinct from old.status and new.status <> 'cancelled' then raise exception 'guest_may_only_cancel' using errcode = '42501'; end if;
     if new.status = 'cancelled' and old.status not in ('reported','assigned','forwarded','received') then raise exception 'cannot_cancel_now' using errcode = '42501'; end if;
     new.cancelled_at := case when new.status = 'cancelled' then coalesce(new.cancelled_at, now()) else old.cancelled_at end;

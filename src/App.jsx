@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_LANG, detectLang } from './config/languages.js';
 import { propertyById, propertyByQr } from './config/properties.js';
 import { I18nContext, hasDict, loadDict, makeT, readStoredLang, storeLang } from './i18n/index.js';
@@ -112,11 +112,14 @@ export function App() {
   const ctx = useMemo(() => ({ stay, property, content, pack, rules, publicMode: !stay, refresh: () => setTick(x => x + 1) }), [stay, property, content, pack, rules]);
   useEffect(() => { if (window.__primaBootOk) window.__primaBootOk(); startOutbox(); startStore(); }, []);
   // QR z dverí bez prihlásenia: vyberie budovu; kód izby si Report prevezme po zadaní kódu (do 30 min).
+  const qrApplied = useRef(false);
   useEffect(() => {
-    if (stay) return;
+    if (stay || qrApplied.current) return;
     const q = peekQrPending();
     const p = q && propertyByQr(q.pid);
-    if (p && p.id !== publicPid) setPublicProperty(p.id);
+    if (!p) return;
+    qrApplied.current = true;   // raz — návštevník si potom môže vybrať inú budovu
+    if (p.id !== publicPid) setPublicProperty(p.id);
   }, [stay, publicPid]);
 
   const seg = route.segs[0] || '';

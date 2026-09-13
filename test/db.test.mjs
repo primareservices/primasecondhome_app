@@ -13,8 +13,9 @@ const A = '11111111-1111-4111-8111-111111111111', B = '22222222-2222-4222-8222-2
 
 const PREP = `
 create schema if not exists auth;
-create or replace function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
-create or replace function auth.role() returns text language sql stable as $$ select nullif(current_setting('request.jwt.claim.role', true), '') $$;
+create or replace function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
+create or replace function auth.uid() returns uuid language sql stable as $$ select nullif(auth.jwt() ->> 'sub', '')::uuid $$;
+create or replace function auth.role() returns text language sql stable as $$ select nullif(auth.jwt() ->> 'role', '') $$;
 create or replace function public.unaccent(t text) returns text language sql immutable as $$ select t $$;
 create or replace function public.digest(t text, a text) returns bytea language sql immutable as $$ select sha256(convert_to(t, 'UTF8')) $$;
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
@@ -31,8 +32,9 @@ alter default privileges in schema public grant execute on functions to anon, au
 grant all on all tables in schema storage to anon, authenticated, service_role;
 `;
 async function as(uid, role, fn) {
-  await db.exec(`set role ${role}; select set_config('request.jwt.claim.sub', '${uid || ''}', false); select set_config('request.jwt.claim.role', '${role}', false);`);
-  try { return await fn(); } finally { await db.exec(`reset role; select set_config('request.jwt.claim.sub', '', false); select set_config('request.jwt.claim.role', '', false);`); }
+  const claims = JSON.stringify({ sub: uid || undefined, role, email: uid ? uid.slice(0, 4) + '@test' : undefined });
+  await db.exec(`set role ${role}; select set_config('request.jwt.claims', '${claims}', false);`);
+  try { return await fn(); } finally { await db.exec(`reset role; select set_config('request.jwt.claims', '', false);`); }
 }
 const q = async (sql, params) => (await db.query(sql, params)).rows;
 const fails = async (fn, re) => { try { await fn(); } catch (e) { assert.match(String(e.message), re); return; } assert.fail('expected failure ' + re); };

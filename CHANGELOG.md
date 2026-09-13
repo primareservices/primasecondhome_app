@@ -35,6 +35,11 @@ verzie sa hosťom nová verzia neponúkne.
   prekladá do SK/EN pre recepciu.
 - **Vymazať moje údaje** v profile (`guest_forget_me`): správy, notifikácie, nastavenia a väzba
   telefónu preč; hlásenia a podpísané dokumenty ostávajú do anonymizácie po odchode.
+- Opravy z revízie kódu: outbox nestráca položky zaradené počas odosielania; kontrola roly cez
+  `auth.role()` (nie zastaraný GUC); push Topic ≤ 32 znakov; rekurzívne mazanie fotiek pri
+  anonymizácii; naplánované oznamy posiela cron; podpis prežije čistenie fotiek; lokálne PDF sa
+  zahodí po serverovom; obnova tokenu naprieč oknami bez straty prihlásenia; QR nastaví budovu
+  raz; otváranie PDF funguje aj v iOS Safari; jeden endpoint = jedna notifikácia.
 - Nástroje: `tools/export-rules.mjs` (poriadok do tabuľky `rules`, `supabase/seed/rules.sql`),
   `.env.example`, návrh presmerovania QR pre RE SERVICE (`integrations/re-service/`).
 - 57 + 12 testov (`npm run check`): DB nad PGlite, adaptér nad falošným PostgREST, handlery

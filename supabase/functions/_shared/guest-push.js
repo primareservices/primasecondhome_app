@@ -35,7 +35,9 @@ export async function subscriptionsFor(own, target) {
     for (const p of prefs) if (p.lang) langByUid[p.uid] = p.lang;
     for (const s of subs) if (!off.has(s.uid)) out.push({ uid: s.uid, endpoint: s.endpoint, keys: s.keys, lang: langByUid[s.uid] || target.lang || 'en' });
   }
-  return out;
+  // rovnaký telefón po odhlásení a novom prihlásení má nový uid — jeden endpoint = jedna notifikácia
+  const seen = new Set();
+  return out.filter(s => { if (seen.has(s.endpoint)) return false; seen.add(s.endpoint); return true; });
 }
 export async function pushTo(own, subs, makePayload, { fetchImpl } = {}) {
   const v = vapid();

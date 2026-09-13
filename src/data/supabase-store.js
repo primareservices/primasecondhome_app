@@ -30,8 +30,19 @@ function load() {
   try { const raw = storage().getItem(KEY); state = raw ? { ...blank(), ...JSON.parse(raw) } : blank(); } catch { state = blank(); }
   return state;
 }
+// Pri plnom úložisku (iOS ~5 MB) zahodíme najväčšie voliteľné dáta (lokálne PDF, potom fotky) a skúsime znova;
+// storageFull ostáva ako diagnostika. Bez toho by sa každý ďalší zápis potichu stratil.
+export let storageFull = false;
 function save() {
-  try { storage().setItem(KEY, JSON.stringify(state)); } catch {}
+  try { storage().setItem(KEY, JSON.stringify(state)); storageFull = false; }
+  catch {
+    try {
+      for (const sg of state.signatures) if (sg.pdfDataUrl) sg.pdfDataUrl = null;
+      storage().setItem(KEY, JSON.stringify(state)); storageFull = false;
+    } catch {
+      try { state.photosLocal = {}; storage().setItem(KEY, JSON.stringify(state)); storageFull = false; } catch { storageFull = true; }
+    }
+  }
   for (const fn of listeners) { try { fn(); } catch {} }
 }
 export function subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); }
@@ -51,7 +62,7 @@ export function requestFromRow(r, photosLocal) {
   const local = photosLocal && photosLocal[r.id];
   return { ...(r.payload || {}), id: r.id, ref: r.ref, stayId: r.stay_id, kind: r.kind, category: r.category, service: r.service, place: r.place, room: r.room,
     text: r.text, lang: r.lang, status: r.status, timeline: Array.isArray(r.timeline) ? r.timeline : [], createdAt: r.created_at, updatedAt: r.updated_at,
-    externalRef: r.external_ref || null, photos: local || [], photoPaths: Array.isArray(r.photos) ? r.photos : [], sync: 'synced' };
+    externalRef: r.external_ref || null, photos: local || [], photoPaths: Array.isArray(r.photos) ? r.photos : [], sync: 'synced' };   // photos: lokálne dátové URL len pri čítaní (withPhotos)
 }
 export function requestToRow(req) {
   const payload = {}; for (const k of PAYLOAD_KEYS) if (req[k] !== undefined) payload[k] = req[k];
@@ -87,20 +98,21 @@ export function getPublicPropertyId() { return load().publicPropertyId; }
 export function setPublicProperty(id) { const st = load(); st.publicPropertyId = id; save(); syncAll(true).catch(() => {}); }
 
 // ── žiadosti ─────────────────────────────────────────────────────────────────
-export function listRequests(stayId) { return load().requests.filter(r => r.stayId === stayId).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)); }
-export function getRequest(id) { return load().requests.find(r => r.id === id) || null; }
+const withPhotos = (r, st) => (r ? { ...r, photos: st.photosLocal[r.id] || r.photos || [] } : r);
+export function listRequests(stayId) { const st = load(); return st.requests.filter(r => r.stayId === stayId).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)).map(r => withPhotos(r, st)); }
+export function getRequest(id) { const st = load(); return withPhotos(st.requests.find(r => r.id === id) || null, st); }
 export function createRequest(stayId, data) {
   const st = load();
   const now = nowISO();
   const id = uuid();
   const photos = Array.isArray(data.photos) ? data.photos : [];
-  const req = { ...data, id, ref: '…', stayId, status: 'reported', createdAt: now, updatedAt: now, timeline: [{ at: now, status: 'reported' }], photos, photoPaths: [], sync: 'queued' };
+  const req = { ...data, id, ref: '…', stayId, status: 'reported', createdAt: now, updatedAt: now, timeline: [{ at: now, status: 'reported' }], photos: [], photoPaths: [], sync: 'queued' };
   st.requests.push(req);
-  if (photos.length) { st.photosLocal[id] = photos; prunePhotos(st); }
+  if (photos.length) { st.photosLocal[id] = photos; prunePhotos(st); }   // fotky len raz (photosLocal), v žiadosti nie
   save();
   enqueue('supa:insertRequest', { id });
   if (isOnline()) flush().catch(() => {});
-  return req;
+  return { ...req, photos };
 }
 export function cancelRequest(id) {
   const st = load();
@@ -114,7 +126,7 @@ export function cancelRequest(id) {
 }
 function prunePhotos(st) {
   const keep = st.requests.slice().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)).slice(0, 10).map(r => r.id);
-  for (const id of Object.keys(st.photosLocal)) if (!keep.includes(id)) delete st.photosLocal[id];
+  for (const id of Object.keys(st.photosLocal)) if (!id.startsWith('sig:') && !keep.includes(id)) delete st.photosLocal[id];   // sig:* = neodoslaný podpis
 }
 export async function getPhotoUrls(req) {
   if (req && req.photos && req.photos.length) return req.photos;
@@ -279,7 +291,7 @@ export async function syncAll(force = false) {
     if (got.ann) s2.announcements = got.ann.map(r => annFromRow(r, s2.readAnn));
     if (got.requests) {
       const queued = s2.requests.filter(r => r.sync !== 'synced' && !got.requests.some(x => x.id === r.id));
-      s2.requests = [...got.requests.map(r => requestFromRow(r, s2.photosLocal)), ...queued];
+      s2.requests = [...got.requests.map(r => ({ ...requestFromRow(r, null), photos: [] })), ...queued];
     }
     if (got.bookings) { const queued = s2.bookings.filter(b => !got.bookings.some(x => x.id === b.id) && b.day >= dayISO(new Date())); s2.bookings = [...got.bookings.map(bookingFromRow), ...queued]; }
     if (got.occupancy) s2.occupancy = (Array.isArray(got.occupancy) ? got.occupancy : []).map(o => ({ day: o.day, start: o.start, len: o.len, machine: o.machine }));
@@ -289,7 +301,7 @@ export async function syncAll(force = false) {
     if (got.signatures) {
       const local = Object.fromEntries(s2.signatures.map(s => [s.id, s]));
       const queued = s2.signatures.filter(s => s.sync === 'queued' && !got.signatures.some(x => x.id === s.id));
-      s2.signatures = [...got.signatures.map(r => ({ ...sigFromRow(r), pdfDataUrl: local[r.id] ? local[r.id].pdfDataUrl : null })), ...queued];
+      s2.signatures = [...got.signatures.map(r => ({ ...sigFromRow(r), pdfDataUrl: r.pdf_path ? null : (local[r.id] ? local[r.id].pdfDataUrl : null) })), ...queued];   // serverové PDF nahrádza lokálne
     }
     if (got.prefs && got.prefs[0]) s2.prefs.notifications = got.prefs[0].notifications !== false;
     s2.syncedAt = nowISO();
@@ -326,7 +338,7 @@ registerHandler('supa:insertRequest', async ({ id }) => {
   try { rows = await rest('guest_requests?on_conflict=id', { method: 'POST', body: requestToRow(req), prefer: 'resolution=ignore-duplicates,return=representation' }); }
   catch (e) { if (e && e.permanent) patchLocal(s => s.requests, id, r => { r.sync = 'failed'; r.syncError = e.message; }); throw e; }
   const row = Array.isArray(rows) ? rows[0] : rows;
-  patchLocal(s => s.requests, id, (r, s) => { if (row) { Object.assign(r, requestFromRow(row, s.photosLocal)); } r.sync = 'synced'; r.syncedAt = nowISO(); });
+  patchLocal(s => s.requests, id, (r, s) => { if (row) { Object.assign(r, requestFromRow(row, null), { photos: [] }); } r.sync = 'synced'; r.syncedAt = nowISO(); });
 });
 registerHandler('supa:cancelRequest', async ({ id }) => { await rest('guest_requests?id=eq.' + id, { method: 'PATCH', body: { status: 'cancelled' }, prefer: 'return=minimal' }); });
 registerHandler('supa:cancelBooking', async ({ id }) => { await rest('guest_bookings?id=eq.' + id, { method: 'PATCH', body: { status: 'cancelled', cancelled_at: nowISO() }, prefer: 'return=minimal' }); });
