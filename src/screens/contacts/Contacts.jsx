@@ -8,7 +8,7 @@ import { Banner, Card, IconBox, PageHeader, SectionLabel, secondaryBtn } from '.
 import { Icon } from '../../ui/icons.jsx';
 
 function LinkBtn({ href, icon, children, primary }) {
-  return <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" style={{ ...secondaryBtn, width: 'auto', minHeight: 46, padding: '0 14px', fontSize: 14, textDecoration: 'none', flex: '1 1 auto', ...(primary ? { background: BRAND.red, color: '#fff', boxShadow: '0 10px 24px ' + BRAND.redGlow } : null) }}><Icon name={icon} size={16}/>{children}</a>;
+  return <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" style={{ ...secondaryBtn, width: 'auto', minHeight: 46, padding: '0 14px', fontSize: 14, textDecoration: 'none', flex: '1 1 auto', ...(primary ? { background: BRAND.red, color: '#fff', boxShadow: 'none' } : null) }}><Icon name={icon} size={16}/>{children}</a>;
 }
 function ContactCard({ icon, title, sub, children, note }) {
   return (

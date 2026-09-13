@@ -12,23 +12,24 @@ import { RoofAccent } from './PrimaLogo.jsx';
 // vstupy sú vyplnené krémom bez rámika. Biele karty na krémovom pozadí, žiadne gradienty.
 export const inputStyle = {
   width: '100%', padding: '14px 16px', fontSize: 16, minHeight: 54,
-  background: C.cardAlt, border: 'none', borderRadius: C.radiusSm,
+  background: C.card, border: 'none', borderRadius: C.radiusSm, boxShadow: 'inset 0 0 0 1.5px ' + C.borderStrong,
   color: C.text, fontFamily: 'inherit',
 };
 export const primaryBtn = {
-  width: '100%', padding: '0 20px', borderRadius: 16, minHeight: 54,
+  width: '100%', padding: '0 20px', borderRadius: 14, minHeight: 54,
   background: BRAND.red, color: '#FFFFFF', border: 'none',
   fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-  boxShadow: '0 8px 20px ' + BRAND.redGlow,
+  boxShadow: 'none',
 };
+// Sekundárne tlačidlo je obrys: biele, 1,5 px linka, Carbon text.
 export const secondaryBtn = {
-  ...primaryBtn, background: C.cardAlt, color: C.text, boxShadow: 'none', fontSize: 15, minHeight: 52,
+  ...primaryBtn, background: C.card, color: C.text, boxShadow: 'inset 0 0 0 1.5px ' + C.borderStrong, fontSize: 15, minHeight: 52,
 };
 export const ghostBtn = {
   background: 'transparent', border: 'none', color: C.textMuted, fontSize: 14, fontWeight: 600, padding: '10px 12px',
   display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 14, minHeight: 44,
 };
-export const inkBtn = { ...primaryBtn, background: C.navy, boxShadow: '0 8px 20px rgba(51,51,51,0.2)' };
+export const inkBtn = { ...primaryBtn, background: C.navy };
 export const iconBtn = {
   width: 44, height: 44, borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm,
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: C.text, flexShrink: 0,
@@ -64,7 +65,7 @@ export function Field({ label, hint, children, style, optional }) {
 export function EmptyState({ icon, title, subtitle }) {
   return (
     <div style={{ background: C.card, borderRadius: C.radius, padding: '32px 20px', textAlign: 'center', color: C.textMuted, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, boxShadow: shadow.sm }}>
-      <div style={{ width: 52, height: 52, borderRadius: 18, background: C.cardAlt, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.textFaint }}><Icon name={icon} size={24}/></div>
+      <div style={{ width: 52, height: 52, borderRadius: 18, boxShadow: shadow.sm, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.textFaint }}><Icon name={icon} size={24}/></div>
       <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{title}</div>
       {subtitle && <div style={{ fontSize: 14, lineHeight: 1.5, maxWidth: 320 }}>{subtitle}</div>}
     </div>
@@ -74,23 +75,24 @@ export function Chip({ active, onClick, children, icon }) {
   return (
     <button type="button" onClick={onClick} style={{
       flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 40, borderRadius: 999, border: 'none',
-      background: active ? BRAND.red : C.card, color: active ? '#fff' : C.text, fontSize: 14, fontWeight: 600,
-      boxShadow: active ? '0 6px 16px ' + BRAND.redGlow : shadow.sm, whiteSpace: 'nowrap',
+      background: active ? C.navy : C.card, color: active ? '#fff' : C.text, fontSize: 14, fontWeight: 600,
+      boxShadow: active ? 'none' : shadow.sm, whiteSpace: 'nowrap',
     }}>{icon && <Icon name={icon} size={15}/>}{children}</button>
   );
 }
+// Box ikony je obrys (1px linka) s farebnou ikonou; plnú plochu majú len danger (červená) a ink (Carbon).
 const ICON_TONES = {
-  default: { bg: C.cardAlt, fg: C.textMuted },
+  default: { ring: C.border, fg: C.text },
   danger: { bg: BRAND.red, fg: '#fff' },
-  success: { bg: C.successSoft, fg: C.successText },
-  info: { bg: C.infoSoft, fg: C.infoText },
-  warning: { bg: C.warningSoft, fg: C.warningText },
-  brand: { bg: BRAND.redSoft, fg: BRAND.red },
+  success: { ring: C.successBorder, fg: C.successText },
+  info: { ring: C.infoBorder, fg: C.infoText },
+  warning: { ring: C.warningBorder, fg: C.warningText },
+  brand: { ring: '#F5C2BF', fg: BRAND.red },
   ink: { bg: C.navy, fg: '#fff' },
 };
 export function IconBox({ name, tone = 'default', size = 46, iconSize = 22, radius = 16, style }) {
   const t = ICON_TONES[tone] || ICON_TONES.default;
-  return <span style={{ width: size, height: size, borderRadius: radius, background: t.bg, color: t.fg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...style }}><Icon name={name} size={iconSize}/></span>;
+  return <span style={{ width: size, height: size, borderRadius: radius, background: t.bg || C.card, boxShadow: t.ring ? 'inset 0 0 0 1px ' + t.ring : 'none', color: t.fg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...style }}><Icon name={name} size={iconSize}/></span>;
 }
 export function ListRow({ icon, title, sub, meta, right, onClick, tone, badge, flat }) {
   return (
@@ -111,20 +113,20 @@ export function ListRow({ icon, title, sub, meta, right, onClick, tone, badge, f
     </button>
   );
 }
-// Štítok: mäkká pilulka vo vetách; „highlighter" z manuálu = ružový podklad + červený text (danger).
+// Štítok: obrysová pilulka vo vetách — farba tónu je v texte a v linke, nie v ploche.
 const TONES = {
-  muted:   { bg: C.cardAlt, fg: C.textMuted },
-  accent:  { bg: C.accentSoft, fg: C.accentText },
-  info:    { bg: C.infoSoft, fg: C.infoText },
-  warning: { bg: C.warningSoft, fg: C.warningText },
-  danger:  { bg: BRAND.redSoft, fg: BRAND.redDark },
-  success: { bg: C.successSoft, fg: C.successText },
+  muted:   { ring: C.borderStrong, fg: C.textMuted },
+  accent:  { ring: C.accentBorder, fg: C.accentText },
+  info:    { ring: C.infoBorder, fg: C.infoText },
+  warning: { ring: C.warningBorder, fg: C.warningText },
+  danger:  { ring: '#F5C2BF', fg: BRAND.redDark },
+  success: { ring: C.successBorder, fg: C.successText },
   ink:     { bg: C.navy, fg: '#fff' },
   red:     { bg: BRAND.red, fg: '#fff' },
 };
 export function Tag({ tone = 'muted', icon, children, style, wrap }) {
   const t = TONES[tone] || TONES.muted;
-  return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minHeight: 28, padding: wrap ? '4px 11px' : '0 11px', borderRadius: 999, background: t.bg, color: t.fg, fontSize: 12.5, fontWeight: 600, lineHeight: 1.3, whiteSpace: wrap ? 'normal' : 'nowrap', maxWidth: '100%', ...style }}>{icon && <Icon name={icon} size={14} style={{ flexShrink: 0 }}/>}<span>{children}</span></span>;
+  return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minHeight: 28, padding: wrap ? '4px 11px' : '0 11px', borderRadius: 999, background: t.bg || 'transparent', boxShadow: t.ring ? 'inset 0 0 0 1px ' + t.ring : 'none', color: t.fg, fontSize: 12.5, fontWeight: 600, lineHeight: 1.3, whiteSpace: wrap ? 'normal' : 'nowrap', maxWidth: '100%', ...style }}>{icon && <Icon name={icon} size={14} style={{ flexShrink: 0 }}/>}<span>{children}</span></span>;
 }
 export function StatusBadge({ status }) {
   const { t } = useT();
@@ -132,12 +134,12 @@ export function StatusBadge({ status }) {
   return <Tag tone={m.tone}>{t(m.t)}</Tag>;
 }
 export function Banner({ tone = 'info', icon, children, style }) {
-  const c = tone === 'warning' ? { bg: C.warningSoft, fg: C.warningText }
-    : tone === 'success' ? { bg: C.successSoft, fg: C.successText }
-    : tone === 'danger' ? { bg: BRAND.redSoft, fg: BRAND.redDark }
-    : { bg: C.infoSoft, fg: C.infoText };
+  const c = tone === 'warning' ? { ring: C.warningBorder, fg: C.warningText }
+    : tone === 'success' ? { ring: C.successBorder, fg: C.successText }
+    : tone === 'danger' ? { ring: '#F5C2BF', fg: BRAND.redDark }
+    : { ring: C.infoBorder, fg: C.infoText };
   return (
-    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: c.bg, color: C.text, borderRadius: 16, padding: '12px 14px', fontSize: 14, lineHeight: 1.45, ...style }}>
+    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: C.card, boxShadow: 'inset 0 0 0 1px ' + c.ring, color: C.text, borderRadius: 16, padding: '12px 14px', fontSize: 14, lineHeight: 1.45, ...style }}>
       {icon && <span style={{ color: c.fg, flexShrink: 0, marginTop: 1 }}><Icon name={icon} size={18}/></span>}
       <div style={{ minWidth: 0, flex: 1 }}>{children}</div>
     </div>
@@ -170,8 +172,8 @@ export function Toggle({ checked, onChange, label, sub }) {
         <span style={{ display: 'block', fontSize: 15, fontWeight: 600 }}>{label}</span>
         {sub && <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3, lineHeight: 1.4 }}>{sub}</span>}
       </span>
-      <span style={{ width: 50, height: 30, borderRadius: 999, background: checked ? BRAND.red : '#DAD4C8', position: 'relative', transition: 'background .15s', flexShrink: 0 }}>
-        <span style={{ position: 'absolute', top: 3, left: checked ? 23 : 3, width: 24, height: 24, borderRadius: '50%', background: '#fff', boxShadow: '0 2px 6px rgba(51,51,51,0.2)', transition: 'left .15s' }}/>
+      <span style={{ width: 50, height: 30, borderRadius: 999, background: checked ? C.navy : '#E2E2E2', position: 'relative', transition: 'background .15s', flexShrink: 0 }}>
+        <span style={{ position: 'absolute', top: 3, left: checked ? 23 : 3, width: 24, height: 24, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 3px rgba(51,51,51,0.25)', transition: 'left .15s' }}/>
       </span>
     </button>
   );
@@ -182,7 +184,7 @@ export function Stars({ value, onChange, label }) {
       <span style={{ flex: 1, fontSize: 15, fontWeight: 700 }}>{label}</span>
       <span style={{ display: 'flex', gap: 2 }}>
         {[1, 2, 3, 4, 5].map(n => (
-          <button key={n} type="button" onClick={() => onChange(n)} aria-label={String(n)} style={{ background: 'none', border: 'none', padding: 4, color: n <= value ? C.warning : '#DAD4C8', display: 'flex' }}>
+          <button key={n} type="button" onClick={() => onChange(n)} aria-label={String(n)} style={{ background: 'none', border: 'none', padding: 4, color: n <= value ? C.warning : '#D6D6D6', display: 'flex' }}>
             <Icon name="Star" size={26} fill={n <= value ? C.warning : 'none'}/>
           </button>
         ))}
@@ -197,7 +199,7 @@ export function Segmented({ options, value, onChange }) {
         const on = value === o.key;
         return (
           <button key={o.key} type="button" onClick={() => onChange(o.key)} className={'opt' + (on ? ' on' : '')} style={{ minHeight: 54 }}>
-            <span style={{ width: 22, height: 22, borderRadius: '50%', boxShadow: 'inset 0 0 0 2px ' + (on ? BRAND.red : '#D0C9BC'), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ width: 22, height: 22, borderRadius: '50%', boxShadow: 'inset 0 0 0 2px ' + (on ? BRAND.red : '#D6D6D6'), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {on && <span style={{ width: 10, height: 10, borderRadius: '50%', background: BRAND.red }}/>}
             </span>
             {o.label}
@@ -209,7 +211,7 @@ export function Segmented({ options, value, onChange }) {
 }
 export function BigAction({ icon, title, sub, onClick }) {
   return (
-    <button type="button" onClick={onClick} className="press" style={{ ...primaryBtn, minHeight: sub ? 68 : 56, justifyContent: 'flex-start', textAlign: 'left', padding: '0 20px 0 18px', borderRadius: 22 }}>
+    <button type="button" onClick={onClick} className="press" style={{ ...primaryBtn, minHeight: sub ? 68 : 56, justifyContent: 'flex-start', textAlign: 'left', padding: '0 20px 0 18px', borderRadius: 20 }}>
       <span style={{ width: 40, height: 40, borderRadius: 14, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icon name={icon} size={22}/></span>
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{ display: 'block', fontSize: 17, fontWeight: 700 }}>{title}</span>
@@ -255,10 +257,10 @@ export function Sheet({ open, title, onClose, children }) {
   return (
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
-        <div style={{ width: 40, height: 5, borderRadius: 999, background: '#DAD4C8', margin: '-4px auto 14px' }}/>
+        <div style={{ width: 40, height: 5, borderRadius: 999, background: '#E2E2E2', margin: '-4px auto 14px' }}/>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
           <b style={{ flex: 1, fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}>{title}</b>
-          <button type="button" onClick={onClose} aria-label="close" style={{ ...iconBtn, width: 36, height: 36, boxShadow: 'none', background: C.cardAlt }}><Icon name="X" size={18}/></button>
+          <button type="button" onClick={onClose} aria-label="close" style={{ ...iconBtn, width: 36, height: 36 }}><Icon name="X" size={18}/></button>
         </div>
         {children}
       </div>

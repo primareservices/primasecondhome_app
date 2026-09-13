@@ -66,7 +66,7 @@ export function Home() {
   return (
     <>
       {stay ? (
-        <div style={{ background: C.card, borderRadius: 24, overflow: 'hidden', boxShadow: shadow.md, position: 'relative' }}>
+        <div style={{ background: C.card, borderRadius: 22, overflow: 'hidden', boxShadow: shadow.sm, position: 'relative' }}>
           <RoofBand style={{ width: '100%' }}/>
           <div style={{ padding: '0 20px 20px', marginTop: -52, position: 'relative' }}>
             <div className="label" style={{ color: C.textMuted }}>{t('home.hello', { name: stay.displayName })}</div>

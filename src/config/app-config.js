@@ -15,10 +15,11 @@ export const fontFamily = "'Poppins', 'Montserrat', ui-sans-serif, system-ui, -a
 // Čísla (izba, referencie, časy) nie sú v monospace — Poppins ExtraBold s tabulkovými číslicami.
 export const monoFamily = fontFamily;
 
+// v5: „tieň" bežnej karty je 1px obrys; skutočný tieň má len plávajúci prvok (súhrn práčovne, sheet).
 export const shadow = {
-  sm: '0 1px 2px rgba(51,51,51,0.04), 0 6px 18px rgba(51,51,51,0.05)',
-  md: '0 2px 4px rgba(51,51,51,0.04), 0 12px 30px rgba(51,51,51,0.08)',
-  lg: '0 18px 40px rgba(184,32,37,0.22)',
+  sm: '0 0 0 1px rgba(51,51,51,0.10)',
+  md: '0 0 0 1px rgba(51,51,51,0.10), 0 10px 30px rgba(51,51,51,0.08)',
+  lg: '0 0 0 1px rgba(51,51,51,0.10), 0 18px 40px rgba(51,51,51,0.10)',
 };
 
 // Kontakty spoločné pre celú sieť (verejné údaje z primare.sk / ubytovnaprima.sk).

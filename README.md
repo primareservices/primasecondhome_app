@@ -120,6 +120,12 @@ Na želanie: menej verzálok (ostávajú len ako brandové gesto), nadpisy a tla
 tlačidlá ako zaoblené bloky (rádius 16), sekundárne tlačidlá a vstupy vyplnené krémom bez rámika,
 štítky ako mäkké pilulky, tiene sotva viditeľné, rádius kariet 24.
 
+### v5 — minimal, obrysy
+
+Biely podklad bez béžovej, karty a štítky ako 1 px obrysy namiesto výplní a tieňov, sekundárne
+tlačidlá a vstupy obrysové, plochá spodná navigácia. Červená len pre hlavnú akciu, výber a brand;
+aktívne filtre Carbon. Popis v `docs/DESIGN_SYSTEM.md` (v5).
+
 ### v3.1 — brand PRIMA v appke
 
 Oficiálne logo PRIMA (strieška + PRIMA + YOUR SECOND HOME, `src/ui/PrimaLogo.jsx`) v hlavičke, na
@@ -129,7 +135,7 @@ hosťa. Obrázky sú voliteľné — pozri `docs/DESIGN_SYSTEM.md` §7: skopíru
 a `prevadzky/*.jpg` z PRIMA TOOLS do `public/brand/` a `public/prevadzky/` a spustite
 `node tools/crop-buildings.mjs`; dovtedy appka používa vínový hero a ikonu budovy.
 
-## Ukážky (demo, 390 px, dizajn v4 podľa brand manuálu)
+## Ukážky (demo, 390 px, dizajn v5 minimal podľa brand manuálu)
 
 Dizajnový systém: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md). Plátno s obrazovkami a alternatívami B/C:
 https://claude.ai/code/artifact/dba3de52-e581-402e-a4cd-a7808c9b6c02.

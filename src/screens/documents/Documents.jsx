@@ -42,7 +42,7 @@ function PermitHero({ stay, t, lang }) {
   // Karta ako „Ubytovací preukaz" z manuálu: červený pás s názvom a logom, pod ním údaje.
   return (
     <>
-      <div style={{ background: C.card, borderRadius: 22, overflow: 'hidden', boxShadow: shadow.md }}>
+      <div style={{ background: C.card, borderRadius: 20, overflow: 'hidden', boxShadow: shadow.sm }}>
         <div style={{ background: BRAND.red, color: '#fff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ flex: 1, fontSize: 16, fontWeight: 700, letterSpacing: '-0.01em' }}>{t('docs.permit')}</span>
           <PrimaLogo variant="horizontal" tone="white" height={30}/>
@@ -51,7 +51,7 @@ function PermitHero({ stay, t, lang }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
               <svg width="92" height="92" viewBox="0 0 92 92" style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
-                <circle cx="46" cy="46" r="40" stroke={C.cardAlt} strokeWidth="8" fill="none"/>
+                <circle cx="46" cy="46" r="40" stroke="#EDEDED" strokeWidth="8" fill="none"/>
                 <circle cx="46" cy="46" r="40" stroke={ringColor} strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={RING} strokeDashoffset={RING * (1 - pct)}/>
               </svg>
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -95,7 +95,7 @@ function Wallet({ stayId, t }) {
     if (!f || !target.current) return;
     try { const dataUrl = await compressImage(f, { maxSide: 1400, quality: 0.8 }); persist({ ...docs, [target.current]: dataUrl }); } catch {}
   };
-  const tile = { padding: 0, border: 'none', borderRadius: 20, background: C.card, boxShadow: shadow.sm, color: C.text, aspectRatio: '1 / 1', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 };
+  const tile = { padding: 0, border: 'none', borderRadius: 18, background: C.card, boxShadow: shadow.sm, color: C.text, aspectRatio: '1 / 1', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 };
   return (
     <>
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/>

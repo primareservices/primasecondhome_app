@@ -14,7 +14,7 @@ const mapHref = (q) => 'https://www.google.com/maps/search/?api=1&query=' + enco
 // Malé okrúhle tlačidlo „Mapa" na konci riadku.
 function MapBtn({ q, t, dark }) {
   if (!q) return null;
-  return <a href={mapHref(q)} target="_blank" rel="noreferrer" aria-label={t('around.map')} style={{ ...iconBtn, width: 38, height: 38, boxShadow: 'none', background: dark ? 'rgba(255,255,255,0.12)' : C.cardAlt, color: dark ? '#fff' : C.textMuted, textDecoration: 'none' }}><Icon name="MapPin" size={17}/></a>;
+  return <a href={mapHref(q)} target="_blank" rel="noreferrer" aria-label={t('around.map')} style={{ ...iconBtn, width: 38, height: 38, boxShadow: dark ? 'inset 0 0 0 1px rgba(255,255,255,0.4)' : shadow.sm, background: dark ? 'transparent' : C.card, color: dark ? '#fff' : C.textMuted, textDecoration: 'none' }}><Icon name="MapPin" size={17}/></a>;
 }
 function Row({ icon, title, sub, walk, q, t, tone = 'default', right }) {
   return (
@@ -35,19 +35,19 @@ function Row({ icon, title, sub, walk, q, t, tone = 'default', right }) {
 // Ilustračná mapka (bez siete, bez API) so špendlíkom budovy a adresou.
 function MapCard({ p }) {
   return (
-    <div style={{ position: 'relative', height: 170, borderRadius: 24, overflow: 'hidden', background: '#F1EAD9', boxShadow: shadow.sm }}>
+    <div style={{ position: 'relative', height: 170, borderRadius: 24, overflow: 'hidden', background: '#F4F4F4', boxShadow: shadow.sm }}>
       <svg viewBox="0 0 350 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
-        <rect width="350" height="170" fill="#F1EAD9"/>
+        <rect width="350" height="170" fill="#F4F4F4"/>
         <path d="M-10 118 C 60 112, 120 96, 200 92 S 330 84, 370 70" stroke="#FFFFFF" strokeWidth="16" fill="none" strokeLinecap="round"/>
-        <path d="M-10 118 C 60 112, 120 96, 200 92 S 330 84, 370 70" stroke="#E0D6C3" strokeWidth="2" fill="none" strokeDasharray="6 8"/>
+        <path d="M-10 118 C 60 112, 120 96, 200 92 S 330 84, 370 70" stroke="#DADADA" strokeWidth="2" fill="none" strokeDasharray="6 8"/>
         <path d="M120 -10 C 126 40, 150 90, 172 180" stroke="#FFFFFF" strokeWidth="12" fill="none"/>
         <path d="M250 -10 C 236 50, 240 110, 262 180" stroke="#FFFFFF" strokeWidth="10" fill="none"/>
-        <rect x="40" y="30" width="46" height="34" rx="6" fill="#E6DCC6"/><rect x="196" y="112" width="60" height="38" rx="6" fill="#E6DCC6"/><rect x="290" y="100" width="44" height="50" rx="6" fill="#E6DCC6"/>
-        <circle cx="318" cy="52" r="26" fill="#DCE8DA"/><circle cx="40" cy="150" r="30" fill="#DCE8DA"/>
+        <rect x="40" y="30" width="46" height="34" rx="6" fill="#E6E6E6"/><rect x="196" y="112" width="60" height="38" rx="6" fill="#E6E6E6"/><rect x="290" y="100" width="44" height="50" rx="6" fill="#E6E6E6"/>
+        <circle cx="318" cy="52" r="26" fill="#E3EEE4"/><circle cx="40" cy="150" r="30" fill="#E3EEE4"/>
         <circle cx="176" cy="86" r="22" fill="rgba(238,42,36,0.16)"/>
         <path d="M176 60 c-9 0-16 7-16 16 0 12 16 26 16 26s16-14 16-26c0-9-7-16-16-16z" fill={BRAND.red}/><circle cx="176" cy="76" r="6" fill="#FFFFFF"/>
       </svg>
-      <a href={mapUrl(p)} target="_blank" rel="noreferrer" style={{ position: 'absolute', left: 14, bottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 999, background: C.navy, color: '#fff', fontSize: 12, fontWeight: 800, textDecoration: 'none' }}><Icon name="MapPin" size={14}/>{p.street}</a>
+      <a href={mapUrl(p)} target="_blank" rel="noreferrer" style={{ position: 'absolute', left: 14, bottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 999, background: C.card, boxShadow: shadow.sm, color: C.text, fontSize: 12.5, fontWeight: 600, textDecoration: 'none' }}><Icon name="MapPin" size={14}/>{p.street}</a>
     </div>
   );
 }
@@ -91,7 +91,7 @@ export function Around() {
               {pack.facts.tickets.single.map(([k, paper, app]) => <KeyValue key={k} label={k} value={<span className="num">{paper} <span style={{ color: C.infoText }}>· {app} {t('around.inApp')}</span></span>}/>)}
               {pack.facts.tickets.passes.map(([k, v]) => <KeyValue key={k} label={k} value={v} mono/>)}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 16, background: C.warningSoft, color: C.warningText, fontSize: 13, fontWeight: 600, lineHeight: 1.4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 14, boxShadow: 'inset 0 0 0 1px ' + C.warningBorder, color: C.warningText, fontSize: 13, fontWeight: 600, lineHeight: 1.4 }}>
               <Icon name="AlertTriangle" size={18} style={{ flexShrink: 0 }}/><span>{t('around.fine', { a: pack.facts.tickets.fine[0], b: pack.facts.tickets.fine[1], c: pack.facts.tickets.fine[2] })} {t('around.reimburse')}</span>
             </div>
           </Card>
@@ -118,7 +118,7 @@ export function Around() {
           </Card>
         )}
         {sec === 'authorities' && <>
-          <div style={{ background: C.navy, color: '#fff', borderRadius: C.radius, padding: 18, boxShadow: '0 16px 36px rgba(23,22,26,0.22)' }}>
+          <div style={{ background: C.navy, color: '#fff', borderRadius: C.radius, padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <IconBox name="Landmark" tone="danger"/>
               <span style={{ flex: 1, minWidth: 0 }}>
@@ -134,7 +134,7 @@ export function Around() {
           </div>
           <Card className="rows" style={rows}>
             <Row icon="Users" tone="success" title={F.iom.name} sub={I('iom')} t={t}
-              right={<a href={telHref(F.iom.phone)} style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 12, borderRadius: 999, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)', textDecoration: 'none' }}><Icon name="Phone" size={14}/>{t('around.call')}</a>}/>
+              right={<a href={telHref(F.iom.phone)} style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 13, borderRadius: 999, textDecoration: 'none' }}><Icon name="Phone" size={14}/>{t('around.call')}</a>}/>
           </Card>
           <SectionLabel style={{ margin: '4px 2px -4px' }}>{I('embassies')}</SectionLabel>
           <Card className="rows" style={rows}>

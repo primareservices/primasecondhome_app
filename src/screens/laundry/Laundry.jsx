@@ -79,7 +79,7 @@ export function Laundry() {
         ))}
         <div style={{ display: 'flex', gap: 14, padding: '12px 0 4px', fontSize: 12, fontWeight: 700, color: C.textMuted, flexWrap: 'wrap' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span className="hatch" style={{ width: 14, height: 14, borderRadius: 4 }}/>{t('laundry.legendTaken')}</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ width: 14, height: 14, borderRadius: 4, background: C.infoSoft }}/>{t('laundry.legendMine')}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ width: 14, height: 14, borderRadius: 4, background: C.card, boxShadow: 'inset 0 0 0 1.5px ' + C.infoText }}/>{t('laundry.legendMine')}</span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span style={{ width: 14, height: 14, borderRadius: 4, background: BRAND.red }}/>{t('laundry.legendSel')}</span>
         </div>
       </Card>
@@ -96,15 +96,15 @@ export function Laundry() {
                 <span style={{ display: 'block', fontSize: 15, fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.01em' }}>{(b.day === dayISO(now) ? t('common.today') : fmtDate(b.day, lang)) + ' ' + slotLabel(b.start, b.len || 2) + ' · ' + t('laundry.machine', { n: b.machine })}</span>
                 <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3 }}>{t('laundry.reminder')}</span>
               </span>
-              {canCancel(b) && <button type="button" style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 12, borderRadius: 999, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)' }} onClick={() => setConfirm(b.id)}>{t('common.cancel')}</button>}
+              {canCancel(b) && <button type="button" style={{ ...secondaryBtn, width: 'auto', minHeight: 34, padding: '0 12px', fontSize: 13, borderRadius: 999 }} onClick={() => setConfirm(b.id)}>{t('common.cancel')}</button>}
             </div>
           ))}
         </Card>
       ) : <EmptyState icon="WashingMachine" title={t('laundry.none')}/>}
       <div style={{ height: 104 }}/>
 
-      <div style={{ position: 'fixed', left: 16, right: 16, bottom: 'calc(100px + env(safe-area-inset-bottom))', zIndex: 18, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto', maxWidth: 608, margin: '0 auto', background: C.card, borderRadius: C.radius, boxShadow: '0 -8px 30px rgba(23,22,26,0.08), 0 16px 40px rgba(23,22,26,0.14)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ position: 'fixed', left: 16, right: 16, bottom: 'calc(78px + env(safe-area-inset-bottom))', zIndex: 18, pointerEvents: 'none' }}>
+        <div style={{ pointerEvents: 'auto', maxWidth: 608, margin: '0 auto', background: C.card, borderRadius: C.radius, boxShadow: '0 0 0 1px rgba(51,51,51,0.10), 0 12px 32px rgba(51,51,51,0.12)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             {sel && <div className="label" style={{ color: BRAND.redDark }}>{t('laundry.selected')}</div>}
             <div style={{ fontSize: 15, fontWeight: 700, marginTop: sel ? 4 : 0, lineHeight: 1.3, letterSpacing: '-0.01em', color: sel ? C.text : C.textMuted }}>{sel ? fmtDate(day, lang) + ' · ' + slotLabel(sel.start, L.slotHours) + ' · ' + t('laundry.machine', { n: sel.machine }) : t('laundry.pick')}</div>

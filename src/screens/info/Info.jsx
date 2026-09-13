@@ -42,7 +42,7 @@ export function Info() {
             <div style={{ fontSize: 14, color: C.textMuted }}>{p.postal}{p.district ? ' · ' + p.district : ''}</div>
           </div>
         </div>
-        {tip && <div style={{ marginTop: 12, background: C.warningSoft, borderRadius: 16, padding: '12px 14px', fontSize: 14, lineHeight: 1.45 }}><b>{t('info.arrival')}: </b>{tip}</div>}
+        {tip && <div style={{ marginTop: 12, boxShadow: 'inset 0 0 0 1px ' + C.warningBorder, borderRadius: 14, padding: '12px 14px', fontSize: 14, lineHeight: 1.45 }}><b>{t('info.arrival')}: </b>{tip}</div>}
         <a href={mapUrl(p)} target="_blank" rel="noreferrer" style={{ ...secondaryBtn, marginTop: 12, textDecoration: 'none' }}><Icon name="ExternalLink" size={16}/>{t('info.openMap')}</a>
       </Card>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -56,7 +56,7 @@ export function Info() {
             <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em' }}>{t('info.reception')}</div>
             <div style={{ fontSize: 13, color: C.textMuted }}>{p.reception.hours247 ? t('info.reception247') : ''}</div>
           </div>
-          <a href={telHref(p.reception.phone)} style={{ ...secondaryBtn, width: 'auto', minHeight: 40, padding: '0 14px', fontSize: 13, borderRadius: 999, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)', textDecoration: 'none' }}><Icon name="Phone" size={15}/>{t('common.call')}</a>
+          <a href={telHref(p.reception.phone)} style={{ ...secondaryBtn, width: 'auto', minHeight: 40, padding: '0 14px', fontSize: 13, borderRadius: 999, textDecoration: 'none' }}><Icon name="Phone" size={15}/>{t('common.call')}</a>
         </div>
       </Card>
       <Card style={{ marginBottom: 10 }}>
@@ -76,7 +76,7 @@ export function Info() {
         {['kitchen', 'laundryRoom', 'quiet', 'cleaning', 'waste', 'smoking', 'visitors', 'parking', 'card'].map(k => (
           <InfoBlock key={k} icon={HOUSE_INFO_ICONS[k]} title={t('info.' + k) + (extra[k] ? ' · ' + extra[k] : '')}>
             {body(k)}
-            {k === 'laundryRoom' && p.laundry === 'booking' && <div style={{ marginTop: 8 }}><button type="button" style={{ ...secondaryBtn, minHeight: 44, fontSize: 14, background: BRAND.redSoft, color: BRAND.red, boxShadow: 'none' }} onClick={() => navigate('/laundry')}><Icon name="WashingMachine" size={16}/>{t('svc.laundryBooking')}</button></div>}
+            {k === 'laundryRoom' && p.laundry === 'booking' && <div style={{ marginTop: 8 }}><button type="button" style={{ ...secondaryBtn, minHeight: 44, fontSize: 14, color: BRAND.red, boxShadow: 'inset 0 0 0 1.5px #F5C2BF' }} onClick={() => navigate('/laundry')}><Icon name="WashingMachine" size={16}/>{t('svc.laundryBooking')}</button></div>}
           </InfoBlock>
         ))}
         <ListRow icon="ShieldCheck" title={t('info.rules')} sub={t('rules.readFull')} onClick={() => navigate('/info/rules')}/>

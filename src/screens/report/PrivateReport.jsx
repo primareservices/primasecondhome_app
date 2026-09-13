@@ -38,7 +38,7 @@ export function PrivateReport() {
   };
   if (done) return (
     <div className="fade-in" style={{ textAlign: 'center', paddingTop: 32 }}>
-      <div style={{ width: 84, height: 84, borderRadius: 28, background: C.successSoft, color: C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name="ShieldCheck" size={40}/></div>
+      <div style={{ width: 84, height: 84, borderRadius: '50%', boxShadow: 'inset 0 0 0 1.5px ' + C.successBorder, color: C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name="ShieldCheck" size={40}/></div>
       <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em' }}>{t('private.sentTitle')}</h1>
       <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.5 }}>{t('private.sentSub')}<br/>{t('detail.ref')} <b className="num" style={{ color: C.text }}>{done.ref}</b></div>
       <button type="button" style={{ ...inkBtn, marginTop: 22 }} onClick={() => navigate('/requests/' + done.id, { replace: true })}><Icon name="ClipboardList" size={18}/>{t('requests.title')}</button>
@@ -67,7 +67,7 @@ export function PrivateReport() {
         <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onFiles}/>
         <div className="photo-strip">
           {photos.map((p, i) => <div key={i} style={{ position: 'relative' }}><img src={p} alt=""/><button type="button" aria-label={t('common.remove')} onClick={() => setPhotos(ph => ph.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, right: -6, width: 26, height: 26, borderRadius: '50%', border: 'none', background: C.navy, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="X" size={14}/></button></div>)}
-          {photos.length < 2 && <button type="button" onClick={() => fileRef.current && fileRef.current.click()} style={{ width: 84, height: 84, borderRadius: 16, border: 'none', background: C.card, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)', color: C.textMuted, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 12, fontWeight: 800 }}><Icon name="Camera" size={22}/>{t('common.photo')}</button>}
+          {photos.length < 2 && <button type="button" onClick={() => fileRef.current && fileRef.current.click()} style={{ width: 84, height: 84, borderRadius: 14, border: 'none', background: C.card, boxShadow: 'inset 0 0 0 1.5px ' + C.borderStrong, color: C.textMuted, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 12, fontWeight: 600 }}><Icon name="Camera" size={22}/>{t('common.photo')}</button>}
         </div>
       </Field>
       <Card className="rows" style={{ marginTop: 18, padding: '4px 18px' }}>
@@ -76,7 +76,7 @@ export function PrivateReport() {
       </Card>
       {error && <Banner tone="danger" icon="AlertCircle" style={{ marginTop: 12 }}>{error}</Banner>}
       <button type="button" style={{ ...inkBtn, marginTop: 18 }} onClick={submit}><Icon name="Send" size={20}/>{t('private.submit')}</button>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 16, background: BRAND.redSoft, color: BRAND.redDark, fontSize: 13, fontWeight: 700, lineHeight: 1.4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, padding: '12px 14px', borderRadius: 14, boxShadow: 'inset 0 0 0 1px #F5C2BF', color: BRAND.redDark, fontSize: 13, fontWeight: 600, lineHeight: 1.4 }}>
         <Icon name="Siren" size={18} style={{ flexShrink: 0 }}/><span>{t('private.danger', { a: E.general, b: E.police })}</span>
       </div>
     </>

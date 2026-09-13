@@ -44,16 +44,16 @@ export function Welcome({ query, initialStep, hasLang }) {
   if (step === 'lang') {
     return (
       <div className="fade-in" style={{ minHeight: '100dvh' }}>
-        <div style={{ background: C.card, padding: '24px 20px 0', overflow: 'hidden', borderRadius: '0 0 32px 32px', boxShadow: shadow.sm }}>
+        <div style={{ background: C.card, padding: '24px 20px 0', overflow: 'hidden', borderBottom: '1px solid ' + C.border }}>
           <div style={{ maxWidth: 640, margin: '0 auto' }}>
             <PrimaLogo variant="horizontal" tone="brand" height={48}/>
             {art ? (
               <img src={BRAND_ART} alt="" style={{ display: 'block', width: '110%', maxWidth: 560, maxHeight: '34dvh', objectFit: 'contain', margin: '6px auto -4px', transform: 'translateX(-3%)' }}/>
             ) : (
-              <RoofBand style={{ width: '62%', margin: '18px 0 -8px auto', opacity: 0.9 }}/>
+              <RoofBand style={{ width: '58%', margin: '18px 0 -8px auto' }}/>
             )}
-            <div style={{ padding: '10px 0 22px' }}>
-              <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, color: BRAND.redDark }}>{title}</h1>
+            <div style={{ padding: '10px 0 24px' }}>
+              <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, color: C.text }}>{title}</h1>
               <div style={{ fontSize: 22, fontWeight: 500, color: C.textMuted, marginTop: 4, letterSpacing: '-0.01em' }}>Welcome home.</div>
             </div>
           </div>

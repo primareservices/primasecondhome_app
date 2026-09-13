@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { C } from '../../config/theme.js';
+import { shadow } from '../../config/app-config.js';
 import { ISSUE_BY_KEY, ISSUE_CATEGORIES, PLACES, URGENCY } from '../../config/catalog.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
@@ -10,7 +11,7 @@ import { roomLabel } from '../../domain/room-codes.js';
 import { Banner, Chip, Field, IconBox, ListRow, PageHeader, Segmented, Spinner, ghostBtn, inputStyle, primaryBtn, secondaryBtn } from '../../ui/primitives.jsx';
 import { Icon } from '../../ui/icons.jsx';
 
-const addTile = { width: 84, height: 84, borderRadius: 16, border: 'none', background: C.card, boxShadow: 'inset 0 0 0 1.5px rgba(23,22,26,0.08)', color: C.textMuted, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 12, fontWeight: 800 };
+const addTile = { width: 84, height: 84, borderRadius: 14, border: 'none', background: C.card, boxShadow: 'inset 0 0 0 1.5px ' + C.borderStrong, color: C.textMuted, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 12, fontWeight: 600 };
 
 export function Report({ query }) {
   const { t, lang } = useT();
@@ -47,7 +48,7 @@ export function Report({ query }) {
   if (done) {
     return (
       <div className="fade-in" style={{ textAlign: 'center', paddingTop: 32 }}>
-        <div style={{ width: 84, height: 84, borderRadius: 28, background: C.successSoft, color: C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name="CheckCircle2" size={40}/></div>
+        <div style={{ width: 84, height: 84, borderRadius: '50%', boxShadow: 'inset 0 0 0 1.5px ' + C.successBorder, color: C.success, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}><Icon name="CheckCircle2" size={40}/></div>
         <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em' }}>{t('report.sentTitle')}</h1>
         <div style={{ fontSize: 15, color: C.textMuted, lineHeight: 1.5, marginBottom: 18 }}>{t('report.sentSub', { ref: done.ref })}</div>
         {cat && cat.ddd && <Banner tone="warning" icon="Bug" style={{ textAlign: 'left', marginBottom: 10 }}>{t('report.pestsNote')}</Banner>}
@@ -88,7 +89,7 @@ export function Report({ query }) {
       <Field label={t('report.photo')} hint={t('report.photoHint')} optional style={{ marginTop: 22 }}>
         <input ref={fileRef} type="file" accept="image/*" capture="environment" multiple hidden onChange={onFiles}/>
         <div className="photo-strip">
-          {photos.map((p, i) => p.loading ? <div key={i} style={{ width: 84, height: 84, borderRadius: 16, background: C.cardAlt, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Spinner/></div> : (
+          {photos.map((p, i) => p.loading ? <div key={i} style={{ width: 84, height: 84, borderRadius: 14, boxShadow: shadow.sm, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Spinner/></div> : (
             <div key={i} style={{ position: 'relative' }}>
               <img src={p.dataUrl} alt=""/>
               <button type="button" aria-label={t('common.remove')} onClick={() => setPhotos(ph => ph.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, right: -6, width: 26, height: 26, borderRadius: '50%', border: 'none', background: C.navy, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="X" size={14}/></button>
