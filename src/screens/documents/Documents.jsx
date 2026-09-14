@@ -4,7 +4,7 @@ import { NETWORK, shadow } from '../../config/app-config.js';
 import { DOC_PICKUPS, DOC_PURPOSES } from '../../config/catalog.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
-import { createRequest, getDocumentUrl, getPermitExpiry, listRequests, listSignatures, setPermitExpiry, subscribe } from '../../data/adapter.js';
+import { createRequest, getDocumentUrl, getIdentity, getPermitExpiry, listRequests, listSignatures, setPermitExpiry, subscribe } from '../../data/adapter.js';
 import { dataUrlToBlob } from '../../lib/pdf.js';
 import { back, navigate } from '../../router.js';
 import { fmtDate, fmtDateTime, fmtDay, todayISO } from '../../lib/format.js';
@@ -172,6 +172,8 @@ export function Documents() {
   const [done, setDone] = useState(null);
   useEffect(() => subscribe(() => setTick(x => x + 1)), []);
   const docs = useMemo(() => listRequests(stay.id).filter(r => r.kind === 'document'), [stay, tick]);
+  const idn = useMemo(() => getIdentity(stay.id), [stay, tick]);
+  const idnStatus = idn && idn.status ? idn.status : null;
 
   const submit = () => {
     setError('');
@@ -193,6 +195,15 @@ export function Documents() {
             <span style={{ display: 'flex', marginTop: 7 }}>{stay.registeredAt ? <Tag tone="success" icon="Check">{t('status.resolved')}</Tag> : <Tag tone="warning" icon="Clock">{t('docs.pending')}</Tag>}</span>
           </span>
         </div>
+        <button type="button" className="row press" onClick={() => navigate('/identity')} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', color: C.text, padding: '14px 0' }}>
+          <IconBox name={idnStatus === 'approved' ? 'UserCheck' : 'ScanFace'} tone={idnStatus === 'approved' ? 'success' : idnStatus === 'declined' ? 'danger' : idnStatus ? 'warning' : 'info'}/>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: 'block', fontSize: 15, fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.01em' }}>{t('docs.identity')}</span>
+            <span style={{ display: 'block', fontSize: 13, color: C.textMuted, marginTop: 3, lineHeight: 1.4 }}>{idnStatus === 'approved' && idn.checkedAt ? t('identity.checkedAt', { date: fmtDate(idn.checkedAt, lang) }) : idnStatus ? t('identity.' + idnStatus) : t('identity.intro')}</span>
+            <span style={{ display: 'flex', marginTop: 7 }}>{idnStatus === 'approved' ? <Tag tone="success" icon="Check">{t('identity.approved')}</Tag> : idnStatus === 'declined' ? <Tag tone="danger" icon="AlertTriangle">{t('status.reported')}</Tag> : idnStatus ? <Tag tone="warning" icon="Clock">{t('docs.pending')}</Tag> : <Tag tone="info" icon="ScanFace">{t('identity.start')}</Tag>}</span>
+          </span>
+          <Icon name="ChevronRight" size={20} color={C.textFaint}/>
+        </button>
         {docs.map(r => (
           <button key={r.id} type="button" className="row press" onClick={() => navigate('/requests/' + r.id)} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', color: C.text, padding: '14px 0' }}>
             <IconBox name="FileCheck" tone="info"/>

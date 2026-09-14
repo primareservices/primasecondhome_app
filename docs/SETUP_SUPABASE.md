@@ -6,7 +6,7 @@ prestane bežať v DEMO režime a hlásenia hostí sa objavia v PRIMA RE SERVICE
 ## 0. Čo vznikne
 
 - Supabase projekt **prima-home** (EÚ región), oddelený od RE SERVICE a TOOLS.
-- Schéma z `supabase/migrations/`, šesť edge funkcií, dva privátne buckety, webhooky a cron.
+- Schéma z `supabase/migrations/`, deväť edge funkcií, dva privátne buckety, webhooky a cron.
 - Appka prepne na ostrý režim, keď má `VITE_SUPABASE_URL` a `VITE_SUPABASE_ANON_KEY`.
 
 ## 1. Projekt
@@ -42,11 +42,27 @@ npx supabase secrets set \
   DEEPL_KEY=<DeepL API kľúč; free končí :fx> \
   VAPID_PUBLIC_KEY=<…> VAPID_PRIVATE_KEY=<…> VAPID_SUBJECT=mailto:office@primare.sk \
   CF_ACCOUNT_ID=<Cloudflare account id> CF_API_TOKEN=<token s právom Browser Rendering: Edit> \
-  RESEND_API_KEY=<…> MAIL_FROM="PRIMA SECOND HOME <noreply@primare.sk>"
-npx supabase functions deploy guest-request-bridge sync-ticket-status sync-cleaning send-push translate sign-rules guest-cleanup
+  RESEND_API_KEY=<…> MAIL_FROM="PRIMA SECOND HOME <noreply@primare.sk>" \
+  APP_URL=https://home.primare.sk
+npx supabase functions deploy guest-request-bridge sync-ticket-status sync-cleaning send-push translate sign-rules guest-cleanup identity-start identity-webhook
 ```
 
-`SUPABASE_URL` a `SUPABASE_SERVICE_ROLE_KEY` dostávajú funkcie automaticky. Bez `CF_*` funkcia
+Overenie totožnosti (eKYC, voliteľné — bez neho appka povie „doklad ukážete na recepcii“):
+
+```bash
+npx supabase secrets set IDENTITY_PROVIDER=idenfy IDENFY_API_KEY=<…> IDENFY_API_SECRET=<…> IDENFY_WEBHOOK_KEY=<callback signature key>
+# alebo
+npx supabase secrets set IDENTITY_PROVIDER=veriff VERIFF_API_KEY=<…> VERIFF_SHARED_SECRET=<…>
+```
+
+V konzole poskytovateľa nastaviť webhook (rozhodnutie) na
+`https://<ref>.supabase.co/functions/v1/identity-webhook?provider=idenfy` (resp. `…=veriff`);
+funkcia overuje HMAC podpis tela (`Idenfy-Signature`, resp. `X-HMAC-SIGNATURE` + `X-AUTH-CLIENT`).
+Návratová adresa po overení je `APP_URL/#/identity?done=1`. Do `guest_identity` sa ukladá len stav
+a údaje pre domovú knihu (meno, dátum narodenia, štátna príslušnosť, doklad) — nikdy fotky ani
+biometria (`docs/CHECKIN_PODPIS_OVERENIE.md §2`).
+
+`SUPABASE_URL` a `SUPABASE_SERVICE_ROLE_KEY` dostávajú funkcie automaticky (`identity-start` z `SUPABASE_URL` skladá adresu webhooku). Bez `CF_*` funkcia
 `sign-rules` PDF nevyrobí (hosť má PDF z telefónu), bez `RESEND_API_KEY` nepošle e-mail, bez
 `DEEPL_KEY` idú texty personálu bez prekladu, bez `VAPID_*` sa push preskočí — nič nespadne.
 
@@ -58,6 +74,7 @@ npx supabase functions deploy guest-request-bridge sync-ticket-status sync-clean
 | `guest_announcements` | INSERT | `send-push` | `x-webhook-secret: <WEBHOOK_SECRET>` |
 | `guest_signatures` | INSERT | `sign-rules` | `x-webhook-secret: <WEBHOOK_SECRET>` |
 | `guest_messages` | INSERT | `send-push` | `x-webhook-secret: <WEBHOOK_SECRET>` |
+| `guest_requests` | UPDATE | `send-push` | `x-webhook-secret: <WEBHOOK_SECRET>` — zmena stavu / poznámka z modulu „Hostia“ → preklad + push hosťovi (poruchy preskočí, tie rieši `sync-ticket-status`) |
 
 ## 5. Cron (SQL editor; pg_cron + pg_net)
 

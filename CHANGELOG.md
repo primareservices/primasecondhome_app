@@ -4,6 +4,32 @@ Verzia je v `src/config/app-config.js` (`APP_VERSION`) a v `package.json`; obe s
 Commit začína verziou (`v0.2.0 - …`), rovnako ako v PRIMA RE SERVICE a PRIMA TOOLS. Bez zdvihnutia
 verzie sa hosťom nová verzia neponúkne.
 
+## v0.4.0 — 14. 9. 2026 · kolo C (modul „Hostia“ pre TOOLS, overenie totožnosti)
+
+- **Modul „Hostia“ pre PRIMA TOOLS** (`integrations/tools-hostia/`, drop-in s návodom): druhé
+  prihlásenie do projektu hostí (office účet), karty Pobyty a kódy (zoznam po budovách, nový
+  pobyt → kód → lístok A6 s QR do appky a inštrukciou v jazyku hosťa + SK/EN/UK/RU, hromadný
+  import z XLSX exportu ubytovacieho systému s tlačou lístkov 2 × 2, nový kód, odhlásenie, PDF
+  podpísaného poriadku, stav overenia dokladu), Žiadosti (stav + poznámka pre hosťa; poruchy len
+  na čítanie s číslom ticketu RE SERVICE), Správy (vlákna, preklad, odpoveď) a Oznamy (DeepL do
+  6 jazykov, plánovanie, push). Overené produkčným buildom TOOLS a Playwright harnessom s mockom
+  celého projektu hostí (desktop aj mobil, bez JS chýb); logika (`genCode`, import, lístok) má
+  testy v tomto repe.
+- **Push pri zmene stavu žiadosti z office** (`send-push`, webhook `guest_requests` UPDATE):
+  poznámka po slovensky sa preloží do jazyka hosťa a EN, doplní do časovej osi a hosť dostane
+  push; poruchy preskočí (rieši `sync-ticket-status`), vlastný PATCH prekladu sa nezacyklí.
+- **Overenie totožnosti (eKYC) ako krok 2 check-inu:** edge funkcie `identity-start` (JWT hosťa →
+  session u poskytovateľa → presmerovanie) a `identity-webhook` (HMAC-overené rozhodnutie →
+  `guest_identity` len s údajmi pre domovú knihu → push), adaptéry iDenfy a Veriff (`_shared/identity-providers.js`),
+  obrazovka `/identity` (stavy pending / approved / declined / review / unavailable, „overím na
+  recepcii“ ako alternatíva bez biometrie, po návrate od poskytovateľa dosync), karta Check-in
+  na domove (poriadok ✓, doklad →), riadok v Dokumentoch, demo simulácia (schválenie o 4 s),
+  18 nových textov v 12 jazykoch, push texty. Bez `IDENTITY_PROVIDER` appka povie „doklad
+  ukážete na recepcii“.
+- Welcome prijme kód aj ako `?code=` (okrem `?c=` z lístka). Verzia v0.4.0.
+- Dokumentácia: `integrations/tools-hostia/README.md`, SETUP §3 (secrets a webhook eKYC, deploy
+  9 funkcií) a §4 (webhook UPDATE), CHECKIN_PODPIS_OVERENIE §3, INTEGRATION §4, README.
+
 ## v0.3.0 — 14. 9. 2026 · kolo B (API: Supabase + most do RE SERVICE) a hotelový check-in
 
 - **Backend pripravený na nasadenie** (`docs/SETUP_SUPABASE.md`): migrácia v1.1 (práčovňa, povolenia,

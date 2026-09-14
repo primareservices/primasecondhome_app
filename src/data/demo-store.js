@@ -8,7 +8,7 @@ const KEY = 'primaHome:demo:v1';
 const listeners = new Set();
 let state = null;
 
-function blank() { return { session: null, publicPropertyId: null, requests: [], readAnn: [], rulesAck: {}, feedback: [], seq: 1100, notifications: true, bookings: [], permits: {}, signatures: [], messages: [] }; }
+function blank() { return { session: null, publicPropertyId: null, requests: [], readAnn: [], rulesAck: {}, feedback: [], seq: 1100, notifications: true, bookings: [], permits: {}, signatures: [], messages: [], identity: {} }; }
 function load() {
   if (state) return state;
   try { const raw = localStorage.getItem(KEY); state = raw ? { ...blank(), ...JSON.parse(raw) } : blank(); }
@@ -171,8 +171,18 @@ export function markMessagesRead(stayId) {
   for (const m of st.messages) if (m.stayId === stayId && m.sender === 'reception' && !m.readAt && m.createdAt <= at) { m.readAt = at; changed = true; }
   if (changed) save();
 }
+// ── overenie totožnosti (ukážka: „poskytovateľ“ schváli o pár sekúnd; v ostrej prevádzke edge funkcia identity-start + webhook) ──
+export function getIdentity(stayId) { const st = load(); const i = st.identity && st.identity[stayId]; return i ? { stayId, status: i.status || null, provider: i.provider || null, checkedAt: i.checkedAt || null, skipped: !!i.skipped } : null; }
+export function startIdentity(stayId, { delay = 4000 } = {}) {
+  const st = load(); st.identity = st.identity || {};
+  st.identity[stayId] = { status: 'pending', provider: 'demo', startedAt: new Date().toISOString(), checkedAt: null, skipped: false };
+  save();
+  setTimeout(() => { const s2 = load(); const cur = s2.identity && s2.identity[stayId]; if (cur && cur.status === 'pending') { cur.status = 'approved'; cur.checkedAt = new Date().toISOString(); save(); } }, delay);
+  return Promise.resolve({ status: 'pending', provider: 'demo', url: null });
+}
+export function setIdentitySkipped(stayId, v = true) { const st = load(); st.identity = st.identity || {}; st.identity[stayId] = { ...(st.identity[stayId] || { status: null }), skipped: !!v }; save(); }
 export function start() {}
-export async function forgetMe() { const st = load(); const sid = st.session && st.session.stayId; if (sid) { st.messages = st.messages.filter(m => m.stayId !== sid); st.signatures = st.signatures.filter(x => x.stayId !== sid); delete st.rulesAck[sid]; } st.session = null; st.notifications = true; save(); }
+export async function forgetMe() { const st = load(); const sid = st.session && st.session.stayId; if (sid) { st.messages = st.messages.filter(m => m.stayId !== sid); st.signatures = st.signatures.filter(x => x.stayId !== sid); delete st.rulesAck[sid]; if (st.identity) delete st.identity[sid]; } st.session = null; st.notifications = true; save(); }
 
 // Outbox: v DEMO režime je „odoslanie“ = označiť žiadosť ako odoslanú (Supabase adaptér v1.1 tu
 // spraví skutočný zápis). Simulácia personálu beží až od odoslania (syncedAt), nie od uloženia.

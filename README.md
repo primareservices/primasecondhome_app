@@ -91,11 +91,13 @@ Nastavenie v Cloudflare (raz): Workers & Pages → Import a repository → tento
 Postup zmeny: vetva → `npm run check` (importy, preklady, testy, build) → náhľad na staging →
 zlúčenie do `main` = produkcia. Verzia sa dvíha spolu so zápisom do [CHANGELOG.md](CHANGELOG.md).
 
-## Ďalší krok (kolo C)
+## Ďalší krok (kolo D)
 
-Nasadiť backend podľa `docs/SETUP_SUPABASE.md` (Supabase projekt, secrets, webhooky, cron), modul
-„Hostia“ v PRIMA TOOLS (pobyty a kódy z XLSX exportu, tlač lístka, odpovede na správy), overenie
-totožnosti (eKYC poskytovateľ, `docs/CHECKIN_PODPIS_OVERENIE.md`), potom store verzia (Capacitor).
+1. Nasadiť backend podľa `docs/SETUP_SUPABASE.md` (Supabase projekt, secrets, webhooky, cron)
+   a modul „Hostia“ do PRIMA TOOLS podľa `integrations/tools-hostia/README.md`.
+2. Vybrať poskytovateľa overenia totožnosti (`docs/CHECKIN_PODPIS_OVERENIE.md §2`) — kód je
+   pripravený, treba zmluvu, kľúče a DPIA.
+3. Store verzia (Capacitor), potom napojenie na Casist (pobyty bez ručného importu).
 
 ## v2 — Tarif (8. 9. 2026)
 
@@ -141,6 +143,22 @@ Vitajte a ako ikona PWA; Vitajte má rovnakú stavbu ako prihlásenie PRIMA TOOL
 hosťa. Obrázky sú voliteľné — pozri `docs/DESIGN_SYSTEM.md` §7: skopírujte `login-buildings.webp`
 a `prevadzky/*.jpg` z PRIMA TOOLS do `public/brand/` a `public/prevadzky/` a spustite
 `node tools/crop-buildings.mjs`; dovtedy appka používa vínový hero a ikonu budovy.
+
+## v0.4.0 — kolo C: modul „Hostia“ pre TOOLS a overenie totožnosti (14. 9. 2026)
+
+Office strana je hotová ako drop-in modul pre PRIMA TOOLS ([integrations/tools-hostia](integrations/tools-hostia/README.md)):
+pobyty a kódy (lístok s QR, import z XLSX exportu), žiadosti, správy a oznamy — overené buildom
+TOOLS a harnessom s mockom projektu hostí. Check-in hosťa má krok 2: overenie dokladu u eKYC
+poskytovateľa (iDenfy / Veriff, dá sa preskočiť), zmena stavu žiadosti z office ide hosťovi ako
+push s preloženou poznámkou. Podrobne v [CHANGELOG.md](CHANGELOG.md).
+
+| Hostia · pobyty | Lístok s QR | Žiadosti |
+|---|---|---|
+| ![pobyty](docs/screens/tools-hostia-pobyty.png) | ![lístok](docs/screens/tools-hostia-listok.png) | ![žiadosti](docs/screens/tools-hostia-ziadosti.png) |
+
+| Check-in na domove | Overenie dokladu (krok 2) | Overené · Dokumenty |
+|---|---|---|
+| ![check-in](docs/screens/22-home-checkin-uk.png) | ![overenie](docs/screens/23-identity-uk.png) | ![dokumenty](docs/screens/25-documents-identity-uk.png) |
 
 ## v0.3.0 — kolo B: API a hotelový check-in (14. 9. 2026)
 

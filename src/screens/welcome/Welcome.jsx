@@ -20,12 +20,12 @@ import { BRAND_ART, BuildingThumb, useBrandImage } from '../../ui/brand.jsx';
 export function Welcome({ query, initialStep, hasLang }) {
   const { t, lang, setLang, ready } = useT();
   const [step, setStep] = useState(initialStep || (hasLang ? 'code' : 'lang'));
-  const [code, setCode] = useState(query.get('c') || '');
+  const [code, setCode] = useState(query.get('c') || query.get('code') || '');   // z lístka (QR): ?step=code&c=IC23-XXXXXX
   const [surname, setSurname] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const art = useBrandImage(BRAND_ART);
-  useEffect(() => { if (query.get('c')) setCode(query.get('c')); }, [query]);
+  useEffect(() => { const c = query.get('c') || query.get('code'); if (c) setCode(c); }, [query]);
 
   const submit = async () => {
     if (busy) return;

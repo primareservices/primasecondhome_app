@@ -4,7 +4,7 @@
 // po návrate online, pri prepnutí do appky, každú minútu a po každom odoslaní.
 // Tvary objektov sú tie isté ako v demo-store — obrazovky sa nemenia.
 import { APP_VERSION } from '../config/app-config.js';
-import { SupaError, clearSession, ensureSession, getUid, rest, rpc, signedUrl, uploadDataUrl } from './supabase-client.js';
+import { SupaError, clearSession, ensureSession, getUid, invoke, rest, rpc, signedUrl, uploadDataUrl } from './supabase-client.js';
 import { enqueue, flush, isOnline, registerHandler } from './outbox.js';
 import { normSurname } from './demo-store.js';
 
@@ -23,7 +23,7 @@ function storage() {
 }
 function blank() {
   return { session: null, stay: null, publicPropertyId: null, requests: [], photosLocal: {}, announcements: [], readAnn: [], rulesAck: {},
-    bookings: [], occupancy: [], permits: {}, prefs: { notifications: true }, signatures: [], messages: [], syncedAt: null };
+    bookings: [], occupancy: [], permits: {}, prefs: { notifications: true }, signatures: [], messages: [], identity: null, identitySkipped: {}, syncedAt: null };
 }
 function load() {
   if (state) return state;
@@ -72,6 +72,7 @@ export function requestToRow(req) {
 const annFromRow = (r, readAnn) => ({ id: r.id, propertyId: r.property_id, severity: r.severity, validFrom: r.valid_from, validTo: r.valid_to, texts: r.texts || {}, scope: r.scope || {}, unread: !readAnn.includes(r.id) });
 const bookingFromRow = (r) => ({ id: r.id, stayId: r.stay_id, day: r.day, start: r.start, len: r.len, machine: r.machine, status: r.status, createdAt: r.created_at });
 const msgFromRow = (r) => ({ id: r.id, stayId: r.stay_id, sender: r.sender, text: r.text, tr: r.tr || {}, lang: r.lang, createdAt: r.created_at, readAt: r.read_at });
+const identityFromRow = (r) => ({ stayId: r.stay_id, status: r.status, provider: r.provider || null, providerRef: r.provider_ref || null, checkedAt: r.checked_at || null, data: r.data || {} });
 const sigFromRow = (r) => ({ id: r.id, stayId: r.stay_id, version: r.version, name: r.name, email: r.email, lang: r.lang, signedAt: r.signed_at, pdfPath: r.pdf_path, sha256: r.sha256, emailSentAt: r.email_sent_at, sync: 'synced' });
 
 // ── session ──────────────────────────────────────────────────────────────────
@@ -257,6 +258,25 @@ export async function getDocumentUrl(sig) {
   return sig && sig.pdfDataUrl ? sig.pdfDataUrl : null;
 }
 
+// ── overenie totožnosti (eKYC): session zakladá edge funkcia identity-start, výsledok príde webhookom do guest_identity ──
+export function getIdentity(stayId) {
+  const st = load();
+  const i = st.identity && st.identity.stayId === stayId ? st.identity : null;
+  const skipped = !!(st.identitySkipped && st.identitySkipped[stayId]);
+  return i ? { ...i, skipped } : (skipped ? { stayId, status: null, skipped: true } : null);
+}
+export async function startIdentity(stayId, { lang } = {}) {
+  if (!isOnline()) throw new Error('offline');
+  const r = await invoke('identity-start', { lang: lang || null });
+  const st = load();
+  if (r && r.status === 'approved') st.identity = { stayId, status: 'approved', provider: r.provider || null, checkedAt: r.checkedAt || null, data: {} };
+  else if (r && r.status === 'pending') st.identity = { stayId, status: 'pending', provider: r.provider || null, providerRef: r.ref || null, checkedAt: null, data: {} };
+  save();
+  return r || { status: 'unavailable' };
+}
+export function setIdentitySkipped(stayId, v = true) { const st = load(); st.identitySkipped = { ...(st.identitySkipped || {}), [stayId]: !!v }; save(); }
+export const syncNow = () => syncAll(true);
+
 // ── sync zo servera ──────────────────────────────────────────────────────────
 async function fetchAll(path) { const rows = await rest(path); return Array.isArray(rows) ? rows : []; }
 export async function syncAll(force = false) {
@@ -280,6 +300,7 @@ export async function syncAll(force = false) {
       jobs.acks = fetchAll('rule_acks?select=*&stay_id=eq.' + sid + '&order=at.desc&limit=1');
       jobs.messages = fetchAll('guest_messages?select=*&stay_id=eq.' + sid + '&order=created_at.asc&limit=200');
       jobs.signatures = fetchAll('guest_signatures?select=*&stay_id=eq.' + sid + '&order=signed_at.desc');
+      jobs.identity = fetchAll('guest_identity?select=*&stay_id=eq.' + sid);
     }
     if (uid) { jobs.reads = fetchAll('guest_ann_reads?select=ann_id&uid=eq.' + uid); jobs.prefs = fetchAll('guest_prefs?select=*&uid=eq.' + uid); }
     const keys = Object.keys(jobs);
@@ -304,6 +325,7 @@ export async function syncAll(force = false) {
       s2.signatures = [...got.signatures.map(r => ({ ...sigFromRow(r), pdfDataUrl: r.pdf_path ? null : (local[r.id] ? local[r.id].pdfDataUrl : null) })), ...queued];   // serverové PDF nahrádza lokálne
     }
     if (got.prefs && got.prefs[0]) s2.prefs.notifications = got.prefs[0].notifications !== false;
+    if (got.identity && s2.stay) s2.identity = got.identity[0] ? identityFromRow(got.identity[0]) : null;
     s2.syncedAt = nowISO();
     lastSync = Date.now();
     save();

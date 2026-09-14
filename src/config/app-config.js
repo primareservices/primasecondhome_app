@@ -1,6 +1,6 @@
 export const APP_NAME = 'PRIMA SECOND HOME';
 export const APP_SHORT = 'PRIMA Home';
-export const APP_VERSION = 'v0.3.0';
+export const APP_VERSION = 'v0.4.0';
 // (import.meta.env && …) — v node testoch import.meta.env neexistuje; Vite výraz aj tak nahradí.
 export const APP_ENV = (import.meta.env && import.meta.env.VITE_APP_ENV) || 'production';
 export const IS_STAGING = APP_ENV === 'staging';

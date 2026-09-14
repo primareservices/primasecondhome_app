@@ -46,7 +46,7 @@ export function RulesAck() {
       const { pdf } = await renderSignedRules({ rulesGuest: rules, rulesSk, lang, langName, property, stay, name: name.trim(), signedAt, version: rules.version, signaturePng: png, appVersion: APP_VERSION, labels: { title: t('rules.docTitle'), legal: t('rules.docLegal') } });
       const sha256 = await sha256Hex(pdf);
       signRules(stay.id, { version: rules.version, name: name.trim(), email: email.trim() || null, lang, signaturePng: png, pdfDataUrl: bytesToDataUrl(pdf), sha256 });
-      navigate('/', { replace: true });
+      navigate('/identity?step=1', { replace: true });   // krok 2 check-inu: overenie dokladu (dá sa preskočiť)
     } catch (e) { setError(t('common.error')); }
     setBusy(false);
   };

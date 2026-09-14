@@ -1,24 +1,24 @@
-// Krátke texty push notifikácií v 12 jazykoch appky (kľúče: statusUpdate, resolved, message, announcement).
+// Krátke texty push notifikácií v 12 jazykoch appky (kľúče: statusUpdate, resolved, message, announcement, identity*).
 export const PUSH_TEXTS = {
-  sk: { statusUpdate: 'Hlásenie {ref}: {status}', resolved: 'Hlásenie {ref} je vyriešené', message: 'Nová správa z recepcie', announcement: 'Oznam' },
-  en: { statusUpdate: 'Request {ref}: {status}', resolved: 'Request {ref} is resolved', message: 'New message from reception', announcement: 'Announcement' },
-  uk: { statusUpdate: 'Запит {ref}: {status}', resolved: 'Запит {ref} вирішено', message: 'Нове повідомлення від рецепції', announcement: 'Оголошення' },
-  ru: { statusUpdate: 'Запрос {ref}: {status}', resolved: 'Запрос {ref} решён', message: 'Новое сообщение от ресепшена', announcement: 'Объявление' },
-  sr: { statusUpdate: 'Zahtev {ref}: {status}', resolved: 'Zahtev {ref} je rešen', message: 'Nova poruka sa recepcije', announcement: 'Obaveštenje' },
-  ro: { statusUpdate: 'Solicitarea {ref}: {status}', resolved: 'Solicitarea {ref} este rezolvată', message: 'Mesaj nou de la recepție', announcement: 'Anunț' },
-  hu: { statusUpdate: '{ref} kérelem: {status}', resolved: 'A(z) {ref} kérelem megoldva', message: 'Új üzenet a recepciótól', announcement: 'Közlemény' },
-  vi: { statusUpdate: 'Yêu cầu {ref}: {status}', resolved: 'Yêu cầu {ref} đã được giải quyết', message: 'Tin nhắn mới từ lễ tân', announcement: 'Thông báo' },
-  hi: { statusUpdate: 'अनुरोध {ref}: {status}', resolved: 'अनुरोध {ref} हल हो गया', message: 'रिसेप्शन से नया संदेश', announcement: 'सूचना' },
-  ne: { statusUpdate: 'अनुरोध {ref}: {status}', resolved: 'अनुरोध {ref} समाधान भयो', message: 'रिसेप्सनबाट नयाँ सन्देश', announcement: 'सूचना' },
-  uz: { statusUpdate: 'So‘rov {ref}: {status}', resolved: 'So‘rov {ref} hal qilindi', message: 'Qabulxonadan yangi xabar', announcement: 'E’lon' },
-  tl: { statusUpdate: 'Kahilingan {ref}: {status}', resolved: 'Nalutas na ang kahilingan {ref}', message: 'Bagong mensahe mula sa reception', announcement: 'Abiso' },
+  sk: { statusUpdate: 'Hlásenie {ref}: {status}', resolved: 'Hlásenie {ref} je vyriešené', message: 'Nová správa z recepcie', announcement: 'Oznam', identityApproved: 'Doklad je overený', identityDeclined: 'Overenie dokladu neprešlo — príďte na recepciu', identityReview: 'Overenie dokladu kontroluje pracovník' },
+  en: { statusUpdate: 'Request {ref}: {status}', resolved: 'Request {ref} is resolved', message: 'New message from reception', announcement: 'Announcement', identityApproved: 'Your ID is verified', identityDeclined: 'ID verification failed — please come to reception', identityReview: 'Your ID verification is being reviewed' },
+  uk: { statusUpdate: 'Запит {ref}: {status}', resolved: 'Запит {ref} вирішено', message: 'Нове повідомлення від рецепції', announcement: 'Оголошення', identityApproved: 'Документ підтверджено', identityDeclined: 'Перевірка документа не пройшла — зверніться на рецепцію', identityReview: 'Перевірку документа розглядає працівник' },
+  ru: { statusUpdate: 'Запрос {ref}: {status}', resolved: 'Запрос {ref} решён', message: 'Новое сообщение от ресепшена', announcement: 'Объявление', identityApproved: 'Документ подтверждён', identityDeclined: 'Проверка документа не пройдена — обратитесь на ресепшен', identityReview: 'Проверку документа рассматривает сотрудник' },
+  sr: { statusUpdate: 'Zahtev {ref}: {status}', resolved: 'Zahtev {ref} je rešen', message: 'Nova poruka sa recepcije', announcement: 'Obaveštenje', identityApproved: 'Dokument je proveren', identityDeclined: 'Provera dokumenta nije prošla — dođite na recepciju', identityReview: 'Proveru dokumenta pregleda zaposleni' },
+  ro: { statusUpdate: 'Solicitarea {ref}: {status}', resolved: 'Solicitarea {ref} este rezolvată', message: 'Mesaj nou de la recepție', announcement: 'Anunț', identityApproved: 'Actul este verificat', identityDeclined: 'Verificarea actului a eșuat — veniți la recepție', identityReview: 'Verificarea actului este analizată de un angajat' },
+  hu: { statusUpdate: '{ref} kérelem: {status}', resolved: 'A(z) {ref} kérelem megoldva', message: 'Új üzenet a recepciótól', announcement: 'Közlemény', identityApproved: 'Az okmány ellenőrizve', identityDeclined: 'Az okmány ellenőrzése sikertelen — fáradjon a recepcióra', identityReview: 'Az okmány ellenőrzését munkatárs vizsgálja' },
+  vi: { statusUpdate: 'Yêu cầu {ref}: {status}', resolved: 'Yêu cầu {ref} đã được giải quyết', message: 'Tin nhắn mới từ lễ tân', announcement: 'Thông báo', identityApproved: 'Giấy tờ đã được xác minh', identityDeclined: 'Xác minh giấy tờ không thành công — vui lòng đến lễ tân', identityReview: 'Nhân viên đang xem xét việc xác minh giấy tờ' },
+  hi: { statusUpdate: 'अनुरोध {ref}: {status}', resolved: 'अनुरोध {ref} हल हो गया', message: 'रिसेप्शन से नया संदेश', announcement: 'सूचना', identityApproved: 'दस्तावेज़ सत्यापित हो गया', identityDeclined: 'दस्तावेज़ सत्यापन विफल — कृपया रिसेप्शन पर आएँ', identityReview: 'कर्मचारी दस्तावेज़ सत्यापन की समीक्षा कर रहा है' },
+  ne: { statusUpdate: 'अनुरोध {ref}: {status}', resolved: 'अनुरोध {ref} समाधान भयो', message: 'रिसेप्सनबाट नयाँ सन्देश', announcement: 'सूचना', identityApproved: 'कागजात प्रमाणित भयो', identityDeclined: 'कागजात प्रमाणीकरण असफल — कृपया रिसेप्सनमा आउनुहोस्', identityReview: 'कर्मचारीले कागजात प्रमाणीकरण जाँच गर्दैछन्' },
+  uz: { statusUpdate: 'So‘rov {ref}: {status}', resolved: 'So‘rov {ref} hal qilindi', message: 'Qabulxonadan yangi xabar', announcement: 'E’lon', identityApproved: 'Hujjat tasdiqlandi', identityDeclined: 'Hujjat tekshiruvi o‘tmadi — qabulxonaga keling', identityReview: 'Hujjat tekshiruvini xodim ko‘rib chiqmoqda' },
+  tl: { statusUpdate: 'Kahilingan {ref}: {status}', resolved: 'Nalutas na ang kahilingan {ref}', message: 'Bagong mensahe mula sa reception', announcement: 'Abiso', identityApproved: 'Na-verify na ang dokumento', identityDeclined: 'Hindi pumasa ang pag-verify ng dokumento — pumunta sa reception', identityReview: 'Sinusuri ng staff ang pag-verify ng dokumento' },
 };
 // Názvy stavov pre push (krátke, zrkadlo i18n status.*).
 export const STATUS_TEXTS = {
-  sk: { reported: 'nahlásené', assigned: 'priradené', inProgress: 'rieši sa', longer: 'dlhšia oprava', major: 'väčšia porucha', deferred: 'odložené', resolved: 'vyriešené' },
-  en: { reported: 'reported', assigned: 'assigned', inProgress: 'in progress', longer: 'longer repair', major: 'major fault', deferred: 'deferred', resolved: 'resolved' },
-  uk: { reported: 'повідомлено', assigned: 'призначено', inProgress: 'у роботі', longer: 'триваліший ремонт', major: 'серйозна несправність', deferred: 'відкладено', resolved: 'вирішено' },
-  ru: { reported: 'сообщено', assigned: 'назначено', inProgress: 'в работе', longer: 'длительный ремонт', major: 'серьёзная неисправность', deferred: 'отложено', resolved: 'решено' },
+  sk: { reported: 'nahlásené', assigned: 'priradené', inProgress: 'rieši sa', longer: 'dlhšia oprava', major: 'väčšia porucha', deferred: 'odložené', resolved: 'vyriešené', ready: 'pripravené', forwarded: 'preposlané koordinátorovi', received: 'prijaté vedením' },
+  en: { reported: 'reported', assigned: 'assigned', inProgress: 'in progress', longer: 'longer repair', major: 'major fault', deferred: 'deferred', resolved: 'resolved', ready: 'ready', forwarded: 'forwarded to the coordinator', received: 'received by management' },
+  uk: { reported: 'повідомлено', assigned: 'призначено', inProgress: 'у роботі', longer: 'триваліший ремонт', major: 'серйозна несправність', deferred: 'відкладено', resolved: 'вирішено', ready: 'готово', forwarded: 'передано координатору', received: 'отримано керівництвом' },
+  ru: { reported: 'сообщено', assigned: 'назначено', inProgress: 'в работе', longer: 'длительный ремонт', major: 'серьёзная неисправность', deferred: 'отложено', resolved: 'решено', ready: 'готово', forwarded: 'передано координатору', received: 'получено руководством' },
 };
 export function pushText(lang, key, vars = {}) {
   const d = PUSH_TEXTS[lang] || PUSH_TEXTS.en;

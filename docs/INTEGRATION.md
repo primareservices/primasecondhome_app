@@ -1,10 +1,11 @@
 # Integration with PRIMA systems
 
 How PRIMA SECOND HOME (guest app) connects to Casist, PRIMA RE SERVICE and PRIMA TOOLS.
-Status 14 Sep 2026 (v0.3.0): the guest side of v1.1 is implemented — migrations in
-`supabase/migrations/`, the Supabase adapter (`src/data/supabase-store.js`) and six edge functions
-(`supabase/functions/`). Deployment steps: `SETUP_SUPABASE.md`. Until the project is created the app
-runs on the `demo` adapter.
+Status 14 Sep 2026 (v0.4.0): the guest side of v1.1 is implemented — migrations in
+`supabase/migrations/`, the Supabase adapter (`src/data/supabase-store.js`) and nine edge functions
+(`supabase/functions/`, incl. eKYC `identity-start` / `identity-webhook`). The office side is a
+drop-in module for PRIMA TOOLS (`integrations/tools-hostia/`, see §4). Deployment steps:
+`SETUP_SUPABASE.md`. Until the project is created the app runs on the `demo` adapter.
 
 ---
 
@@ -188,9 +189,19 @@ through `guest_links.uid = auth.uid()`.
 
 ---
 
-## 4. Office-side screens (PRIMA TOOLS, v1.1)
+## 4. Office-side screens (PRIMA TOOLS, v1.1) — delivered as `integrations/tools-hostia/`
 
-- **Hostia** — create stay + print slip (QR + code + first 5 languages of the building).
-- **Žiadosti hostí** — inbox of service/document requests with status buttons.
-- **Oznamy** — announcements editor with DeepL fill-in and preview per language.
-- **Potvrdenia o ubytovaní** — queue, mark ready, attach scan.
+One TOOLS module „Hostia“ with four tabs (install guide in its README; verified by a production
+build of TOOLS and a browser harness with a mocked guest project):
+
+- **Pobyty a kódy** — stays per building, new stay + slip (QR + code + guest language, SK, EN, UK,
+  RU), bulk import from the accommodation-system XLSX export with slips 2 × 2 on A4, new code,
+  check-out, signed house-rules PDF and identity status per stay.
+- **Žiadosti** — service/document/private requests with status change + note (translated and
+  pushed to the guest by the `guest_requests` UPDATE webhook); issues are shown read-only with
+  the RE SERVICE ticket id.
+- **Správy** — threads per guest with SK translation, replies translated by DeepL + push.
+- **Oznamy** — editor with DeepL fill-in (EN, UK, RU, RO, HU, VI), scheduling and push.
+
+Accommodation confirmations are handled as document requests in the Žiadosti tab (status
+`ready` = pick up at reception).

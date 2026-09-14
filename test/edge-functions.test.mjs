@@ -105,3 +105,29 @@ test('send-push: správa recepcie → preklad (DeepL falošný) + push hosťovi;
   assert.equal(res.translated, true);
   delete process.env.DEEPL_KEY;
 });
+
+test('send-push: office zmenil stav žiadosti (webhook UPDATE) → preklad poznámky + push; porucha a náš PATCH sa preskočia', async () => {
+  process.env.DEEPL_KEY = 'x:fx';
+  const sub = { uid: 'u1', endpoint: 'https://push.example/1', keys: { p256dh: 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4', auth: 'BTBZMqHH6r4Tts7J_aSIgg' } };
+  process.env.VAPID_PUBLIC_KEY = 'BP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A8'; process.env.VAPID_PRIVATE_KEY = 'yfWPiYE-n46HLnH0KqZOF1fJJU3MYrct3AELtAQ-oRw';
+  const own = fakeClient([[/^GET guest_stays/, [{ id: STAY.id, lang: 'uk' }]], [/^GET guest_links/, [{ uid: 'u1', stay_id: STAY.id }]], [/^GET guest_push_subscriptions/, [sub]], [/^GET guest_prefs/, []]]);
+  const deepl = async (url, init) => { const b = JSON.parse(init.body); return new Response(JSON.stringify({ translations: [{ detected_source_language: 'SK', text: '[' + b.target_lang + '] ' + b.text[0] }] }), { status: 200 }); };
+  const pushed = [];
+  const pushFetch = async (url, init) => { pushed.push({ url, init }); return new Response(null, { status: 201 }); };
+  const old = { id: 'r2', ref: 'H-1042', stay_id: STAY.id, kind: 'service', status: 'reported', timeline: [] };
+  const rec = { ...old, status: 'inProgress', timeline: [{ at: '2026-09-14T18:00:00Z', status: 'inProgress', note: { sk: 'Vrecia vyzdvihneme o 18:00.' } }] };
+  let res = await (await sendPush(post({ type: 'UPDATE', table: 'guest_requests', record: rec, old_record: old }), { own, fetchImpl: deepl, pushFetch })).json();
+  assert.equal(res.translated, true); assert.equal(res.recipients, 1); assert.equal(res.sent, 1);
+  const patch = own.calls.find(c => c.method === 'PATCH' && c.path.startsWith('guest_requests'));
+  assert.equal(patch.body.timeline[0].note.uk, '[UK] Vrecia vyzdvihneme o 18:00.'); assert.equal(patch.body.timeline[0].note.en, '[EN-GB] Vrecia vyzdvihneme o 18:00.');
+  assert.equal(pushed[0].init.headers.Topic, 'req-r2');
+  // náš vlastný PATCH prekladu spustí webhook znova: rovnaký stav, rovnaká dĺžka časovej osi → nič
+  res = await (await sendPush(post({ type: 'UPDATE', record: { ...rec, timeline: patch.body.timeline }, old_record: rec }), { own, fetchImpl: deepl, pushFetch })).json();
+  assert.equal(res.skipped, 'no_change');
+  // poznámka bez zmeny stavu = nový záznam v časovej osi → push bez zmeny stavu; porucha → rieši sync-ticket-status
+  res = await (await sendPush(post({ type: 'UPDATE', record: { ...rec, timeline: [...rec.timeline, { at: '2026-09-14T19:00:00Z', status: 'inProgress', note: { sk: 'Meškáme 30 min.', en: 'x', uk: 'y' } }] }, old_record: rec }), { own, fetchImpl: deepl, pushFetch })).json();
+  assert.equal(res.sent, 1); assert.equal(pushed.length, 2);
+  res = await (await sendPush(post({ type: 'UPDATE', record: { ...rec, kind: 'issue' }, old_record: old }), { own, fetchImpl: deepl, pushFetch })).json();
+  assert.equal(res.skipped, 'issue');
+  delete process.env.DEEPL_KEY;
+});

@@ -71,8 +71,15 @@ knihy v TOOLS (modul Hostia).
 
 ## 3. Poradie
 
-Stav 14. 9. 2026: podpis poriadku je hotový (v0.3.0: klient + edge funkcia `sign-rules`);
-overenie totožnosti čaká na výber poskytovateľa.
+Stav 14. 9. 2026 (v0.4.0): podpis poriadku je hotový (v0.3.0: klient + edge funkcia `sign-rules`).
+Overenie totožnosti je **napojené ako krok 2 check-inu** — hotové je všetko okrem zmluvy
+s poskytovateľom: edge funkcie `identity-start` (session, presmerovanie) a `identity-webhook`
+(HMAC-overené rozhodnutie → `guest_identity` → push hosťovi), adaptéry **iDenfy** a **Veriff**
+v `supabase/functions/_shared/identity-providers.js` (Innovatrics/Sumsub sa dopíšu rovnakým
+tvarom: `createSession`, `verify`, `parse`), obrazovka `/identity` v appke (12 jazykov, „overím
+na recepcii“ ako alternatíva bez biometrie), karta Check-in na domove, stav v Dokumentoch a v
+TOOLS (modul Hostia, stĺpec „Doklad“). Výber poskytovateľa = jeden secret `IDENTITY_PROVIDER`
++ kľúče (`docs/SETUP_SUPABASE.md §3`); bez neho appka povie „doklad ukážete na recepcii“.
 
 Kolo B (backend) → kolo C (TOOLS „Hostia“) → tento check-in (podpis + overenie) ako kolo C2:
 potrebuje backend, e-mail a modul Hostia. Podpisové plátno a PDF šablónu viem pripraviť už v kole B.

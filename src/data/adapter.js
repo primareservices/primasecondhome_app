@@ -44,5 +44,10 @@ export const getDocumentUrl = impl.getDocumentUrl || (async (s) => (s && s.pdfDa
 export const savePushSubscription = impl.savePushSubscription || noop;
 export const removePushSubscription = impl.removePushSubscription || noop;
 export const forgetMe = impl.forgetMe || (async () => impl.signOut());
+// v1.3: overenie totožnosti (eKYC) a vynútená synchronizácia
+export const getIdentity = impl.getIdentity || (() => null);
+export const startIdentity = impl.startIdentity || (async () => ({ status: 'unavailable' }));
+export const setIdentitySkipped = impl.setIdentitySkipped || noop;
+export const syncNow = impl.syncNow || (async () => null);
 export const startStore = impl.start || noop;
 export const STORE_KIND = DEMO_MODE ? 'demo' : 'supabase';

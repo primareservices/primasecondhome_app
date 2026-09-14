@@ -3,7 +3,7 @@ import { BRAND, C } from '../../config/theme.js';
 import { shadow } from '../../config/app-config.js';
 import { useT } from '../../i18n/index.js';
 import { useApp } from '../../app-context.js';
-import { getPermitExpiry, listAnnouncements, listBookings, listRequests, subscribe } from '../../data/adapter.js';
+import { getIdentity, getPermitExpiry, getRulesAck, listAnnouncements, listBookings, listRequests, subscribe } from '../../data/adapter.js';
 import { navigate } from '../../router.js';
 import { fmtDate } from '../../lib/format.js';
 import { nextCleaningDate } from '../../domain/cleaning.js';
@@ -59,6 +59,9 @@ export function Home() {
   const permitExpiry = useMemo(() => stay ? getPermitExpiry(stay.id) : null, [stay, tick]);
   const permit = useMemo(() => stay ? permitStatus(permitExpiry) : null, [stay, permitExpiry]);
   const open = reqs.filter(isOpen);
+  const idn = useMemo(() => stay ? getIdentity(stay.id) : null, [stay, tick]);
+  const ack = useMemo(() => stay ? getRulesAck(stay.id) : null, [stay, tick]);
+  const checkinOpen = !!stay && !(idn && (idn.status === 'approved' || idn.skipped));   // hotelový check-in: podpis ✓, overenie dokladu →
   const cleaning = stay && stay.nextCleaning ? new Date(stay.nextCleaning + 'T09:00:00') : nextCleaningDate();   // z RE SERVICE (sync-cleaning), inak odhad
   const today = new Date().toISOString().slice(0, 10);
   const loc = stay ? parseRoomLoc(stay.room) : null;
@@ -96,6 +99,15 @@ export function Home() {
         </Card>
       )}
 
+      {checkinOpen && (
+        <>
+          <SectionLabel>{t('home.checkin')}</SectionLabel>
+          <Card style={{ padding: '4px 18px' }}>
+            <TodayRow icon="FileSignature" tone="success" title={t('home.checkinRules')} sub={ack && ack.at ? fmtDate(ack.at, lang) : ''} right={<IconBox name="Check" tone="success" size={30} iconSize={16} radius={10}/>} onClick={() => navigate('/documents')}/>
+            <TodayRow icon="ScanFace" tone={idn && idn.status ? (idn.status === 'declined' ? 'danger' : 'warning') : 'info'} title={t('home.checkinIdentity')} sub={idn && idn.status ? t('identity.' + idn.status) : t('identity.intro')} right={idn && idn.status === 'pending' ? <Tag tone="warning" icon="Clock">{t('docs.pending')}</Tag> : undefined} onClick={() => navigate('/identity')} last/>
+          </Card>
+        </>
+      )}
       {stay && <div style={{ marginTop: 16 }}><BigAction icon="Wrench" title={t('home.reportProblem')} sub={t('home.reportSub')} onClick={() => navigate('/report')}/></div>}
 
       {stay ? (

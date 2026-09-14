@@ -1,8 +1,10 @@
-// Push hosťom. Dva vstupy: (a) webhook z DB pri INSERT do guest_announcements → všetci hostia budovy
-// (alebo siete) vo svojom jazyku; (b) interné volanie { target, title, body, url, tag } so secretom.
+// Push hosťom. Vstupy: (a) webhook z DB pri INSERT do guest_announcements → všetci hostia budovy (alebo siete)
+// vo svojom jazyku; (b) webhook guest_messages INSERT (preklad + push); (c) webhook guest_requests UPDATE —
+// office v TOOLS zmenil stav / dopísal poznámku (preklad poznámky + push); (d) interné volanie
+// { target, title, body, url, tag } so secretom; (e) cron { dueAnnouncements: true }.
 import { checkWebhookSecret, cors, json, readJson } from '../_shared/http.js';
 import { own as ownClient } from '../_shared/supa.js';
-import { pushText } from '../_shared/push-texts.js';
+import { pushText, statusText } from '../_shared/push-texts.js';
 import { translate } from '../_shared/deepl.js';
 import { pushTo, subscriptionsFor } from '../_shared/guest-push.js';
 
@@ -33,6 +35,31 @@ export async function handle(req, deps = {}) {
     const a = body.record;
     if (a.valid_from && new Date(a.valid_from).getTime() > Date.now() + 60 * 1000) return json({ skipped: 'scheduled' });   // pošle cron
     return json({ ok: true, ...(await pushAnnouncement(a)) });
+  }
+  if (body.type === 'UPDATE' && body.record && body.record.ref && body.old_record) {   // žiadosť (webhook guest_requests UPDATE)
+    const r = body.record, o = body.old_record;
+    if (r.kind === 'issue') return json({ skipped: 'issue' });   // poruchy: stav aj push rieši sync-ticket-status
+    if (r.status === 'cancelled') return json({ skipped: 'cancelled' });   // zrušil sám hosť
+    const oldLen = Array.isArray(o.timeline) ? o.timeline.length : 0;
+    const timeline = Array.isArray(r.timeline) ? r.timeline.slice() : [];
+    if (o.status === r.status && timeline.length <= oldLen) return json({ skipped: 'no_change' });   // napr. náš vlastný PATCH prekladu
+    const stay = (await own.rest('guest_stays?select=id,lang&id=eq.' + r.stay_id))[0];
+    if (!stay) return json({ error: 'stay_not_found' }, 404);
+    const lang = stay.lang || 'en';
+    const last = timeline[timeline.length - 1];
+    let note = last && last.note && typeof last.note === 'object' ? { ...last.note } : null;
+    if (note && note.sk && (!note[lang] || !note.en)) {   // poznámka office je po slovensky → jazyk hosťa + EN
+      const tr = await translate(note.sk, [...new Set(['en', lang])], { source: 'sk', fetchImpl: deps.fetchImpl });
+      if (Object.keys(tr).length) {
+        note = { ...note, ...tr }; timeline[timeline.length - 1] = { ...last, note };
+        await own.rest('guest_requests?id=eq.' + r.id, { method: 'PATCH', body: { timeline }, prefer: 'return=minimal' });
+      }
+    }
+    const subs = await subscriptionsFor(own, { stayId: r.stay_id, lang });
+    const res = await pushTo(own, subs, (s) => ({
+      title: r.status === 'resolved' ? pushText(s.lang, 'resolved', { ref: r.ref }) : pushText(s.lang, 'statusUpdate', { ref: r.ref, status: statusText(s.lang, r.status) }),
+      body: note ? String(note[s.lang] || note.en || note.sk || '').slice(0, 180) : '', url: '/#/requests/' + r.id, tag: 'req-' + r.id }), { fetchImpl: deps.pushFetch });
+    return json({ ok: true, translated: !!(note && note[lang]), recipients: subs.length, ...res });
   }
   if (body.record && body.record.sender && body.record.stay_id) {   // správa (webhook guest_messages INSERT)
     const m = body.record;

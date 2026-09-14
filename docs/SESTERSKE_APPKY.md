@@ -99,4 +99,8 @@ RE SERVICE), `tools/verify-imports.mjs`, `_headers` (zatiaľ bez HSTS a CSP).
   (most do RE SERVICE so service role namiesto funkcie v RE SERVICE, sync stavov, push, DeepL,
   podpis poriadku), správy s recepciou. Čítanie `clean_plan` (najbližšie upratovanie) ostáva na
   kolo C spolu s modulom Hostia.
-- **C — TOOLS:** modul „Hostia“ (kódy z XLSX exportu, tlač lístka), koordinátori firiem do appky.
+- **C — hotové vo v0.4.0 (14. 9. 2026):** modul „Hostia“ pre TOOLS ako drop-in
+  (`integrations/tools-hostia/`: pobyty a kódy z XLSX exportu, lístky s QR, žiadosti, správy,
+  oznamy; overené buildom TOOLS a harnessom s mockom projektu hostí), push pri zmene stavu
+  žiadosti z office, overenie totožnosti (eKYC) ako krok 2 check-inu s adaptérmi iDenfy/Veriff.
+  Koordinátori firiem sa zadávajú pri novom pobyte (hromadne až s Casistom).

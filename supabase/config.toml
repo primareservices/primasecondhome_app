@@ -14,3 +14,7 @@ verify_jwt = false
 verify_jwt = true
 [functions.sync-cleaning]
 verify_jwt = false
+[functions.identity-start]
+verify_jwt = true
+[functions.identity-webhook]
+verify_jwt = false   # volá poskytovateľ eKYC; overuje sa HMAC podpis tela
