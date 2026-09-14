@@ -160,6 +160,10 @@ push s preloženou poznámkou. Podrobne v [CHANGELOG.md](CHANGELOG.md).
 |---|---|---|
 | ![check-in](docs/screens/22-home-checkin-uk.png) | ![overenie](docs/screens/23-identity-uk.png) | ![dokumenty](docs/screens/25-documents-identity-uk.png) |
 
+| Prepínač jazyka v hlavičke (v0.4.1) | | |
+|---|---|---|
+| ![jazyk](docs/screens/26-lang-menu-uk.png) | | |
+
 ## v0.3.0 — kolo B: API a hotelový check-in (14. 9. 2026)
 
 Backend na Supabase je napísaný a otestovaný (schéma, RLS, adaptér, šesť edge funkcií vrátane mostu

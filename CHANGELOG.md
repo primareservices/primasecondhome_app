@@ -4,6 +4,13 @@ Verzia je v `src/config/app-config.js` (`APP_VERSION`) a v `package.json`; obe s
 Commit začína verziou (`v0.2.0 - …`), rovnako ako v PRIMA RE SERVICE a PRIMA TOOLS. Bez zdvihnutia
 verzie sa hosťom nová verzia neponúkne.
 
+## v0.4.1 — 14. 9. 2026 · prepínač jazyka v hlavičke
+
+- **Jazyk sa prepína priamo v hlavičke** ako v PRIMA RE SERVICE (pilulka s aktuálnym jazykom):
+  klepnutie otvorí menu 12 jazykov (názov v pôvodnom písme + kód), výber prepne jazyk okamžite —
+  bez odchodu na Profil. Zatvára sa klepnutím mimo, Escape a výberom; bez vlajok (vlajka ≠ jazyk).
+  Profil a uvítacia obrazovka ostávajú ako doteraz. Smoke test prepne EN ↔ UK a overí navigáciu.
+
 ## v0.4.0 — 14. 9. 2026 · kolo C (modul „Hostia“ pre TOOLS, overenie totožnosti)
 
 - **Modul „Hostia“ pre PRIMA TOOLS** (`integrations/tools-hostia/`, drop-in s návodom): druhé

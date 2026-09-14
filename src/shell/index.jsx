@@ -5,7 +5,7 @@ import { useT } from '../i18n/index.js';
 import { useApp } from '../app-context.js';
 import { navigate } from '../router.js';
 import { Icon } from '../ui/icons.jsx';
-import { langMeta } from '../config/languages.js';
+import { LangMenu } from '../ui/LangMenu.jsx';
 import { PrimaLogo } from '../ui/PrimaLogo.jsx';
 import { useOnline, useOutboxCount } from '../lib/online.js';
 
@@ -20,7 +20,7 @@ export function activeNav(segs) {
   return (NAV.find(n => n.match.includes(first)) || NAV[0]).key;
 }
 export function Shell({ children, segs, badges }) {
-  const { t, lang } = useT();
+  const { t, lang, setLang } = useT();
   const { property } = useApp();
   const online = useOnline();
   const queued = useOutboxCount();
@@ -39,7 +39,7 @@ export function Shell({ children, segs, badges }) {
             <Icon name="Bell" size={20}/>
             {unread ? <span style={{ position: 'absolute', top: 11, right: 11, width: 8, height: 8, borderRadius: '50%', background: BRAND.red, boxShadow: '0 0 0 2px #fff' }}/> : null}
           </button>
-          <button type="button" onClick={() => navigate('/profile')} aria-label={t('profile.language')} style={{ height: 44, padding: '0 12px', borderRadius: 22, background: C.card, border: 'none', boxShadow: shadow.sm, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: C.text, letterSpacing: '0.06em' }}><Icon name="Languages" size={16}/>{langMeta(lang).short}</button>
+          <LangMenu lang={lang} setLang={setLang} label={t('profile.language')}/>
         </div>
       </div>
       {(!online || queued > 0) && (
